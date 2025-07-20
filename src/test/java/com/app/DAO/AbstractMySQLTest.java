@@ -89,6 +89,27 @@ public abstract class AbstractMySQLTest {
             + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
             + "INDEX(user_id)"
             + ")");
+    jdbcTemplate.execute(
+        "CREATE TABLE IF NOT EXISTS pins ("
+        + "id int auto_increment primary key,"
+        + "user_id int NOT NULL,"
+        + "description text,"
+        + "media_id int NOT NULL,"
+        + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+        + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
+        + "FOREIGN kEY (media_id) REFERENCES media(id) ON DELETE CASCADE"
+        + ")");
+    jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS comments ("
+        + "id INT AUTO_INCREMENT PRIMARY KEY,"
+        + "content TEXT,"
+        + "user_id INT,"
+        + "pin_id INT,"
+        + "media_id INT,"
+        + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+        + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
+        + "FOREIGN KEY (pin_id) REFERENCES pins(id) ON DELETE CASCADE,"
+        + "FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE"
+        + ")");
 
     jdbcTemplate.update(
         "INSERT IGNORE INTO media (id, url, media_type) VALUES (?, ?, ?)", 1, "url", "IMAGE");
