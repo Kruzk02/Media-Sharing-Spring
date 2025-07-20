@@ -79,6 +79,16 @@ public abstract class AbstractMySQLTest {
             + "expiration_date DATETIME NOT NULL,"
             + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE\n"
             + ")");
+    jdbcTemplate.execute(
+        "CREATE TABLE IF NOT EXISTS notifications("
+            + "id INT auto_increment PRIMARY KEY,"
+            + "user_id INT NOT NULL,"
+            + "message VARCHAR(512) NOT NULL,"
+            + "is_read BOOLEAN DEFAULT FALSE,"
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
+            + "INDEX(user_id)"
+            + ")");
 
     jdbcTemplate.update(
         "INSERT IGNORE INTO media (id, url, media_type) VALUES (?, ?, ?)", 1, "url", "IMAGE");
