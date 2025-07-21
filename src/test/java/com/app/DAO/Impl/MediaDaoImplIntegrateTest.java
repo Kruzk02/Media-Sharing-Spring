@@ -53,16 +53,6 @@ class MediaDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   void findByCommentId() {
     jdbcTemplate.update(
-        "INSERT INTO users (id, username, email, password, gender, bio, enable, media_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        1,
-        "username",
-        "email@gmail.com",
-        "HashedPassword",
-        "male",
-        "bio",
-        false,
-        1);
-    jdbcTemplate.update(
         "INSERT INTO pins(user_id, description, media_id) VALUES (?, ?, ?)", 1L, "description", 1L);
     jdbcTemplate.update(
         "INSERT INTO comments (content,user_id,pin_id, media_id) VALUES (?,?,?,?)",

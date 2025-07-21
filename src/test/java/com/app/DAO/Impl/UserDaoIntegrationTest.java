@@ -8,8 +8,12 @@ import com.app.Model.*;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserDaoIntegrationTest extends AbstractMySQLTest {
 
   private UserDao userDao;
@@ -20,13 +24,14 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(1)
   void register() {
     User savedUser =
         userDao.register(
             User.builder()
                 .id(1L)
-                .username("username")
-                .email("email@gmail.com")
+                .username("username3")
+                .email("email3@gmail.com")
                 .password("HashedPassword")
                 .gender(Gender.MALE)
                 .media(Media.builder().id(1L).mediaType(MediaType.IMAGE).url("url").build())
@@ -44,12 +49,13 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
     assertNotNull(savedUser);
     assertNotNull(savedUser.getId());
 
+    System.out.println(savedUser.getId());
     Integer count =
         jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM users WHERE id = ? AND username = ?",
             Integer.class,
             savedUser.getId(),
-            "username");
+            "username3");
 
     assertEquals(1, count);
 
@@ -63,18 +69,20 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(2)
   void login() {
     insertTestUser();
-    var savedUser = userDao.login("username");
+    var savedUser = userDao.login("username2");
 
     assertNotNull(savedUser);
-    assertEquals(1L, savedUser.getId());
-    assertEquals("username", savedUser.getUsername());
-    assertEquals("email@gmail.com", savedUser.getEmail());
+    assertEquals(2L, savedUser.getId());
+    assertEquals("username2", savedUser.getUsername());
+    assertEquals("email2@gmail.com", savedUser.getEmail());
     assertFalse(savedUser.getEnable());
   }
 
   @Test
+  @Order(3)
   void findUserById() {
     insertTestUser();
     var foundUser = userDao.findUserById(1L);
@@ -87,6 +95,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(4)
   void findUserByUsername() {
     insertTestUser();
     var foundUser = userDao.findUserByUsername("username");
@@ -99,6 +108,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(5)
   void findUserByEmail() {
     insertTestUser();
     var foundUser = userDao.findUserByEmail("email@gmail.com");
@@ -111,6 +121,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(6)
   void findFullUserByUsername() {
     insertTestUser();
     User result = userDao.findFullUserByUsername("username");
@@ -125,6 +136,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(7)
   void findPasswordNRoleByUsername() {
     insertTestUser();
 
@@ -138,6 +150,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(8)
   void update() {
     insertTestUser();
 
@@ -172,6 +185,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(9)
   void checkAccountVerifyById() {
     insertTestUser();
 
@@ -182,7 +196,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
 
   private void insertTestUser() {
     jdbcTemplate.update(
-        "INSERT INTO users (id, username, email, password, gender, bio, enable, media_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT IGNORE INTO users (id, username, email, password, gender, bio, enable, media_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         1,
         "username",
         "email@gmail.com",

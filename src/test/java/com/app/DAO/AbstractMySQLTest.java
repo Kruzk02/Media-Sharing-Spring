@@ -146,6 +146,7 @@ public abstract class AbstractMySQLTest {
         "bio",
         false,
         1);
+    jdbcTemplate.update("INSERT INTO users_roles (user_id, role_id) VALUES (?, ?)", 1, 2);
 
     jdbcTemplate.update(
         "INSERT IGNORE INTO users (id, username, email, password, gender, bio, enable, media_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -157,5 +158,6 @@ public abstract class AbstractMySQLTest {
         "bio",
         false,
         1);
+    jdbcTemplate.update("INSERT INTO users_roles (user_id, role_id) VALUES (?, ?)", 2, 2);
   }
 }
