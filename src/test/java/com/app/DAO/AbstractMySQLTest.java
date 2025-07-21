@@ -91,28 +91,59 @@ public abstract class AbstractMySQLTest {
             + ")");
     jdbcTemplate.execute(
         "CREATE TABLE IF NOT EXISTS pins ("
-        + "id int auto_increment primary key,"
-        + "user_id int NOT NULL,"
-        + "description text,"
-        + "media_id int NOT NULL,"
-        + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-        + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
-        + "FOREIGN kEY (media_id) REFERENCES media(id) ON DELETE CASCADE"
-        + ")");
-    jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS comments ("
-        + "id INT AUTO_INCREMENT PRIMARY KEY,"
-        + "content TEXT,"
-        + "user_id INT,"
-        + "pin_id INT,"
-        + "media_id INT,"
-        + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-        + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
-        + "FOREIGN KEY (pin_id) REFERENCES pins(id) ON DELETE CASCADE,"
-        + "FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE"
-        + ")");
+            + "id int auto_increment primary key,"
+            + "user_id int NOT NULL,"
+            + "description text,"
+            + "media_id int NOT NULL,"
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
+            + "FOREIGN kEY (media_id) REFERENCES media(id) ON DELETE CASCADE"
+            + ")");
+    jdbcTemplate.execute(
+        "CREATE TABLE IF NOT EXISTS comments ("
+            + "id INT AUTO_INCREMENT PRIMARY KEY,"
+            + "content TEXT,"
+            + "user_id INT,"
+            + "pin_id INT,"
+            + "media_id INT,"
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
+            + "FOREIGN KEY (pin_id) REFERENCES pins(id) ON DELETE CASCADE,"
+            + "FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE"
+            + ")");
+    jdbcTemplate.execute(
+        "CREATE TABLE IF NOT EXISTS followers("
+            + "follower_id INT NOT NULL,"
+            + "following_id INT NOT NULL,"
+            + "following_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "PRIMARY KEY (follower_id, following_id),"
+            + "FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,"
+            + "FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE"
+            + ")");
 
     jdbcTemplate.update(
         "INSERT IGNORE INTO media (id, url, media_type) VALUES (?, ?, ?)", 1, "url", "IMAGE");
     jdbcTemplate.update("INSERT IGNORE INTO roles (id, name) VALUES (?, ?)", 2, "ROLE_USER");
+    jdbcTemplate.update(
+        "INSERT IGNORE INTO users (id, username, email, password, gender, bio, enable, media_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        1,
+        "username",
+        "email@gmail.com",
+        "HashedPassword",
+        "male",
+        "bio",
+        false,
+        1);
+
+    jdbcTemplate.update(
+        "INSERT IGNORE INTO users (id, username, email, password, gender, bio, enable, media_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        2,
+        "username2",
+        "email2@gmail.com",
+        "HashedPassword",
+        "male",
+        "bio",
+        false,
+        1);
   }
 }

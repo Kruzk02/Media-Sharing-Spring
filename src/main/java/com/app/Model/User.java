@@ -4,8 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import lombok.*;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -6,7 +6,6 @@ import com.app.DAO.AbstractMySQLTest;
 import com.app.DAO.MediaDao;
 import com.app.Model.Media;
 import com.app.Model.MediaType;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,10 @@ class MediaDaoImplIntegrateTest extends AbstractMySQLTest {
   void update() {
     var saved = mediaDao.save(Media.builder().url("url").mediaType(MediaType.IMAGE).build());
 
-    var result = mediaDao.update(saved.getId(), (Media.builder().id(saved.getId()).url("url123").mediaType(MediaType.IMAGE).build()));
+    var result =
+        mediaDao.update(
+            saved.getId(),
+            (Media.builder().id(saved.getId()).url("url123").mediaType(MediaType.IMAGE).build()));
 
     assertNotNull(result);
     assertEquals(saved.getId(), result.getId());
@@ -60,8 +62,14 @@ class MediaDaoImplIntegrateTest extends AbstractMySQLTest {
         "bio",
         false,
         1);
-    jdbcTemplate.update("INSERT INTO pins(user_id, description, media_id) VALUES (?, ?, ?)",1L, "description", 1L);
-    jdbcTemplate.update("INSERT INTO comments (content,user_id,pin_id, media_id) VALUES (?,?,?,?)", "content", 1L, 1L, 1L);
+    jdbcTemplate.update(
+        "INSERT INTO pins(user_id, description, media_id) VALUES (?, ?, ?)", 1L, "description", 1L);
+    jdbcTemplate.update(
+        "INSERT INTO comments (content,user_id,pin_id, media_id) VALUES (?,?,?,?)",
+        "content",
+        1L,
+        1L,
+        1L);
     var result = mediaDao.findByCommentId(1L);
 
     assertNotNull(result);
