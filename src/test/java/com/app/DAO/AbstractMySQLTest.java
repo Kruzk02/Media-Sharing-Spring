@@ -120,19 +120,41 @@ public abstract class AbstractMySQLTest {
             + "FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,"
             + "FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE"
             + ")");
-    jdbcTemplate.update(
+    jdbcTemplate.execute(
         "CREATE TABLE IF NOT EXISTS hashtags("
             + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
             + "tag VARCHAR(69) NOT NULL UNIQUE,"
             + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
             + ")");
-    jdbcTemplate.update(
+    jdbcTemplate.execute(
         "CREATE TABLE IF NOT EXISTS hashtags_pins("
             + "hashtag_id INT,"
             + "pin_id INT,"
             + "FOREIGN KEY (hashtag_id) REFERENCES hashtags(id) ON DELETE CASCADE,"
             + "FOREIGN KEY (pin_id) REFERENCES pins(id) ON DELETE CASCADE"
             + ")");
+
+    jdbcTemplate.execute(
+        "CREATE TABLE IF NOT EXISTS comments ("
+            + "d INT AUTO_INCREMENT PRIMARY KEY,"
+            + "content TEXT,"
+            + "user_id INT,"
+            + "pin_id INT,"
+            + "media_id INT,"
+            + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+            + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
+            + "FOREIGN KEY (pin_id) REFERENCES pins(id) ON DELETE CASCADE,"
+            + "FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE"
+            + ")");
+
+    jdbcTemplate.execute(
+        "CREATE TABLE IF NOT EXISTS hashtags_comments("
+            + "hashtag_id INT,"
+            + "comment_id INT,"
+            + "FOREIGN KEY (hashtag_id) REFERENCES hashtags(id) ON DELETE CASCADE,"
+            + "FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE"
+            + ")");
+
     jdbcTemplate.update(
         "INSERT IGNORE INTO media (id, url, media_type) VALUES (?, ?, ?)", 1, "url", "IMAGE");
     jdbcTemplate.update("INSERT IGNORE INTO roles (id, name) VALUES (?, ?)", 2, "ROLE_USER");
