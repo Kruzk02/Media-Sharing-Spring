@@ -155,6 +155,23 @@ public abstract class AbstractMySQLTest {
             + "FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE"
             + ")");
 
+    jdbcTemplate.execute(
+        "CREATE TABLE IF NOT EXISTS boards ("
+            + "id int auto_increment primary key,"
+            + "user_id int,"
+            + "board_name varchar(255) not null,"
+            + "create_at timestamp default current_timestamp,"
+            + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+            + ")");
+
+    jdbcTemplate.execute(
+        "CREATE TABLE IF NOT EXISTS board_pin ("
+            + "board_id INT,"
+            + "pin_id INT,"
+            + "FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE,"
+            + "FOREIGN KEY (pin_id) REFERENCES pins(id) ON DELETE CASCADE"
+            + ")");
+
     jdbcTemplate.update(
         "INSERT IGNORE INTO media (id, url, media_type) VALUES (?, ?, ?)", 1, "url", "IMAGE");
     jdbcTemplate.update("INSERT IGNORE INTO roles (id, name) VALUES (?, ?)", 2, "ROLE_USER");
