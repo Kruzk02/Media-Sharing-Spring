@@ -25,26 +25,29 @@ public class HashtagDaoImpl implements HashtagDao {
       return Collections.emptyMap();
     }
 
-    String sql = "SELECT id, tag, created_at FROM hashtags WHERE tag IN (:tags)";
-    NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(template);
-
-    Map<String, Object> params = Map.of("tags", tag);
-
-    List<Hashtag> foundItems =
-        namedJdbcTemplate.query(
-            sql,
-            params,
-            (rs, rowNum) ->
-                Hashtag.builder()
-                    .id(rs.getLong("id"))
-                    .tag(rs.getString("tag"))
-                    .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
-                    .build());
+    var sql = "SELECT id, tag, created_at FROM hashtags WHERE tag IN (:tags)";
+    List<Hashtag> foundItems = getHashtags(tag, sql);
 
     return foundItems.stream()
         .collect(
             Collectors.toMap(
                 Hashtag::getTag, hashtag -> hashtag, (existing, replacement) -> existing));
+  }
+
+  private List<Hashtag> getHashtags(Set<String> tag, String sql) {
+    var namedJdbcTemplate = new NamedParameterJdbcTemplate(template);
+
+    Map<String, Object> params = Map.of("tags", tag);
+
+    return namedJdbcTemplate.query(
+        sql,
+        params,
+        (rs, rowNum) ->
+            Hashtag.builder()
+                .id(rs.getLong("id"))
+                .tag(rs.getString("tag"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .build());
   }
 
   @Override
