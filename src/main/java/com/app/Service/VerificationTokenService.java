@@ -9,7 +9,6 @@ import com.app.exception.sub.UserNotMatchException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
@@ -24,7 +23,7 @@ public class VerificationTokenService {
   private final UserDao userDao;
 
   public VerificationToken generateVerificationToken(User user) {
-    String token = UUID.randomUUID().toString();
+    String token = String.valueOf((int) (Math.random() * 900000) + 100000);
     VerificationToken verificationToken =
         VerificationToken.builder()
             .token(token)
