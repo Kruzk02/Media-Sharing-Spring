@@ -362,8 +362,8 @@ public class UserController {
 
   @Operation(summary = "Verify user account")
   @GetMapping("/verify")
-  public ResponseEntity<VerifyAccountResponse> verifyAccount(@RequestParam String token) {
-    userService.verifyAccount(token);
+  public ResponseEntity<VerifyAccountResponse> verifyAccount(@RequestParam String code) {
+    userService.verifyAccount(code);
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
         .body(new VerifyAccountResponse("Account verified successfully."));
