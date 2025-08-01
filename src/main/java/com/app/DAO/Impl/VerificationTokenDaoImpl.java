@@ -5,6 +5,7 @@ import com.app.Model.VerificationToken;
 import com.app.exception.sub.VerificationTokenNotFoundException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -32,7 +33,7 @@ public class VerificationTokenDaoImpl implements VerificationTokenDao {
               VerificationToken.builder()
                   .token(rs.getString("token"))
                   .userId(rs.getLong("user_id"))
-                  .expireDate(rs.getDate("expiration_date"))
+                  .expireDate(rs.getTimestamp("expiration_date").toLocalDateTime())
                   .build(),
           token);
     } catch (EmptyResultDataAccessException e) {
@@ -52,7 +53,7 @@ public class VerificationTokenDaoImpl implements VerificationTokenDao {
               PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
               ps.setString(1, verificationToken.getToken());
               ps.setLong(2, verificationToken.getUserId());
-              ps.setDate(3, verificationToken.getExpireDate());
+              ps.setTimestamp(3, Timestamp.valueOf(verificationToken.getExpireDate()));
               return ps;
             },
             keyHolder);
