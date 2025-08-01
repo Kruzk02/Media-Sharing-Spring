@@ -4,6 +4,7 @@ import com.app.DTO.request.LoginUserRequest;
 import com.app.DTO.request.RegisterUserRequest;
 import com.app.DTO.request.TokenRequest;
 import com.app.DTO.request.UpdateUserRequest;
+import com.app.DTO.request.VerifyAccountRequest;
 import com.app.DTO.response.*;
 import com.app.Jwt.JwtProvider;
 import com.app.Model.Board;
@@ -361,9 +362,10 @@ public class UserController {
   }
 
   @Operation(summary = "Verify user account")
-  @GetMapping("/verify")
-  public ResponseEntity<VerifyAccountResponse> verifyAccount(@RequestParam String token) {
-    userService.verifyAccount(token);
+  @PostMapping("/verify")
+  public ResponseEntity<VerifyAccountResponse> verifyAccount(
+      @RequestBody VerifyAccountRequest request) {
+    userService.verifyAccount(request.token());
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
         .body(new VerifyAccountResponse("Account verified successfully."));
