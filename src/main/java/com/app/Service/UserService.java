@@ -15,4 +15,6 @@ public interface UserService {
   User update(UpdateUserRequest request);
 
   void verifyAccount(String token);
+
+  void resendVerifyToken();
 }

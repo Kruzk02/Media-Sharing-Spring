@@ -208,6 +208,17 @@ public class UserServiceImpl implements UserService {
     verificationTokenService.verifyAccount(token);
   }
 
+  @Override
+  public void resendVerifyToken() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = authentication.getName();
+
+    User user = userDao.findUserByUsername(username);
+    VerificationToken verificationToken = verificationTokenService.generateVerificationToken(user);
+    emailEventProducer.send(
+        new VerificationEmailEvent(user.getEmail(), verificationToken.getToken(), Instant.now()));
+  }
+
   private Media getDefaultProfilePicturePath() {
     Resource defaultProfilePic = new FileSystemResource("image/default_profile_picture.png");
     if (defaultProfilePic.exists()) {
