@@ -1,7 +1,7 @@
 package com.app.Model;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,5 +12,6 @@ public class VerificationToken implements Serializable {
   private Long id;
   private String token;
   private Long userId;
-  private Date expireDate;
+  private LocalDateTime createAt;
+  private LocalDateTime expireDate;
 }
