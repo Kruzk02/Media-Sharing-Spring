@@ -370,4 +370,13 @@ public class UserController {
         .contentType(MediaType.APPLICATION_JSON)
         .body(new VerifyAccountResponse("Account verified successfully."));
   }
+
+  @Operation(summary = "Resend verify token")
+  @GetMapping("/re-verify")
+  public ResponseEntity<VerifyAccountResponse> reverifyAccount() {
+    userService.resendVerifyToken();
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(new VerifyAccountResponse("Check your email"));
+  }
 }

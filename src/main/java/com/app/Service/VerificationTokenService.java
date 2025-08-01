@@ -6,10 +6,8 @@ import com.app.Model.User;
 import com.app.Model.VerificationToken;
 import com.app.exception.sub.TokenExpireException;
 import com.app.exception.sub.UserNotMatchException;
-import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
@@ -24,12 +22,12 @@ public class VerificationTokenService {
   private final UserDao userDao;
 
   public VerificationToken generateVerificationToken(User user) {
-    String token = UUID.randomUUID().toString();
+    String token = String.valueOf((int) (Math.random() * 900000) + 100000);
     VerificationToken verificationToken =
         VerificationToken.builder()
             .token(token)
             .userId(user.getId())
-            .expireDate(Date.valueOf(LocalDate.now().plusDays(1)))
+            .expireDate(LocalDateTime.now().plusMinutes(10))
             .build();
     return verificationTokenDao.create(verificationToken);
   }
@@ -40,12 +38,16 @@ public class VerificationTokenService {
       throw new TokenExpireException("Verification token not found");
     }
 
-    if (verificationToken.getExpireDate().toLocalDate().isBefore(LocalDate.now())) {
+    if (verificationToken.getExpireDate().isBefore(LocalDateTime.now())) {
       throw new TokenExpireException("Verification token expired");
     }
 
     if (userDao.checkAccountVerifyById(verificationToken.getUserId())) {
       throw new TokenExpireException("User already verified");
+    }
+
+    if (!verificationToken.getToken().equals(token)) {
+      throw new TokenExpireException("Token not match");
     }
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -61,7 +63,7 @@ public class VerificationTokenService {
     verificationTokenDao.deleteByToken(token);
   }
 
-  @Scheduled(cron = "0 0 * * * *")
+  @Scheduled(fixedRate = 10 * 60 * 1000)
   private void deleteExpireToken() {
     verificationTokenDao.deleteExpiredTokens();
   }

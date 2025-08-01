@@ -13,8 +13,7 @@ import com.app.Model.*;
 import com.app.Service.VerificationTokenService;
 import com.app.exception.sub.UserAlreadyExistsException;
 import com.app.message.producer.EmailEventProducer;
-import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,7 +111,7 @@ class UserServiceImplTest {
         VerificationToken.builder()
             .token("token")
             .userId(user.getId())
-            .expireDate(Date.valueOf(LocalDate.now()))
+            .expireDate(LocalDateTime.now())
             .build();
 
     Mockito.when(verificationTokenService.generateVerificationToken(Mockito.eq(user)))
