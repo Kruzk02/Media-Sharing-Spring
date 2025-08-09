@@ -2,10 +2,8 @@ package com.app.Controller;
 
 import com.app.DTO.request.CreateCommentRequest;
 import com.app.DTO.request.UpdatedCommentRequest;
-import com.app.DTO.response.CommentDTO;
 import com.app.DTO.response.CommentResponse;
 import com.app.DTO.response.SubCommentResponse;
-import com.app.DTO.response.UserDTO;
 import com.app.Model.Comment;
 import com.app.Model.SortType;
 import com.app.Model.SubComment;
@@ -18,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -110,25 +109,15 @@ public class CommentController {
           "Limit must be greater than 0 and offset must be non-negative.");
     }
 
-    List<SubComment> subComments =
-        subCommentService.findAllByCommentId(id, sortType, limit, offset);
+    List<SubCommentResponse> subComments =
+        subCommentService.findAllByCommentId(id, sortType, limit, offset).stream()
+            .sorted(Comparator.comparing(SubComment::getCreateAt))
+            .map(SubCommentResponse::fromEntity)
+            .toList();
+
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            subComments.stream()
-                .map(
-                    subComment ->
-                        new SubCommentResponse(
-                            subComment.getId(),
-                            subComment.getContent(),
-                            subComment.getMedia().getId(),
-                            new CommentDTO(
-                                subComment.getComment().getId(),
-                                subComment.getComment().getContent()),
-                            new UserDTO(
-                                subComment.getUser().getId(), subComment.getUser().getUsername()),
-                            subComment.getCreateAt()))
-                .toList());
+        .body(subComments);
   }
 
   @Operation(description = "create an comment")

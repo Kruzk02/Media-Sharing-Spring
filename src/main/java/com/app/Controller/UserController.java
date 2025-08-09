@@ -238,20 +238,14 @@ public class UserController {
   @GetMapping("/{id}/followers")
   public ResponseEntity<List<UserResponse>> getAllFollowersByUserId(
       @PathVariable Long id, @RequestParam(defaultValue = "10") int limit) {
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            followerService.getAllFollowingByUserId(id, limit).stream()
-                .map(
-                    user ->
-                        new UserResponse(
-                            user.getId(),
-                            user.getUsername(),
-                            user.getEmail(),
-                            user.getMedia().getId(),
-                            user.getBio(),
-                            user.getGender()))
-                .toList());
+
+    List<UserResponse> users =
+        followerService.getAllFollowingByUserId(id, limit).stream()
+            .sorted(Comparator.comparing(User::getUsername))
+            .map(UserResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(users);
   }
 
   @PostMapping("/{id}/followers")
@@ -284,25 +278,16 @@ public class UserController {
       @PathVariable Long userId,
       @RequestParam(defaultValue = "10") int limit,
       @RequestParam(defaultValue = "0") int offset) {
-    List<Board> boards = boardService.findAllByUserId(userId, limit, offset);
+
+    List<BoardResponse> boards =
+        boardService.findAllByUserId(userId, limit, offset).stream()
+            .sorted(Comparator.comparing(Board::getName))
+            .map(BoardResponse::fromEntity)
+            .toList();
+
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            boards.parallelStream()
-                .map(
-                    board ->
-                        new BoardResponse(
-                            board.getId(),
-                            board.getName(),
-                            new UserDTO(board.getUser().getId(), board.getUser().getUsername()),
-                            board.getPins().stream()
-                                .skip(offset)
-                                .limit(limit)
-                                .map(
-                                    pin ->
-                                        new PinDTO(pin.getId(), pin.getUserId(), pin.getMediaId()))
-                                .toList()))
-                .toList());
+        .body(boards);
   }
 
   @GetMapping("/{userId}/pins")
