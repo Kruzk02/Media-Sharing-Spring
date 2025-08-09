@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -61,21 +62,15 @@ public class PinController {
           "Limit must be greater than 0 and offset must be non-negative.");
     }
 
-    List<Pin> pins = pinService.getAllPins(sortType, limit, offset);
+    List<PinResponse> pinResponses =
+        pinService.getAllPins(sortType, limit, offset).stream()
+            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
+            .map(PinResponse::fromEntity)
+            .toList();
+
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            pins.stream()
-                .map(
-                    pin ->
-                        new PinResponse(
-                            pin.getId(),
-                            pin.getUserId(),
-                            pin.getDescription(),
-                            pin.getMediaId(),
-                            new ArrayList<>(),
-                            pin.getCreatedAt()))
-                .toList());
+        .body(pinResponses);
   }
 
   @Operation(summary = "Upload a pin")

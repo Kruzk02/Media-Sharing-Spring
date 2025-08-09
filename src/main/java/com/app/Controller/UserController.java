@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -316,21 +316,13 @@ public class UserController {
       @Parameter(description = "Offset for pagination, indicating the starting point")
           @RequestParam(defaultValue = "0")
           int offset) {
-    List<Pin> pins = pinService.findPinByUserId(userId, limit, offset);
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            pins.stream()
-                .map(
-                    pin ->
-                        new PinResponse(
-                            pin.getId(),
-                            pin.getUserId(),
-                            pin.getDescription(),
-                            pin.getMediaId(),
-                            new ArrayList<>(),
-                            pin.getCreatedAt()))
-                .toList());
+    List<PinResponse> pins =
+        pinService.findPinByUserId(userId, limit, offset).stream()
+            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
+            .map(PinResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
   }
 
   @GetMapping("/notification")
