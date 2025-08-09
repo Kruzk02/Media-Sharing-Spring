@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,21 +57,13 @@ public class HashtagController {
           "Limit must be greater than 0 and offset must be non-negative.");
     }
 
-    List<Pin> pins = pinService.getAllPinsByHashtag(tag, limit, offset);
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            pins.stream()
-                .map(
-                    pin ->
-                        new PinResponse(
-                            pin.getId(),
-                            pin.getUserId(),
-                            pin.getDescription(),
-                            pin.getMediaId(),
-                            new ArrayList<>(),
-                            pin.getCreatedAt()))
-                .toList());
+    List<PinResponse> pins =
+        pinService.getAllPinsByHashtag(tag, limit, offset).stream()
+            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
+            .map(PinResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
   }
 
   @Operation(summary = "Get all Pins")
