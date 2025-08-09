@@ -2,10 +2,8 @@ package com.app.Controller;
 
 import com.app.DTO.request.CreateCommentRequest;
 import com.app.DTO.request.UpdatedCommentRequest;
-import com.app.DTO.response.CommentDTO;
 import com.app.DTO.response.CommentResponse;
 import com.app.DTO.response.SubCommentResponse;
-import com.app.DTO.response.UserDTO;
 import com.app.Model.Comment;
 import com.app.Model.SortType;
 import com.app.Model.SubComment;

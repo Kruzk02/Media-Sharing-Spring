@@ -238,20 +238,14 @@ public class UserController {
   @GetMapping("/{id}/followers")
   public ResponseEntity<List<UserResponse>> getAllFollowersByUserId(
       @PathVariable Long id, @RequestParam(defaultValue = "10") int limit) {
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            followerService.getAllFollowingByUserId(id, limit).stream()
-                .map(
-                    user ->
-                        new UserResponse(
-                            user.getId(),
-                            user.getUsername(),
-                            user.getEmail(),
-                            user.getMedia().getId(),
-                            user.getBio(),
-                            user.getGender()))
-                .toList());
+
+    List<UserResponse> users =
+        followerService.getAllFollowingByUserId(id, limit).stream()
+            .sorted(Comparator.comparing(User::getUsername))
+            .map(UserResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(users);
   }
 
   @PostMapping("/{id}/followers")
