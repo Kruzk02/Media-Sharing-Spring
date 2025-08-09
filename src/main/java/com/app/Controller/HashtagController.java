@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -94,21 +93,14 @@ public class HashtagController {
           "Limit must be greater than 0 and offset must be non-negative.");
     }
 
-    List<Comment> comments = commentService.findByHashtag(tag, limit, offset);
+    List<CommentResponse> comments =
+        commentService.findByHashtag(tag, limit, offset).stream()
+            .sorted(Comparator.comparing(Comment::getCreated_at).reversed())
+            .map(CommentResponse::fromEntity)
+            .toList();
+
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            comments.stream()
-                .map(
-                    comment ->
-                        new CommentResponse(
-                            comment.getId(),
-                            comment.getContent(),
-                            comment.getPinId(),
-                            comment.getUserId(),
-                            comment.getMediaId(),
-                            comment.getCreated_at(),
-                            new ArrayList<>()))
-                .toList());
+        .body(comments);
   }
 }

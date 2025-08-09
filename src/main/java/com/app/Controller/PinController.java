@@ -230,21 +230,15 @@ public class PinController {
           "Limit must be greater than 0 and offset must be non-negative.");
     }
 
+    List<CommentResponse> comments =
+        commentService.findByPinId(id, sortType, limit, offset).stream()
+            .sorted(Comparator.comparing(Comment::getCreated_at))
+            .map(CommentResponse::fromEntity)
+            .toList();
+
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            commentService.findByPinId(id, sortType, limit, offset).stream()
-                .map(
-                    comment ->
-                        new CommentResponse(
-                            comment.getId(),
-                            comment.getContent(),
-                            id,
-                            comment.getUserId(),
-                            comment.getMediaId(),
-                            comment.getCreated_at(),
-                            new ArrayList<>()))
-                .toList());
+        .body(comments);
   }
 
   @Operation(summary = "Delete an pin by its id")
