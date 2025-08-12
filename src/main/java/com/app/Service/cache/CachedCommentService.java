@@ -8,6 +8,7 @@ import com.app.Service.CommentService;
 import com.app.exception.sub.CommentNotFoundException;
 import com.app.helper.CachedServiceHelper;
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -78,7 +79,10 @@ public class CachedCommentService extends CachedServiceHelper<Comment> implement
     String redisKeys = "comments_hashtag:" + tag + ":limit:" + limit + ":offset:" + offset;
     return super.getListOrLoad(
         redisKeys,
-        () -> commentService.findByHashtag(tag, limit, offset),
+        () ->
+            commentService.findByHashtag(tag, limit, offset).stream()
+                .sorted(Comparator.comparing(Comment::getCreated_at).reversed())
+                .toList(),
         limit,
         offset,
         Duration.ofHours(2));
