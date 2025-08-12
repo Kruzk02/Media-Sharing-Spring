@@ -6,6 +6,7 @@ import com.app.Service.BoardService;
 import com.app.exception.sub.BoardNotFoundException;
 import com.app.helper.CachedServiceHelper;
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -61,7 +62,10 @@ public class CachedBoardService extends CachedServiceHelper<Board> implements Bo
   public List<Board> findAllByUserId(Long userId, int limit, int offset) {
     return super.getListOrLoad(
         "user:" + userId + ":board",
-        () -> boardService.findAllByUserId(userId, limit, offset),
+        () ->
+            boardService.findAllByUserId(userId, limit, offset).stream()
+                .sorted(Comparator.comparing(Board::getName).reversed())
+                .toList(),
         limit,
         offset,
         Duration.ofHours(2));
