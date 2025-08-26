@@ -59,13 +59,45 @@ public class PinServiceImpl implements PinService {
     return pinDao.getAllPinsByHashtag(tag, limit, offset);
   }
 
-  @Transactional
   @Override
   public Pin save(PinRequest pinRequest) {
     if (pinRequest.file().isEmpty()) {
       throw new PinIsEmptyException("A pin must have file");
     }
 
+    String filename = MediaManager.generateUniqueFilename(pinRequest.file().getOriginalFilename());
+    String extension = MediaManager.getFileExtension(pinRequest.file().getOriginalFilename());
+
+    Media media =
+        mediaDao.save(
+            Media.builder()
+                .url(filename)
+                .mediaType(MediaType.fromExtension(extension))
+                .status(Status.PENDING)
+                .build());
+
+    Pin pin = savePinAndHashTags(pinRequest, media.getId());
+
+    FileManager.save(pinRequest.file(), filename, extension)
+        .thenRunAsync(
+            () -> {
+              // TODO: add notify to the user
+              mediaDao.updateStatus(media.getId(), Status.READY);
+            })
+        .exceptionally(
+            (err) -> {
+              mediaDao.updateStatus(media.getId(), Status.FAILED);
+
+              pinDao.deleteById(pin.getId());
+
+              FileManager.delete(filename, extension);
+              return null;
+            });
+    return pin;
+  }
+
+  @Transactional
+  private Pin savePinAndHashTags(PinRequest pinRequest, Long mediaId) {
     Set<String> tagsToFind = pinRequest.hashtags();
     Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
 
@@ -78,19 +110,11 @@ public class PinServiceImpl implements PinService {
       hashtags.add(hashtag);
     }
 
-    String filename = MediaManager.generateUniqueFilename(pinRequest.file().getOriginalFilename());
-    String extension = MediaManager.getFileExtension(pinRequest.file().getOriginalFilename());
-
-    FileManager.save(pinRequest.file(), filename, extension);
-    Media media =
-        mediaDao.save(
-            Media.builder().url(filename).mediaType(MediaType.fromExtension(extension)).build());
-
     Pin pin =
         Pin.builder()
             .description(pinRequest.description())
             .userId(getAuthenticatedUser().getId())
-            .mediaId(media.getId())
+            .mediaId(mediaId)
             .hashtags(hashtags)
             .build();
     return pinDao.save(pin);
@@ -112,21 +136,34 @@ public class PinServiceImpl implements PinService {
 
     if (pinRequest.file() != null && !pinRequest.file().isEmpty()) {
       Media existingMedia = mediaDao.findById(existingPin.getMediaId());
-      String extensionOfExistingMedia = MediaManager.getFileExtension(existingMedia.getUrl());
+      String oldFilename = existingMedia.getUrl();
+      String oldExtension = MediaManager.getFileExtension(oldFilename);
 
-      String filename =
+      String newFilename =
           MediaManager.generateUniqueFilename(pinRequest.file().getOriginalFilename());
-      String extension = MediaManager.getFileExtension(pinRequest.file().getOriginalFilename());
+      String newExtension = MediaManager.getFileExtension(pinRequest.file().getOriginalFilename());
 
-      CompletableFuture.runAsync(
-              () -> FileManager.delete(existingMedia.getUrl(), extensionOfExistingMedia))
-          .thenRunAsync(() -> FileManager.save(pinRequest.file(), filename, extension));
-
-      mediaDao.update(
-          existingPin.getMediaId(),
-          Media.builder().url(filename).mediaType(MediaType.fromExtension(extension)).build());
+      CompletableFuture.runAsync(() -> FileManager.delete(oldFilename, oldExtension))
+          .thenRunAsync(() -> FileManager.save(pinRequest.file(), newFilename, newExtension))
+          .thenRunAsync(
+              () -> {
+                existingMedia.setUrl(newFilename);
+                existingMedia.setMediaType(MediaType.fromExtension(newExtension));
+                existingMedia.setStatus(Status.READY);
+                mediaDao.update(existingPin.getId(), existingMedia);
+              })
+          .exceptionally(
+              err -> {
+                mediaDao.updateStatus(existingMedia.getId(), Status.FAILED);
+                return null;
+              });
     }
 
+    return updatePinAndHashTags(pinRequest, existingPin);
+  }
+
+  @Transactional
+  private Pin updatePinAndHashTags(PinRequest pinRequest, Pin existingPin) {
     Set<String> tagsToFind = pinRequest.hashtags();
     Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
 
@@ -142,7 +179,7 @@ public class PinServiceImpl implements PinService {
     existingPin.setDescription(
         pinRequest.description() != null ? pinRequest.description() : existingPin.getDescription());
     existingPin.setHashtags(hashtags);
-    return pinDao.update(id, existingPin);
+    return pinDao.update(existingPin.getId(), existingPin);
   }
 
   /**
