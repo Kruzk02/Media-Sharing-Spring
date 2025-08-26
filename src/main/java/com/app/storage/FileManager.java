@@ -1,6 +1,8 @@
 package com.app.storage;
 
 import com.app.Model.MediaType;
+import com.app.exception.sub.FileDeleteException;
+import com.app.exception.sub.FileSaveException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -73,7 +75,7 @@ public class FileManager {
             }
           } catch (IOException e) {
             log.error("Error saving media file", e);
-            throw new RuntimeException("Error saving media file: " + e.getMessage(), e);
+            throw new FileSaveException("Error saving media file: " + filename, e);
           }
         });
   }
@@ -106,7 +108,7 @@ public class FileManager {
             }
           } catch (IOException e) {
             log.error("Error deleting media file: {}", filename, e);
-            throw new RuntimeException("Error deleting media file: " + filename, e);
+            throw new FileDeleteException("Error deleting media file: " + filename, e);
           }
         });
   }
