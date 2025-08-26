@@ -1,6 +1,7 @@
 package com.app.DAO;
 
 import com.app.Model.Media;
+import com.app.Model.Status;
 
 /** Data Access Object interface for managing Media entities. */
 public interface MediaDao {
@@ -20,6 +21,14 @@ public interface MediaDao {
    * @return the updated media
    */
   Media update(Long id, Media media);
+
+  /**
+   * Update status a existing media.
+   *
+   * @param id The ID of media to be updated
+   * @param status The status to be updated.
+   */
+  void updateStatus(Long id, Status status);
 
   /**
    * Find a media by its ID.

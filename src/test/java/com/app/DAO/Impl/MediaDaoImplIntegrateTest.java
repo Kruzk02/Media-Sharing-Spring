@@ -6,10 +6,14 @@ import com.app.DAO.AbstractMySQLTest;
 import com.app.DAO.MediaDao;
 import com.app.Model.Media;
 import com.app.Model.MediaType;
+import com.app.Model.Status;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MediaDaoImplIntegrateTest extends AbstractMySQLTest {
 
   private MediaDao mediaDao;
@@ -20,29 +24,56 @@ class MediaDaoImplIntegrateTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(1)
   void save() {
-    var result = mediaDao.save(Media.builder().url("url").mediaType(MediaType.IMAGE).build());
+    var result =
+        mediaDao.save(
+            Media.builder().url("url").mediaType(MediaType.IMAGE).status(Status.PENDING).build());
 
     assertNotNull(result);
-    assertEquals(3L, result.getId());
+    assertEquals(2L, result.getId());
     assertEquals("url", result.getUrl());
   }
 
   @Test
+  @Order(2)
   void update() {
-    var saved = mediaDao.save(Media.builder().url("url").mediaType(MediaType.IMAGE).build());
+    var saved =
+        mediaDao.save(
+            Media.builder().url("url").mediaType(MediaType.IMAGE).status(Status.PENDING).build());
 
     var result =
         mediaDao.update(
             saved.getId(),
-            (Media.builder().id(saved.getId()).url("url123").mediaType(MediaType.IMAGE).build()));
+            (Media.builder()
+                .id(saved.getId())
+                .url("url123")
+                .mediaType(MediaType.IMAGE)
+                .status(Status.READY)
+                .build()));
 
     assertNotNull(result);
     assertEquals(saved.getId(), result.getId());
     assertEquals("url123", result.getUrl());
+    assertEquals(Status.READY, result.getStatus());
   }
 
   @Test
+  @Order(3)
+  void updateStatus() {
+    var saved =
+        mediaDao.save(
+            Media.builder().url("url").mediaType(MediaType.IMAGE).status(Status.PENDING).build());
+
+    mediaDao.updateStatus(saved.getId(), Status.READY);
+    var updated = mediaDao.findById(saved.getId());
+
+    assertNotNull(saved);
+    assertEquals(Status.READY, updated.getStatus());
+  }
+
+  @Test
+  @Order(4)
   void findById() {
     var result = mediaDao.findById(2L);
 
@@ -51,6 +82,7 @@ class MediaDaoImplIntegrateTest extends AbstractMySQLTest {
   }
 
   @Test
+  @Order(5)
   void findByCommentId() {
     jdbcTemplate.update(
         "INSERT INTO pins(user_id, description, media_id) VALUES (?, ?, ?)", 1L, "description", 1L);
@@ -66,7 +98,7 @@ class MediaDaoImplIntegrateTest extends AbstractMySQLTest {
   }
 
   @Test
-  @Order(5)
+  @Order(6)
   void deleteById() {
     var result = mediaDao.deleteById(1L);
 
