@@ -88,7 +88,6 @@ public class MediaDaoImpl implements MediaDao {
     }
   }
 
-  @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
   @Override
   public Media findByCommentId(Long commentId) {
     try {
@@ -107,9 +106,7 @@ public class MediaDaoImpl implements MediaDao {
           },
           commentId);
     } catch (EmptyResultDataAccessException e) {
-      throw new MediaNotFoundException("Media not found with comment ID: " + commentId);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Invalid media type for comment ID: " + commentId);
+      return null;
     }
   }
 

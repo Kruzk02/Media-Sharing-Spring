@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Log4j2
@@ -45,63 +47,51 @@ public class CommentServiceImpl implements CommentService {
   @Override
   public Comment save(CreateCommentRequest request) {
     if ((request.content() == null || request.content().trim().isEmpty())
-        && request.media().isEmpty()) {
+        && (request.media() == null || request.media().isEmpty())) {
       throw new CommentIsEmptyException(
           "A comment must have either content or a media attachment.");
     }
 
-    Set<String> tagsToFind = request.tags();
-    Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
+    Media media = null;
+    if (request.media() != null && !request.media().isEmpty()) {
+      String filename = MediaManager.generateUniqueFilename(request.media().getOriginalFilename());
+      String extension = MediaManager.getFileExtension(request.media().getOriginalFilename());
 
-    List<Hashtag> hashtags = new ArrayList<>();
-    for (String tag : tagsToFind) {
-      Hashtag hashtag = tags.get(tag);
-      if (hashtag == null) {
-        hashtag = hashtagDao.save(Hashtag.builder().tag(tag).build());
-      }
-      hashtags.add(hashtag);
+      media =
+          mediaDao.save(
+              Media.builder()
+                  .url(filename)
+                  .mediaType(MediaType.fromExtension(extension))
+                  .status(Status.PENDING)
+                  .build());
+
+      Media finalMedia = media;
+
+      FileManager.save(request.media(), filename, extension)
+          .thenRunAsync(() -> mediaDao.updateStatus(finalMedia.getId(), Status.READY))
+          .exceptionally(
+              (err) -> {
+                mediaDao.updateStatus(finalMedia.getId(), Status.FAILED);
+                return null;
+              });
     }
 
-    String filename = MediaManager.generateUniqueFilename(request.media().getOriginalFilename());
-    String extension = MediaManager.getFileExtension(request.media().getOriginalFilename());
-
-    FileManager.save(request.media(), filename, extension);
-    Media media =
-        mediaDao.save(
-            Media.builder().url(filename).mediaType(MediaType.fromExtension(extension)).build());
-
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long userId = userDao.findUserByUsername(authentication.getName()).getId();
+    User user = getAuthenticatedUser();
 
     Pin pin = pinDao.findById(request.pinId(), false);
     if (pin == null) {
       throw new PinNotFoundException("Pin not found with a id: " + request.pinId());
     }
 
-    Comment comment =
-        Comment.builder()
-            .content(request.content())
-            .pinId(pin.getId())
-            .mediaId(media.getId())
-            .userId(userId)
-            .hashtags(hashtags)
-            .build();
-    Comment savedComment = commentDao.save(comment);
+    Comment savedComment =
+        saveComment(request, pin.getId(), media == null ? 0 : media.getId(), user.getId());
 
-    SseEmitter emitter = emitters.get(request.pinId());
-    if (emitter != null) {
-      try {
-        emitter.send(SseEmitter.event().name("new-comment").data(savedComment));
-      } catch (IOException e) {
-        emitter.completeWithError(e);
-        emitters.remove(request.pinId());
-      }
-    }
+    sendEvent("new-comment", savedComment);
 
     notificationEventProducer.send(
         Notification.builder()
             .userId(pin.getUserId())
-            .message(authentication.getName() + " comment on your pin: " + request.pinId())
+            .message(user.getUsername() + " comment on your pin: " + request.pinId())
             .build());
     return savedComment;
   }
@@ -118,25 +108,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     if ((request.content() == null || request.content().trim().isEmpty())
-        && (request.media().isEmpty() || request.media().isEmpty())) {
+        && (request.media() == null || request.media().isEmpty())) {
       throw new CommentIsEmptyException(
           "A comment must have either content or a media attachment.");
     }
 
     if (request.media() != null && !request.media().isEmpty()) {
-      Media existingMedia = mediaDao.findByCommentId(comment.getId());
-      String extensionOfExistingMedia = MediaManager.getFileExtension(existingMedia.getUrl());
-
-      String filename = MediaManager.generateUniqueFilename(request.media().getOriginalFilename());
-      String extension = MediaManager.getFileExtension(request.media().getOriginalFilename());
-
-      CompletableFuture.runAsync(
-              () -> FileManager.delete(existingMedia.getUrl(), extensionOfExistingMedia))
-          .thenRunAsync(() -> FileManager.save(request.media(), filename, extension));
-
-      mediaDao.update(
-          comment.getMediaId(),
-          Media.builder().url(filename).mediaType(MediaType.fromExtension(extension)).build());
+      handleUpdateMediaAsync(comment, request.media());
     }
 
     if (request.content() != null && !request.content().trim().isEmpty()) {
@@ -144,32 +122,98 @@ public class CommentServiceImpl implements CommentService {
     }
 
     if (request.tags() != null && !request.tags().isEmpty()) {
-      Set<String> tagsToFind = request.tags();
-      Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
-
-      List<Hashtag> hashtags = new ArrayList<>();
-      for (String tag : tagsToFind) {
-        Hashtag hashtag = tags.get(tag);
-        if (hashtag == null) {
-          hashtag = hashtagDao.save(Hashtag.builder().tag(tag).build());
-        }
-        hashtags.add(hashtag);
-      }
-      comment.setHashtags(hashtags);
+      comment.setHashtags(saveHashTag(request.tags()));
     }
+
     Comment updatedComment = commentDao.update(id, comment);
 
+    sendEvent("updated-comment", updatedComment);
+
+    return updatedComment;
+  }
+
+  private void handleUpdateMediaAsync(Comment comment, MultipartFile mediaFile) {
+    String filename = MediaManager.generateUniqueFilename(mediaFile.getOriginalFilename());
+    String extension = MediaManager.getFileExtension(mediaFile.getOriginalFilename());
+
+    Media existingMedia = mediaDao.findByCommentId(comment.getId());
+    Media mediaToUpdate;
+
+    if (existingMedia != null) {
+      mediaToUpdate = existingMedia;
+    } else {
+      mediaToUpdate =
+          mediaDao.save(
+              Media.builder()
+                  .url(filename)
+                  .mediaType(MediaType.fromExtension(extension))
+                  .status(Status.PENDING)
+                  .build());
+    }
+
+    CompletableFuture.runAsync(
+            () -> {
+              if (existingMedia != null) {
+                String oldExtension = MediaManager.getFileExtension(existingMedia.getUrl());
+                FileManager.delete(existingMedia.getUrl(), oldExtension);
+              }
+            })
+        .thenRunAsync(() -> FileManager.save(mediaFile, filename, extension))
+        .thenRunAsync(
+            () -> {
+              mediaToUpdate.setUrl(filename);
+              mediaToUpdate.setMediaType(MediaType.fromExtension(extension));
+              mediaToUpdate.setStatus(Status.READY);
+              mediaDao.update(mediaToUpdate.getId(), mediaToUpdate);
+            })
+        .exceptionally(
+            err -> {
+              mediaDao.updateStatus(mediaToUpdate.getId(), Status.FAILED);
+              return null;
+            });
+
+    comment.setMediaId(mediaToUpdate.getId());
+  }
+
+  private void sendEvent(String eventName, Comment comment) {
     SseEmitter emitter = emitters.get(comment.getPinId());
     if (emitter != null) {
       try {
-        emitter.send(SseEmitter.event().name("updated-comment").data(updatedComment));
+        emitter.send(SseEmitter.event().name(eventName).data(comment));
       } catch (IOException e) {
         emitter.completeWithError(e);
         emitters.remove(comment.getPinId());
       }
     }
+  }
 
-    return updatedComment;
+  @Transactional
+  private List<Hashtag> saveHashTag(Set<String> tagsToFind) {
+    Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
+
+    List<Hashtag> hashtags = new ArrayList<>();
+    for (String tag : tagsToFind) {
+      Hashtag hashtag = tags.get(tag);
+      if (hashtag == null) {
+        hashtag = hashtagDao.save(Hashtag.builder().tag(tag).build());
+      }
+      hashtags.add(hashtag);
+    }
+    return hashtags;
+  }
+
+  @Transactional
+  private Comment saveComment(CreateCommentRequest request, Long pinId, Long mediaId, Long userId) {
+    List<Hashtag> hashtags = saveHashTag(request.tags());
+
+    return commentDao.save(
+        Comment.builder()
+            .content(request.content())
+            .pinId(pinId)
+            .mediaId(mediaId)
+            .userId(userId)
+            .hashtags(hashtags)
+            .build());
   }
 
   @Override
