@@ -102,7 +102,7 @@ public class DatabaseInitializationService implements ApplicationListener<Contex
             .roles(List.of(roleAdmin))
             .gender(Gender.MALE)
             .build();
-//            createAdminAccount(user);
+    //            createAdminAccount(user);
     mappingRolePrivilege(roleAdmin, readPrivilege);
     mappingRolePrivilege(roleAdmin, writePrivilege);
     mappingRolePrivilege(roleUser, readPrivilege);

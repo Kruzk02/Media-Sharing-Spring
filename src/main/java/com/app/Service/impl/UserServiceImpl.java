@@ -19,6 +19,8 @@ import com.app.storage.MediaManager;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -176,15 +178,16 @@ public class UserServiceImpl implements UserService {
     String extension = MediaManager.getFileExtension(profilePicture.getOriginalFilename());
 
     Media media;
-
-    FileManager.save(profilePicture, filename, extension);
     if (Objects.equals(existingMedia.getUrl(), getDefaultProfilePicturePath().getUrl())) {
       media =
           mediaDao.save(
-              Media.builder().url(filename).mediaType(MediaType.fromExtension(extension)).build());
+              Media.builder()
+                  .url(filename)
+                  .mediaType(MediaType.fromExtension(extension))
+                  .status(Status.PENDING)
+                  .build());
     } else {
       String oldExtension = MediaManager.getFileExtension(existingMedia.getUrl());
-      FileManager.delete(existingMedia.getUrl(), oldExtension);
 
       media =
           mediaDao.update(
@@ -193,8 +196,18 @@ public class UserServiceImpl implements UserService {
                   .id(existingMedia.getId())
                   .url(filename)
                   .mediaType(MediaType.fromExtension(extension))
+                  .status(Status.PENDING)
                   .build());
+      FileManager.delete(existingMedia.getUrl(), oldExtension);
     }
+
+    FileManager.save(profilePicture, filename, extension)
+        .thenRunAsync(() -> mediaDao.updateStatus(media.getId(), Status.READY))
+        .exceptionally(
+            err -> {
+              mediaDao.updateStatus(media.getId(), Status.FAILED);
+              throw new CompletionException(err);
+            });
     user.setMedia(media);
   }
 
