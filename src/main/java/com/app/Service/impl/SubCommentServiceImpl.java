@@ -17,11 +17,14 @@ import com.app.storage.FileManager;
 import com.app.storage.MediaManager;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
@@ -41,29 +44,43 @@ public class SubCommentServiceImpl implements SubCommentService {
 
   @Override
   public SubComment save(CreateSubCommentRequest request) {
-
-    String filename = MediaManager.generateUniqueFilename(request.file().getOriginalFilename());
-    String extension = MediaManager.getFileExtension(request.file().getOriginalFilename());
-
-    FileManager.save(request.file(), filename, extension);
-    Media media =
-        mediaDao.save(
-            Media.builder().url(filename).mediaType(MediaType.fromExtension(extension)).build());
+    if ((request.content() == null || request.content().trim().isEmpty())
+        && (request.media() == null || request.media().isEmpty())) {
+      throw new CommentIsEmptyException(
+          "A comment must have either content or a media attachment.");
+    }
 
     Comment comment = commentDao.findById(request.commentId(), false);
     if (comment == null) {
       throw new CommentNotFoundException("Comment not found with a id: " + request.commentId());
     }
 
-    SubComment subComment =
-        SubComment.builder()
-            .content(request.content())
-            .comment(comment)
-            .user(getAuthenticationUser())
-            .media(media)
-            .build();
+    Media media = null;
 
-    SubComment savedSubComment = subCommentDao.save(subComment);
+    if (request.media() != null && !request.media().isEmpty()) {
+      String filename = MediaManager.generateUniqueFilename(request.media().getOriginalFilename());
+      String extension = MediaManager.getFileExtension(request.media().getOriginalFilename());
+
+      media =
+          mediaDao.save(
+              Media.builder()
+                  .url(filename)
+                  .mediaType(MediaType.fromExtension(extension))
+                  .status(Status.PENDING)
+                  .build());
+
+      Media finalMedia = media;
+
+      FileManager.save(request.media(), filename, extension)
+          .thenRunAsync(() -> mediaDao.updateStatus(finalMedia.getId(), Status.READY))
+          .exceptionally(
+              err -> {
+                mediaDao.updateStatus(finalMedia.getId(), Status.FAILED);
+                throw new CompletionException(err);
+              });
+    }
+
+    SubComment savedSubComment = saveSubComment(request, comment, media);
 
     notificationEventProducer.send(
         Notification.builder()
@@ -74,6 +91,17 @@ public class SubCommentServiceImpl implements SubCommentService {
                     + comment.getId())
             .build());
     return savedSubComment;
+  }
+
+  @Transactional
+  private SubComment saveSubComment(CreateSubCommentRequest request, Comment comment, Media media) {
+    return subCommentDao.save(
+        SubComment.builder()
+            .content(request.content())
+            .comment(comment)
+            .user(getAuthenticationUser())
+            .media(media)
+            .build());
   }
 
   @Override
@@ -95,19 +123,7 @@ public class SubCommentServiceImpl implements SubCommentService {
     }
 
     if (request.media() != null && !request.media().isEmpty()) {
-      String extensionOfMedia = MediaManager.getFileExtension(subComment.getMedia().getUrl());
-
-      String filename = MediaManager.generateUniqueFilename(request.media().getOriginalFilename());
-      String extension = MediaManager.getFileExtension(request.media().getOriginalFilename());
-
-      CompletableFuture.runAsync(
-          () ->
-              FileManager.delete(subComment.getMedia().getUrl(), extensionOfMedia)
-                  .thenRunAsync(() -> FileManager.save(request.media(), filename, extension)));
-
-      mediaDao.update(
-          subComment.getMedia().getId(),
-          Media.builder().url(filename).mediaType(MediaType.fromExtension(extension)).build());
+      handleUpdateMediaAsync(subComment, request.media());
     }
 
     if (request.content() != null && !request.content().trim().isEmpty()) {
@@ -115,6 +131,49 @@ public class SubCommentServiceImpl implements SubCommentService {
     }
 
     return subCommentDao.update(id, subComment);
+  }
+
+  private void handleUpdateMediaAsync(SubComment subComment, MultipartFile file) {
+    String filename = MediaManager.generateUniqueFilename(file.getOriginalFilename());
+    String extension = MediaManager.getFileExtension(file.getOriginalFilename());
+
+    Media existingMedia = mediaDao.findById(subComment.getMedia().getId());
+    Media mediaToUpdate;
+
+    if (existingMedia != null) {
+      mediaToUpdate = existingMedia;
+    } else {
+      mediaToUpdate =
+          mediaDao.save(
+              Media.builder()
+                  .url(filename)
+                  .mediaType(MediaType.fromExtension(extension))
+                  .status(Status.PENDING)
+                  .build());
+    }
+
+    CompletableFuture.runAsync(
+            () -> {
+              if (existingMedia != null) {
+                String oldExtension = MediaManager.getFileExtension(existingMedia.getUrl());
+                FileManager.delete(existingMedia.getUrl(), oldExtension);
+              }
+            })
+        .thenRunAsync(() -> FileManager.save(file, filename, extension))
+        .thenRunAsync(
+            () -> {
+              mediaToUpdate.setUrl(filename);
+              mediaToUpdate.setMediaType(MediaType.fromExtension(extension));
+              mediaToUpdate.setStatus(Status.READY);
+              mediaDao.update(mediaToUpdate.getId(), mediaToUpdate);
+            })
+        .exceptionally(
+            err -> {
+              mediaDao.updateStatus(mediaToUpdate.getId(), Status.FAILED);
+              return null;
+            });
+
+    subComment.setMedia(mediaToUpdate);
   }
 
   @Override
