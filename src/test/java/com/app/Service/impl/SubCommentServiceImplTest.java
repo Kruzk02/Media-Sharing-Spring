@@ -40,7 +40,6 @@ class SubCommentServiceImplTest {
 
   @InjectMocks private SubCommentServiceImpl subCommentService;
 
-  private Hashtag hashtag;
   private Media media;
   private User user;
   private Comment comment;
@@ -64,7 +63,7 @@ class SubCommentServiceImplTest {
             .gender(Gender.OTHER)
             .build();
 
-    hashtag = Hashtag.builder().id(1L).tag("tag").build();
+    Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
 
     comment =
         Comment.builder()
@@ -155,15 +154,6 @@ class SubCommentServiceImplTest {
       fileManagerMocked
           .when(() -> FileManager.save(mockFile, "new-file.jpg", "jpg"))
           .thenReturn(CompletableFuture.completedFuture(null));
-
-      Media updatedMedia =
-          Media.builder().id(1L).url("new-file.jpg").mediaType(MediaType.IMAGE).build();
-
-      Mockito.when(
-              mediaDao.update(
-                  Mockito.eq(1L),
-                  Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
-          .thenReturn(updatedMedia);
 
       Mockito.when(
               subCommentDao.update(

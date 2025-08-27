@@ -134,4 +134,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(FileSaveException.class)
+  public ResponseEntity<ErrorResponse> handleFileSaveException(FileSaveException e) {
+    ErrorResponse response =
+        new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(FileDeleteException.class)
+  public ResponseEntity<ErrorResponse> handleFileDeleteException(FileDeleteException e) {
+    ErrorResponse response =
+        new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
 }

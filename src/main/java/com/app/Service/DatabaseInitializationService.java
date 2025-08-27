@@ -90,7 +90,9 @@ public class DatabaseInitializationService implements ApplicationListener<Contex
             Media.builder()
                 .url(defaultProfilePic.getFilename())
                 .mediaType(MediaType.fromExtension(extension))
+                .status(Status.READY)
                 .build());
+
     User user =
         User.builder()
             .email("phucnguyen@gmail.com")
@@ -100,7 +102,7 @@ public class DatabaseInitializationService implements ApplicationListener<Contex
             .roles(List.of(roleAdmin))
             .gender(Gender.MALE)
             .build();
-    //        createAdminAccount(user);
+    //            createAdminAccount(user);
     mappingRolePrivilege(roleAdmin, readPrivilege);
     mappingRolePrivilege(roleAdmin, writePrivilege);
     mappingRolePrivilege(roleUser, readPrivilege);

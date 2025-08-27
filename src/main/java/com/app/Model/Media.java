@@ -15,6 +15,7 @@ public class Media implements Serializable {
 
   private Long id;
   private String url;
+  private Status status;
   private MediaType mediaType;
   private Timestamp created_at;
 }

@@ -27,8 +27,13 @@ public class SubCommentDaoImpl implements SubCommentDao {
   @Override
   public SubComment save(SubComment subComment) {
     try {
-      String sql =
-          "INSERT INTO sub_comments (content, user_id, comment_id, media_id) VALUES(?,?,?,?)";
+      String sql;
+      if (subComment.getMedia() != null) {
+        sql = "INSERT INTO sub_comments (content, user_id, comment_id, media_id) VALUES(?,?,?,?)";
+      } else {
+        sql = "INSERT INTO sub_comments(content, user_id, comment_id) VALUES(?,?,?)";
+      }
+
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
       int row =
@@ -39,7 +44,9 @@ public class SubCommentDaoImpl implements SubCommentDao {
                 ps.setString(1, subComment.getContent());
                 ps.setLong(2, subComment.getUser().getId());
                 ps.setLong(3, subComment.getComment().getId());
-                ps.setLong(4, subComment.getMedia().getId());
+                if (subComment.getMedia() != null) {
+                  ps.setLong(4, subComment.getMedia().getId());
+                }
                 return ps;
               },
               keyHolder);

@@ -32,6 +32,7 @@ public abstract class AbstractMySQLTest {
             + "id INT AUTO_INCREMENT PRIMARY KEY,"
             + "url VARCHAR(500) NOT NULL,"
             + "media_type ENUM('VIDEO', 'IMAGE') NOT NULL,"
+            + "status ENUM('PENDING', 'FAILED', 'READY'),"
             + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
             + ")");
     jdbcTemplate.execute(
@@ -185,7 +186,11 @@ public abstract class AbstractMySQLTest {
             + ")");
 
     jdbcTemplate.update(
-        "INSERT IGNORE INTO media (id, url, media_type) VALUES (?, ?, ?)", 1, "url", "IMAGE");
+        "INSERT IGNORE INTO media (id, url, media_type, status) VALUES (?, ?, ?, ?)",
+        1,
+        "url",
+        "IMAGE",
+        "PENDING");
     jdbcTemplate.update("INSERT IGNORE INTO roles (id, name) VALUES (?, ?)", 2, "ROLE_USER");
     jdbcTemplate.update(
         "INSERT IGNORE INTO users (id, username, email, password, gender, bio, enable, media_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",

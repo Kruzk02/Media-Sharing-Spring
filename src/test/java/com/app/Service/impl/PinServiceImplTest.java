@@ -37,12 +37,11 @@ class PinServiceImplTest {
 
   private Pin pin;
   private User user;
-  private Hashtag hashtag;
   private Media media;
 
   @BeforeEach
   void setUp() {
-    hashtag = Hashtag.builder().id(1L).tag("tag").build();
+    Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
     user =
         User.builder()
             .id(1L)

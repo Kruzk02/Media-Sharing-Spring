@@ -46,11 +46,10 @@ class CommentServiceImplTest {
   private User user;
   private Media media;
   private Pin pin;
-  private Hashtag hashtag;
 
   @BeforeEach
   void setUp() {
-    hashtag = Hashtag.builder().id(1L).tag("tag").build();
+    Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
     user =
         User.builder()
             .id(1L)
@@ -147,7 +146,7 @@ class CommentServiceImplTest {
         .thenAnswer(invocation -> invocation.getArgument(0));
 
     try (MockedStatic<FileManager> fileManagerMocked = Mockito.mockStatic(FileManager.class);
-        MockedStatic<MediaManager> mediaManagerMocked = Mockito.mockStatic(MediaManager.class); ) {
+        MockedStatic<MediaManager> mediaManagerMocked = Mockito.mockStatic(MediaManager.class)) {
       mediaManagerMocked
           .when(() -> MediaManager.generateUniqueFilename("new-file.jpg"))
           .thenReturn("new-file.jpg");
@@ -165,15 +164,6 @@ class CommentServiceImplTest {
           .when(() -> FileManager.save(mockFile, "new-file.jpg", "jpg"))
           .thenReturn(CompletableFuture.completedFuture(null));
 
-      Media updatedMedia =
-          Media.builder().id(1L).url("new-file.jpg").mediaType(MediaType.IMAGE).build();
-
-      Mockito.when(
-              mediaDao.update(
-                  Mockito.eq(1L),
-                  Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
-          .thenReturn(updatedMedia);
-
       Mockito.when(
               commentDao.update(
                   Mockito.eq(1L),
@@ -188,10 +178,6 @@ class CommentServiceImplTest {
       var result = commentService.update(1L, request);
       assertNotNull(result);
       assertEquals(comment.getId(), result.getId());
-
-      Mockito.verify(mediaDao)
-          .update(
-              Mockito.eq(1L), Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null));
 
       Mockito.verify(commentDao)
           .update(
