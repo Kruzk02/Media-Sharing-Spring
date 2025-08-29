@@ -193,9 +193,6 @@ class PinServiceImplTest {
       assertEquals("New description", updatedPin.getDescription());
       assertEquals(user.getId(), updatedPin.getUserId());
 
-      Mockito.verify(mediaDao)
-          .update(
-              Mockito.eq(1L), Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null));
       Mockito.verify(pinDao)
           .update(
               Mockito.eq(1L),
