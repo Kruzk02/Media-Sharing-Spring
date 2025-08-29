@@ -172,12 +172,6 @@ class PinServiceImplTest {
           Media.builder().id(1L).url(newFilename).mediaType(MediaType.IMAGE).build();
 
       Mockito.when(
-              mediaDao.update(
-                  Mockito.eq(1L),
-                  Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
-          .thenReturn(updatedMedia);
-
-      Mockito.when(
               pinDao.update(
                   Mockito.eq(1L),
                   Mockito.argThat(
