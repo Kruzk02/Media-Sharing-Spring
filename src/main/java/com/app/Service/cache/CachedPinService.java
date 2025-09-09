@@ -74,7 +74,8 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
 
   @Override
   public Pin findById(Long id, DetailsType detailsType) {
-    var cacheKey = detailsType.getType().equals("DETAIL") ? "pin:" + id + ":details" : "pin:" + id + ":basic";
+    var cacheKey =
+        detailsType.getType().equals("DETAIL") ? "pin:" + id + ":details" : "pin:" + id + ":basic";
     var cached =
         super.getOrLoad(cacheKey, () -> delegate.findById(id, detailsType), Duration.ofHours(2));
     return cached.orElseThrow(() -> new PinNotFoundException("Pin not found with a id: " + id));
