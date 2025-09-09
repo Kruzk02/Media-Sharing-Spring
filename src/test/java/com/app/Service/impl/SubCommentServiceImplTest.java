@@ -102,7 +102,7 @@ class SubCommentServiceImplTest {
             mediaDao.save(Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
         .thenReturn(media);
 
-    Mockito.when(commentDao.findById(1L, false)).thenReturn(comment);
+    Mockito.when(commentDao.findById(1L, DetailsType.BASIC)).thenReturn(comment);
 
     Mockito.when(
             subCommentDao.save(

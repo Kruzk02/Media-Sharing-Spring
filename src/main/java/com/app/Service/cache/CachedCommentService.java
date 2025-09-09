@@ -3,6 +3,7 @@ package com.app.Service.cache;
 import com.app.DTO.request.CreateCommentRequest;
 import com.app.DTO.request.UpdatedCommentRequest;
 import com.app.Model.Comment;
+import com.app.Model.DetailsType;
 import com.app.Model.SortType;
 import com.app.Service.CommentService;
 import com.app.exception.sub.CommentNotFoundException;
@@ -54,11 +55,11 @@ public class CachedCommentService extends CachedServiceHelper<Comment> implement
   }
 
   @Override
-  public Comment findById(Long id, boolean fetchDetails) {
-    var cacheKey = fetchDetails ? "comment:" + id + ":details" : "comment:" + id;
+  public Comment findById(Long id, DetailsType detailsType) {
+    var cacheKey = detailsType.getType().equals("DETAIL") ? "comment:" + id + ":details" : "comment:" + id;
     var cached =
         super.getOrLoad(
-            cacheKey, () -> commentService.findById(id, fetchDetails), Duration.ofHours(2));
+            cacheKey, () -> commentService.findById(id, detailsType), Duration.ofHours(2));
     return cached.orElseThrow(
         () -> new CommentNotFoundException("Comment not found with a id: " + id));
   }

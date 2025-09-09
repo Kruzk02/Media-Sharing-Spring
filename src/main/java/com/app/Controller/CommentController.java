@@ -5,6 +5,7 @@ import com.app.DTO.request.UpdatedCommentRequest;
 import com.app.DTO.response.CommentResponse;
 import com.app.DTO.response.SubCommentResponse;
 import com.app.Model.Comment;
+import com.app.Model.DetailsType;
 import com.app.Model.SortType;
 import com.app.Model.SubComment;
 import com.app.Service.CommentService;
@@ -52,9 +53,9 @@ public class CommentController {
     Comment comment;
 
     if ("details".equalsIgnoreCase(view)) {
-      comment = commentService.findById(id, true);
+      comment = commentService.findById(id, DetailsType.DETAIL);
     } else {
-      comment = commentService.findById(id, false);
+      comment = commentService.findById(id, DetailsType.BASIC);
     }
 
     if (comment == null) {

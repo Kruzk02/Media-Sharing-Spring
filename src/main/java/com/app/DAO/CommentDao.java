@@ -1,6 +1,7 @@
 package com.app.DAO;
 
 import com.app.Model.Comment;
+import com.app.Model.DetailsType;
 import com.app.Model.SortType;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public interface CommentDao {
    * @param fetchDetails The basic or full details of the comment
    * @return The comment if found, or exception if not found
    */
-  Comment findById(Long id, boolean fetchDetails);
+  Comment findById(Long id, DetailsType detailsType);
 
   /**
    * Retrieves a list of comments by the ID of the associated pin.

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.app.DAO.AbstractMySQLTest;
 import com.app.DAO.CommentDao;
 import com.app.Model.Comment;
+import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;
 import com.app.Model.SortType;
 import java.util.List;
@@ -51,7 +52,7 @@ class CommentDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(2)
   void findById() {
-    Comment result = commentDao.findById(1L, true);
+    Comment result = commentDao.findById(1L, DetailsType.DETAIL);
 
     assertNotNull(result);
     assertEquals(1L, result.getId());

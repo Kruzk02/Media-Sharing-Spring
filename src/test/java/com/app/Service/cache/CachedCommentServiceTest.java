@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import com.app.DTO.request.CreateCommentRequest;
 import com.app.DTO.request.UpdatedCommentRequest;
 import com.app.Model.Comment;
+import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;
 import com.app.Model.SortType;
 import com.app.Service.CommentService;
@@ -65,7 +66,7 @@ class CachedCommentServiceTest extends AbstractRedisTest<Comment> {
   @Test
   @Order(2)
   void findById() {
-    Comment cached = cachedCommentService.findById(1L, true);
+    Comment cached = cachedCommentService.findById(1L, DetailsType.DETAIL);
 
     assertEquals(1L, cached.getId());
     assertEquals("content123", cached.getContent());

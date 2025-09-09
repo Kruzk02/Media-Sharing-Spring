@@ -98,7 +98,7 @@ public class CommentServiceImpl implements CommentService {
 
   @Override
   public Comment update(Long id, UpdatedCommentRequest request) {
-    Comment comment = commentDao.findById(id, true);
+    Comment comment = commentDao.findById(id, DetailsType.DETAIL);
     if (comment == null) {
       throw new CommentNotFoundException("Comment not found with a id: " + id);
     }
@@ -235,8 +235,8 @@ public class CommentServiceImpl implements CommentService {
    *     found, an exception is thrown
    */
   @Override
-  public Comment findById(Long id, boolean fetchDetails) {
-    return commentDao.findById(id, fetchDetails);
+  public Comment findById(Long id, DetailsType detailsType) {
+    return commentDao.findById(id, detailsType);
   }
 
   /**
@@ -275,7 +275,7 @@ public class CommentServiceImpl implements CommentService {
   @Override
   public void deleteById(Long id) {
     // Fetch the comment from database
-    Comment comment = commentDao.findById(id, false);
+    Comment comment = commentDao.findById(id, DetailsType.BASIC);
     if (comment == null) {
       // Throw exception if not found
       throw new CommentNotFoundException("Comment not found with a id: " + id);
