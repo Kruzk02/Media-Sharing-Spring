@@ -1,6 +1,7 @@
 package com.app.Service.cache;
 
 import com.app.DTO.request.PinRequest;
+import com.app.Model.DetailsType;
 import com.app.Model.Pin;
 import com.app.Model.SortType;
 import com.app.Service.PinService;
@@ -72,10 +73,11 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
   }
 
   @Override
-  public Pin findById(Long id, boolean fetchDetails) {
-    var cacheKey = fetchDetails ? "pin:" + id + ":details" : "pin:" + id + ":basic";
+  public Pin findById(Long id, DetailsType detailsType) {
+    var cacheKey =
+        detailsType.getType().equals("DETAIL") ? "pin:" + id + ":details" : "pin:" + id + ":basic";
     var cached =
-        super.getOrLoad(cacheKey, () -> delegate.findById(id, fetchDetails), Duration.ofHours(2));
+        super.getOrLoad(cacheKey, () -> delegate.findById(id, detailsType), Duration.ofHours(2));
     return cached.orElseThrow(() -> new PinNotFoundException("Pin not found with a id: " + id));
   }
 
@@ -95,7 +97,7 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
 
   @Override
   public void delete(Long id) throws IOException {
-    var pin = delegate.findById(id, false);
+    var pin = delegate.findById(id, DetailsType.BASIC);
     super.delete("pin:*");
     super.delete("user:" + pin.getUserId() + ":pins");
   }

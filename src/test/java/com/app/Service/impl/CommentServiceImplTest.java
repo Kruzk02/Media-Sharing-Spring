@@ -100,7 +100,7 @@ class CommentServiceImplTest {
             mediaDao.save(Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
         .thenReturn(media);
 
-    Mockito.when(pinDao.findById(1L, false)).thenReturn(pin);
+    Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
     Mockito.when(
             commentDao.save(
@@ -133,7 +133,7 @@ class CommentServiceImplTest {
   @Test
   void update_shouldUpdateComment_whenValidRequestAndMatchUser() {
 
-    Mockito.when(commentDao.findById(1L, true)).thenReturn(comment);
+    Mockito.when(commentDao.findById(1L, DetailsType.DETAIL)).thenReturn(comment);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
     Mockito.when(mockFile.getOriginalFilename()).thenReturn("new-file.jpg");
@@ -195,8 +195,8 @@ class CommentServiceImplTest {
 
   @Test
   void findById_shouldReturnComment() {
-    Mockito.when(commentDao.findById(1L, true)).thenReturn(comment);
-    var result = commentService.findById(1L, true);
+    Mockito.when(commentDao.findById(1L, DetailsType.DETAIL)).thenReturn(comment);
+    var result = commentService.findById(1L, DetailsType.DETAIL);
 
     assertNotNull(result);
     assertEquals(comment, result);
@@ -229,7 +229,7 @@ class CommentServiceImplTest {
     SecurityContextHolder.setContext(securityContext);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
-    Mockito.when(commentDao.findById(1L, false)).thenReturn(comment);
+    Mockito.when(commentDao.findById(1L, DetailsType.BASIC)).thenReturn(comment);
 
     commentService.deleteById(1L);
 

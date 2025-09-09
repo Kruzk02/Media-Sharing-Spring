@@ -1,6 +1,7 @@
 package com.app.Service;
 
 import com.app.DTO.request.PinRequest;
+import com.app.Model.DetailsType;
 import com.app.Model.Pin;
 import com.app.Model.SortType;
 import java.io.IOException;
@@ -16,7 +17,7 @@ public interface PinService {
 
   Pin update(Long id, PinRequest pinRequest);
 
-  Pin findById(Long id, boolean fetchDetails);
+  Pin findById(Long id, DetailsType detailsType);
 
   List<Pin> findPinByUserId(Long userId, int limit, int offset);
 

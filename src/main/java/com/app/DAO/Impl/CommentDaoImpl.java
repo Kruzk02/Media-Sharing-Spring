@@ -2,6 +2,7 @@ package com.app.DAO.Impl;
 
 import com.app.DAO.CommentDao;
 import com.app.Model.Comment;
+import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;
 import com.app.Model.SortType;
 import com.app.exception.sub.CommentNotFoundException;
@@ -127,9 +128,9 @@ public class CommentDaoImpl implements CommentDao {
   }
 
   @Override
-  public Comment findById(Long id, boolean fetchDetails) {
+  public Comment findById(Long id, DetailsType detailsType) {
     try {
-      if (fetchDetails) {
+      if (detailsType.getType().equals("DETAIL")) {
         String sql =
             "SELECT c.id AS comment_id, c.user_id, c.pin_id, c.created_at, "
                 + "h.id AS hashtag_id, h.tag "

@@ -1,5 +1,6 @@
 package com.app.DAO;
 
+import com.app.Model.DetailsType;
 import com.app.Model.Pin;
 import com.app.Model.SortType;
 import java.util.List;
@@ -32,7 +33,7 @@ public interface PinDao {
    * @param id The id of the pin to be found.
    * @return The pin object if found, otherwise null.
    */
-  Pin findById(Long id, boolean fetchDetails);
+  Pin findById(Long id, DetailsType detailsType);
 
   /**
    * Find the pin that associated with a user id.

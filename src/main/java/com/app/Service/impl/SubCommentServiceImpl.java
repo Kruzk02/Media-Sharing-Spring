@@ -50,7 +50,7 @@ public class SubCommentServiceImpl implements SubCommentService {
           "A comment must have either content or a media attachment.");
     }
 
-    Comment comment = commentDao.findById(request.commentId(), false);
+    Comment comment = commentDao.findById(request.commentId(), DetailsType.BASIC);
     if (comment == null) {
       throw new CommentNotFoundException("Comment not found with a id: " + request.commentId());
     }

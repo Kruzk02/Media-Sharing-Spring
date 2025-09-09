@@ -7,6 +7,7 @@ import com.app.DAO.PinDao;
 import com.app.DAO.UserDao;
 import com.app.DTO.request.BoardRequest;
 import com.app.Model.Board;
+import com.app.Model.DetailsType;
 import com.app.Model.Gender;
 import com.app.Model.Pin;
 import com.app.Model.User;
@@ -63,7 +64,7 @@ class BoardServiceImplTest {
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
 
-    Mockito.when(pinDao.findById(1L, false)).thenReturn(pin);
+    Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
     Mockito.when(boardDao.save(Mockito.argThat(b -> b.getName() != null)))
         .thenAnswer(invocation -> invocation.getArgument(0));

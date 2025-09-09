@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.app.DTO.request.PinRequest;
+import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;
 import com.app.Model.Pin;
 import com.app.Model.SortType;
@@ -76,7 +77,7 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
   @Test
   @Order(4)
   void findById() {
-    Pin cached = cachedPinService.findById(1L, true);
+    Pin cached = cachedPinService.findById(1L, DetailsType.DETAIL);
     assertEquals(1L, cached.getId());
     assertEquals("description", cached.getDescription());
     assertEquals(1L, cached.getUserId());
