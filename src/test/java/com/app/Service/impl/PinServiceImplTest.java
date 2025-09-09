@@ -137,7 +137,7 @@ class PinServiceImplTest {
     Media existingMedia =
         Media.builder().id(1L).url("old-file.png").mediaType(MediaType.IMAGE).build();
 
-    Mockito.when(pinDao.findById(1L, false)).thenReturn(pin);
+    Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
     Mockito.when(mockFile.isEmpty()).thenReturn(false);
@@ -203,8 +203,8 @@ class PinServiceImplTest {
 
   @Test
   void findById_shouldReturnPin() {
-    Mockito.when(pinDao.findById(1L, false)).thenReturn(pin);
-    var result = pinService.findById(1L, false);
+    Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
+    var result = pinService.findById(1L, DetailsType.BASIC);
 
     assertNotNull(result);
     assertEquals(pin, result);
@@ -222,7 +222,7 @@ class PinServiceImplTest {
   @Test
   void deleteById_shouldDeleteExistingPin() throws IOException {
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
-    Mockito.when(pinDao.findById(1L, false)).thenReturn(pin);
+    Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
     Mockito.when(mediaDao.findById(1L)).thenReturn(media);
 
     pinService.delete(1L);
@@ -233,7 +233,7 @@ class PinServiceImplTest {
 
   @Test
   void testDeleteById_PinNotFound() {
-    Mockito.when(pinDao.findById(2L, false)).thenReturn(null);
+    Mockito.when(pinDao.findById(2L, DetailsType.BASIC)).thenReturn(null);
 
     PinNotFoundException ex = assertThrows(PinNotFoundException.class, () -> pinService.delete(2L));
     assertEquals("Pin not found with a id: 2", ex.getMessage());

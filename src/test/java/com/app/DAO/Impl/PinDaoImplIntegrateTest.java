@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.DAO.AbstractMySQLTest;
 import com.app.DAO.PinDao;
+import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;
 import com.app.Model.Pin;
 import com.app.Model.SortType;
@@ -85,7 +86,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(4)
   void findById() {
-    Pin result = pinDao.findById(1L, false);
+    Pin result = pinDao.findById(1L, DetailsType.BASIC);
 
     assertNotNull(result);
     assertEquals(1L, result.getId());

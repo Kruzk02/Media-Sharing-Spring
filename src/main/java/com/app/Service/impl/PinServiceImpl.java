@@ -123,7 +123,7 @@ public class PinServiceImpl implements PinService {
   @Override
   public Pin update(Long id, PinRequest pinRequest) {
 
-    Pin existingPin = pinDao.findById(id, false);
+    Pin existingPin = pinDao.findById(id, DetailsType.BASIC);
 
     if (existingPin == null) {
       throw new PinNotFoundException("Pin not found with a id: " + id);
@@ -191,8 +191,8 @@ public class PinServiceImpl implements PinService {
    *     exception is thrown
    */
   @Override
-  public Pin findById(Long id, boolean fetchDetails) {
-    return pinDao.findById(id, fetchDetails);
+  public Pin findById(Long id, DetailsType detailsType) {
+    return pinDao.findById(id, detailsType);
   }
 
   /**
@@ -214,7 +214,7 @@ public class PinServiceImpl implements PinService {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     User user = userDao.findUserByUsername(authentication.getName());
 
-    Pin pin = pinDao.findById(id, false);
+    Pin pin = pinDao.findById(id, DetailsType.BASIC);
     if (pin == null) {
       throw new PinNotFoundException("Pin not found with a id: " + id);
     }

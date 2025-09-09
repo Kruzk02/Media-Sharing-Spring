@@ -100,7 +100,7 @@ class CommentServiceImplTest {
             mediaDao.save(Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
         .thenReturn(media);
 
-    Mockito.when(pinDao.findById(1L, false)).thenReturn(pin);
+    Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
     Mockito.when(
             commentDao.save(

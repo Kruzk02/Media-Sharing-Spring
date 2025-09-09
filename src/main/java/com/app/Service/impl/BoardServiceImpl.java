@@ -5,6 +5,7 @@ import com.app.DAO.PinDao;
 import com.app.DAO.UserDao;
 import com.app.DTO.request.BoardRequest;
 import com.app.Model.Board;
+import com.app.Model.DetailsType;
 import com.app.Model.Pin;
 import com.app.Model.User;
 import com.app.Service.BoardService;
@@ -63,7 +64,7 @@ public class BoardServiceImpl implements BoardService {
       List<Pin> pins = new ArrayList<>();
 
       for (Long pinId : boardRequest.pin_id()) {
-        Pin pin = pinDao.findById(pinId, false);
+        Pin pin = pinDao.findById(pinId, DetailsType.BASIC);
         if (pin == null) {
           throw new PinNotFoundException("Pin not found with a id: " + pinId);
         }
@@ -81,7 +82,7 @@ public class BoardServiceImpl implements BoardService {
 
   @Override
   public Board addPinToBoard(Long pinId, Long boardId) {
-    Pin pin = pinDao.findById(pinId, false);
+    Pin pin = pinDao.findById(pinId, DetailsType.BASIC);
     if (pin == null) {
       throw new PinNotFoundException("Pin not found with ID: " + pinId);
     }
@@ -104,7 +105,7 @@ public class BoardServiceImpl implements BoardService {
 
   @Override
   public Board deletePinFromBoard(Long pinId, Long boardId) {
-    Pin pin = pinDao.findById(pinId, false);
+    Pin pin = pinDao.findById(pinId, DetailsType.BASIC);
     if (pin == null) {
       throw new PinNotFoundException("Pin not found with ID: " + pinId);
     }

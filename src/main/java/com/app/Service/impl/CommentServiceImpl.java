@@ -78,7 +78,7 @@ public class CommentServiceImpl implements CommentService {
 
     User user = getAuthenticatedUser();
 
-    Pin pin = pinDao.findById(request.pinId(), false);
+    Pin pin = pinDao.findById(request.pinId(), DetailsType.BASIC);
     if (pin == null) {
       throw new PinNotFoundException("Pin not found with a id: " + request.pinId());
     }

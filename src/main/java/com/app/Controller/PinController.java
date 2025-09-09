@@ -3,6 +3,7 @@ package com.app.Controller;
 import com.app.DTO.request.PinRequest;
 import com.app.DTO.response.*;
 import com.app.Model.Comment;
+import com.app.Model.DetailsType;
 import com.app.Model.Pin;
 import com.app.Model.SortType;
 import com.app.Service.CommentService;
@@ -173,9 +174,9 @@ public class PinController {
       @RequestParam(defaultValue = "basic") String view) {
     Pin pin;
     if ("detail".equalsIgnoreCase(view)) {
-      pin = pinService.findById(id, true);
+      pin = pinService.findById(id, DetailsType.DETAIL);
     } else {
-      pin = pinService.findById(id, false);
+      pin = pinService.findById(id, DetailsType.BASIC);
     }
 
     if (pin == null) {

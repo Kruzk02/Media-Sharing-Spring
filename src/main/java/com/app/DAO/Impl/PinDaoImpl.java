@@ -1,6 +1,7 @@
 package com.app.DAO.Impl;
 
 import com.app.DAO.PinDao;
+import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;
 import com.app.Model.Pin;
 import com.app.Model.SortType;
@@ -146,9 +147,9 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public Pin findById(Long id, boolean fetchDetails) {
+  public Pin findById(Long id, DetailsType detailsType) {
     try {
-      if (fetchDetails) {
+      if (detailsType.getType().equals("DETAIL")) {
         String sql =
             "SELECT p.id AS pin_id, p.user_id, p.description, p.media_id, p.created_at, "
                 + "h.id AS hashtag_id, h.tag "
