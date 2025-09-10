@@ -1,8 +1,8 @@
 package com.app.Service.impl;
 
-import com.app.DAO.BoardDao;
 import com.app.DAO.PinDao;
 import com.app.DAO.UserDao;
+import com.app.DAO.board.BoardDao;
 import com.app.DTO.request.BoardRequest;
 import com.app.Model.Board;
 import com.app.Model.DetailsType;
@@ -139,7 +139,7 @@ public class BoardServiceImpl implements BoardService {
 
     existingBoard.setName(name != null ? name : existingBoard.getName());
 
-    return boardDao.update(existingBoard, id);
+    return boardDao.update(id, existingBoard);
   }
 
   /**

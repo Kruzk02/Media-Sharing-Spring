@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.board;
 
-import com.app.DAO.BoardDao;
 import com.app.Model.Board;
 import com.app.Model.Pin;
 import com.app.Model.User;
@@ -95,7 +94,7 @@ public class BoardDaoImpl implements BoardDao {
   }
 
   @Override
-  public Board update(Board board, long id) {
+  public Board update(Long id, Board board) {
     int rowAffected =
         jdbcTemplate.update("UPDATE boards SET board_name = ? WHERE id = ? ", board.getName(), id);
     return rowAffected > 0 ? board : null;
@@ -104,25 +103,61 @@ public class BoardDaoImpl implements BoardDao {
   @Override
   public Board findById(Long id) {
     try {
-      String sql =
-          "SELECT b.id AS board_id, b.board_name, b.create_at, "
-              + "u.id AS user_id, u.username, "
-              + "p.id AS pin_id, p.media_id, p.user_id AS pin_user_id, p.created_at AS pin_created_at "
-              + "FROM boards b "
-              + "JOIN users u ON b.user_id = u.id "
-              + "LEFT JOIN board_pin bp ON b.id = bp.board_id "
-              + "LEFT JOIN pins p ON p.id = bp.pin_id "
-              + "WHERE b.id = ?";
+      String boardSql =
+          """
+            SELECT b.id AS board_id, b.board_name,
+                   u.id AS user_id, u.username
+            FROM boards b
+            JOIN users u ON b.user_id = u.id
+            WHERE b.id = ?
+        """;
 
-      List<Board> boards = jdbcTemplate.query(sql, new BoardResultSetExtractor(), id);
-      if (boards == null) {
-        throw new RuntimeException();
-      }
+      Board board =
+          jdbcTemplate.query(
+              boardSql,
+              rs -> {
+                if (!rs.next()) return null;
+                var b =
+                    Board.builder()
+                        .id(rs.getLong("board_id"))
+                        .name(rs.getString("board_name"))
+                        .build();
+                var user =
+                    User.builder()
+                        .id(rs.getLong("user_id"))
+                        .username(rs.getString("username"))
+                        .build();
+                b.setUser(user);
+                return b;
+              },
+              id);
 
-      if (boards.isEmpty()) {
+      if (board == null) {
         throw new BoardNotFoundException("Board not found with a id: " + id);
       }
-      return boards.getFirst();
+
+      String pinsSql =
+          """
+            SELECT p.id AS pin_id, p.media_id, p.user_id AS pin_user_id, p.created_at AS pin_created_at
+            FROM pins p
+            JOIN board_pin bp ON bp.pin_id = p.id
+            WHERE bp.board_id = ?
+        """;
+
+      List<Pin> pins =
+          jdbcTemplate.query(
+              pinsSql,
+              (rs, rowNum) ->
+                  Pin.builder()
+                      .id(rs.getLong("id"))
+                      .mediaId(rs.getLong("media_id"))
+                      .userId(rs.getLong("pin_user_id"))
+                      .createdAt(rs.getTimestamp("pin_created_at").toLocalDateTime())
+                      .build(),
+              id);
+
+      board.setPins(pins);
+      return board;
     } catch (DataAccessException e) {
       throw new RuntimeException(e.getMessage());
     }

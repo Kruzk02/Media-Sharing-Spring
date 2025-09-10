@@ -3,7 +3,8 @@ package com.app.DAO.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.DAO.AbstractMySQLTest;
-import com.app.DAO.BoardDao;
+import com.app.DAO.board.BoardDao;
+import com.app.DAO.board.BoardDaoImpl;
 import com.app.Model.Board;
 import com.app.Model.Gender;
 import com.app.Model.Media;
@@ -120,7 +121,7 @@ class BoardDaoImplIntegrateTest extends AbstractMySQLTest {
   @Order(6)
   void update() {
     Board result =
-        boardDao.update(Board.builder().id(1L).name("name123").pins(new ArrayList<>()).build(), 1L);
+        boardDao.update(1L, Board.builder().id(1L).name("name123").pins(new ArrayList<>()).build());
 
     assertNotNull(result);
     assertEquals("name123", result.getName());
