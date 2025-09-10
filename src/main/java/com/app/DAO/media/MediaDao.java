@@ -1,13 +1,11 @@
 package com.app.DAO.media;
 
-import com.app.DAO.base.Creatable;
-import com.app.DAO.base.Deletable;
-import com.app.DAO.base.Updatable;
+import com.app.DAO.base.CRUDDao;
 import com.app.Model.Media;
 import com.app.Model.Status;
 
 /** Data Access Object interface for managing Media entities. */
-public interface MediaDao extends Creatable<Media>, Updatable<Media>, Deletable {
+public interface MediaDao extends CRUDDao<Media> {
 
   /**
    * Update status a existing media.
@@ -16,14 +14,6 @@ public interface MediaDao extends Creatable<Media>, Updatable<Media>, Deletable 
    * @param status The status to be updated.
    */
   void updateStatus(Long id, Status status);
-
-  /**
-   * Find a media by its ID.
-   *
-   * @param id The ID of the media
-   * @return The media if found, or exception if not found.
-   */
-  Media findById(Long id);
 
   /**
    * Find a media by comment ID.

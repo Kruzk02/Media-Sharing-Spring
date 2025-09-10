@@ -1,7 +1,7 @@
 package com.app.Service.impl;
 
-import com.app.DAO.user.UserDao;
 import com.app.DAO.follower.FollowerDao;
+import com.app.DAO.user.UserDao;
 import com.app.Model.Follower;
 import com.app.Model.User;
 import com.app.Service.FollowerService;

@@ -1,20 +1,16 @@
 package com.app.DAO.board;
 
-import com.app.DAO.base.Creatable;
-import com.app.DAO.base.Deletable;
-import com.app.DAO.base.Updatable;
+import com.app.DAO.base.CRUDDao;
 import com.app.Model.Board;
 import com.app.Model.Pin;
 import java.util.List;
 
 /** Interface for managing Board data access operations. */
-public interface BoardDao extends Creatable<Board>, Updatable<Board>, Deletable {
+public interface BoardDao extends CRUDDao<Board> {
 
   Board addPinToBoard(Pin pin, Board board);
 
   Board deletePinFromBoard(Pin pin, Board board);
-
-  Board findById(Long id);
 
   /**
    * Find all board by user id
