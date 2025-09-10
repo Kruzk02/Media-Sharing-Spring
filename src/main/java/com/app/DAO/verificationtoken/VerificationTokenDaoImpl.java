@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.verificationtoken;
 
-import com.app.DAO.VerificationTokenDao;
 import com.app.Model.VerificationToken;
 import com.app.exception.sub.VerificationTokenNotFoundException;
 import java.sql.PreparedStatement;
@@ -43,7 +42,7 @@ public class VerificationTokenDaoImpl implements VerificationTokenDao {
 
   @Override
   @Transactional
-  public VerificationToken create(VerificationToken verificationToken) {
+  public VerificationToken save(VerificationToken verificationToken) {
     String sql = "INSERT INTO verification_token(token, user_id, expiration_date) VALUES (?, ?, ?)";
     KeyHolder keyHolder = new GeneratedKeyHolder();
 

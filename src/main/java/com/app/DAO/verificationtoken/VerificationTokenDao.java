@@ -1,13 +1,11 @@
-package com.app.DAO;
+package com.app.DAO.verificationtoken;
 
+import com.app.DAO.base.Creatable;
 import com.app.Model.VerificationToken;
 
-public interface VerificationTokenDao {
+public interface VerificationTokenDao extends Creatable<VerificationToken> {
 
   VerificationToken findByToken(String token);
-
-  VerificationToken create(VerificationToken verificationToken);
-
   int deleteByToken(String token);
 
   void deleteExpiredTokens();

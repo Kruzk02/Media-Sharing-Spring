@@ -3,7 +3,8 @@ package com.app.DAO.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.DAO.AbstractMySQLTest;
-import com.app.DAO.VerificationTokenDao;
+import com.app.DAO.verificationtoken.VerificationTokenDao;
+import com.app.DAO.verificationtoken.VerificationTokenDaoImpl;
 import com.app.Model.VerificationToken;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,9 +27,9 @@ class VerificationTokenDaoImplIntegrateTest extends AbstractMySQLTest {
 
   @Test
   @Order(1)
-  void create() {
+  void save() {
     var result =
-        verificationTokenDao.create(
+        verificationTokenDao.save(
             VerificationToken.builder()
                 .token("token")
                 .userId(1L)
