@@ -1,26 +1,13 @@
-package com.app.DAO;
+package com.app.DAO.media;
 
+import com.app.DAO.base.Creatable;
+import com.app.DAO.base.Deletable;
+import com.app.DAO.base.Updatable;
 import com.app.Model.Media;
 import com.app.Model.Status;
 
 /** Data Access Object interface for managing Media entities. */
-public interface MediaDao {
-  /**
-   * Save a new Media
-   *
-   * @param media The media to be saved.
-   * @return the saved media
-   */
-  Media save(Media media);
-
-  /**
-   * Update a existing media.
-   *
-   * @param id The ID of media to be updated
-   * @param media The media to be saved
-   * @return the updated media
-   */
-  Media update(Long id, Media media);
+public interface MediaDao extends Creatable<Media>, Updatable<Media>, Deletable {
 
   /**
    * Update status a existing media.
@@ -45,12 +32,4 @@ public interface MediaDao {
    * @return the media if found, or exception if not found
    */
   Media findByCommentId(Long commentId);
-
-  /**
-   * Delete a media by its ID.
-   *
-   * @param id the ID of media
-   * @return The number of row affected.
-   */
-  int deleteById(Long id);
 }

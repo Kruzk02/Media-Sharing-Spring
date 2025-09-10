@@ -1,8 +1,8 @@
 package com.app.Service;
 
-import com.app.DAO.MediaDao;
 import com.app.DAO.PrivilegeDao;
 import com.app.DAO.RoleDao;
+import com.app.DAO.media.MediaDao;
 import com.app.Model.*;
 import com.app.storage.MediaManager;
 import java.io.InputStreamReader;

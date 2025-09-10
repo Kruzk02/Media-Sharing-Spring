@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.media;
 
-import com.app.DAO.MediaDao;
 import com.app.Model.Media;
 import com.app.Model.MediaType;
 import com.app.Model.Status;

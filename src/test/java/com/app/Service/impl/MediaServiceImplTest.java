@@ -2,7 +2,7 @@ package com.app.Service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.DAO.MediaDao;
+import com.app.DAO.media.MediaDao;
 import com.app.Model.Media;
 import com.app.Model.MediaType;
 import com.app.exception.sub.MediaNotFoundException;
