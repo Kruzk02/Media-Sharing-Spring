@@ -1,17 +1,10 @@
-package com.app.DAO;
+package com.app.DAO.role;
 
+import com.app.DAO.base.Creatable;
 import com.app.Model.Role;
 
 /** Interface for managing Role data access operations. */
-public interface RoleDao {
-
-  /**
-   * Create a new role.
-   *
-   * @param role the role object to create.
-   * @return the created role object.
-   */
-  Role create(Role role);
+public interface RoleDao extends Creatable<Role> {
 
   /**
    * Finds a role by role name.

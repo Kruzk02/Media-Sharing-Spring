@@ -1,7 +1,7 @@
 package com.app.Service;
 
 import com.app.DAO.privilege.PrivilegeDao;
-import com.app.DAO.RoleDao;
+import com.app.DAO.role.RoleDao;
 import com.app.DAO.media.MediaDao;
 import com.app.Model.*;
 import com.app.storage.MediaManager;
@@ -177,7 +177,7 @@ public class DatabaseInitializationService implements ApplicationListener<Contex
       log.info("Role with name {} not found. Creating new Role", name);
       role = new Role(name);
       role.setPrivileges(privileges);
-      roleDao.create(role);
+      roleDao.save(role);
       log.info("Role created: {}", role);
     }
     return role;

@@ -3,7 +3,7 @@ package com.app.Service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-import com.app.DAO.RoleDao;
+import com.app.DAO.role.RoleDao;
 import com.app.DAO.UserDao;
 import com.app.DAO.media.MediaDao;
 import com.app.DTO.request.LoginUserRequest;

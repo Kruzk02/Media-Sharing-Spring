@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.role;
 
-import com.app.DAO.RoleDao;
 import com.app.Model.Privilege;
 import com.app.Model.Role;
 import java.sql.PreparedStatement;
@@ -26,7 +25,7 @@ public class RoleDaoImpl implements RoleDao {
   }
 
   @Override
-  public Role create(Role role) {
+  public Role save(Role role) {
     String sql = "INSERT INTO roles (name) VALUES (?)";
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
