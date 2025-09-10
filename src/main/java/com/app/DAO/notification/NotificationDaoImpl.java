@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.notification;
 
-import com.app.DAO.NotificationDao;
 import com.app.Model.Notification;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -91,10 +90,10 @@ public class NotificationDaoImpl implements NotificationDao {
   }
 
   @Override
-  public void deleteById(Long id) {
+  public int deleteById(Long id) {
     try {
       String sql = "DELETE FROM notifications WHERE id = ?";
-      template.update(sql, id);
+      return template.update(sql, id);
     } catch (EmptyResultDataAccessException e) {
       throw new RuntimeException(e);
     }
