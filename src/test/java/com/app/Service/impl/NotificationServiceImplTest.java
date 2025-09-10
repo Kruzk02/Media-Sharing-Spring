@@ -2,8 +2,8 @@ package com.app.Service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.DAO.NotificationDao;
-import com.app.DAO.UserDao;
+import com.app.DAO.notification.NotificationDao;
+import com.app.DAO.user.UserDao;
 import com.app.Model.Gender;
 import com.app.Model.Notification;
 import com.app.Model.User;

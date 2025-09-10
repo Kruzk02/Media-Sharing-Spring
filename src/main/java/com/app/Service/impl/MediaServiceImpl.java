@@ -1,6 +1,6 @@
 package com.app.Service.impl;
 
-import com.app.DAO.MediaDao;
+import com.app.DAO.media.MediaDao;
 import com.app.Model.Media;
 import com.app.Service.MediaService;
 import com.app.exception.sub.MediaNotFoundException;

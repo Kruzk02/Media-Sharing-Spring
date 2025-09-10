@@ -1,7 +1,7 @@
 package com.app.Service;
 
-import com.app.DAO.UserDao;
-import com.app.DAO.VerificationTokenDao;
+import com.app.DAO.user.UserDao;
+import com.app.DAO.verificationtoken.VerificationTokenDao;
 import com.app.Model.User;
 import com.app.Model.VerificationToken;
 import com.app.exception.sub.TokenExpireException;
@@ -29,7 +29,7 @@ public class VerificationTokenService {
             .userId(user.getId())
             .expireDate(LocalDateTime.now().plusMinutes(10))
             .build();
-    return verificationTokenDao.create(verificationToken);
+    return verificationTokenDao.save(verificationToken);
   }
 
   public void verifyAccount(String token) {

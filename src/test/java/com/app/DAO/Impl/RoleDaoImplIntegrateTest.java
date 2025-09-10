@@ -3,7 +3,8 @@ package com.app.DAO.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.DAO.AbstractMySQLTest;
-import com.app.DAO.RoleDao;
+import com.app.DAO.role.RoleDao;
+import com.app.DAO.role.RoleDaoImpl;
 import com.app.Model.Role;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -24,8 +25,8 @@ class RoleDaoImplIntegrateTest extends AbstractMySQLTest {
   }
 
   @Test
-  void create() {
-    var savedRole = roleDao.create(Role.builder().id(1L).name("name123").build());
+  void save() {
+    var savedRole = roleDao.save(Role.builder().id(1L).name("name123").build());
 
     assertNotNull(savedRole);
     assertEquals("name123", savedRole.getName());

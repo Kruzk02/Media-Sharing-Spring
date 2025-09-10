@@ -2,7 +2,11 @@ package com.app.Service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.DAO.*;
+import com.app.DAO.comment.CommentDao;
+import com.app.DAO.hashtag.HashtagDao;
+import com.app.DAO.media.MediaDao;
+import com.app.DAO.pin.PinDao;
+import com.app.DAO.user.UserDao;
 import com.app.DTO.request.CreateCommentRequest;
 import com.app.DTO.request.UpdatedCommentRequest;
 import com.app.Model.*;

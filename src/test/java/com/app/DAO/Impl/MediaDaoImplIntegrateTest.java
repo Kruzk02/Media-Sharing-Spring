@@ -3,7 +3,8 @@ package com.app.DAO.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.DAO.AbstractMySQLTest;
-import com.app.DAO.MediaDao;
+import com.app.DAO.media.MediaDao;
+import com.app.DAO.media.MediaDaoImpl;
 import com.app.Model.Media;
 import com.app.Model.MediaType;
 import com.app.Model.Status;

@@ -3,7 +3,8 @@ package com.app.DAO.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.DAO.AbstractMySQLTest;
-import com.app.DAO.HashtagDao;
+import com.app.DAO.hashtag.HashtagDao;
+import com.app.DAO.hashtag.HashtagDaoImpl;
 import com.app.Model.Hashtag;
 import java.util.Map;
 import java.util.Set;

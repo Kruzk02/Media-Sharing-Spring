@@ -2,8 +2,8 @@ package com.app.Service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.DAO.FollowerDao;
-import com.app.DAO.UserDao;
+import com.app.DAO.follower.FollowerDao;
+import com.app.DAO.user.UserDao;
 import com.app.Model.Follower;
 import com.app.Model.Gender;
 import com.app.Model.User;
