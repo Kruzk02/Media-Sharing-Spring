@@ -1,6 +1,6 @@
 package com.app.Service;
 
-import com.app.DAO.PrivilegeDao;
+import com.app.DAO.privilege.PrivilegeDao;
 import com.app.DAO.RoleDao;
 import com.app.DAO.media.MediaDao;
 import com.app.Model.*;
@@ -189,7 +189,7 @@ public class DatabaseInitializationService implements ApplicationListener<Contex
     if (privilege == null) {
       log.info("Privilege with name {} not found. Creating new Privilege", name);
       privilege = new Privilege(name);
-      privilegeDao.create(privilege);
+      privilegeDao.save(privilege);
       log.info("Privilege created: {}", privilege);
     }
     return privilege;

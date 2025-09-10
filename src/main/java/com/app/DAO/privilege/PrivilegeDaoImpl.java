@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.privilege;
 
-import com.app.DAO.PrivilegeDao;
 import com.app.Model.Privilege;
 import java.sql.PreparedStatement;
 import java.util.Objects;
@@ -18,7 +17,7 @@ public class PrivilegeDaoImpl implements PrivilegeDao {
   private final JdbcTemplate jdbcTemplate;
 
   @Override
-  public Privilege create(Privilege privilege) {
+  public Privilege save(Privilege privilege) {
     String sql = "INSERT INTO privileges (name) VALUES (?)";
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
