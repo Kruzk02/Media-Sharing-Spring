@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.pin;
 
-import com.app.DAO.PinDao;
 import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;
 import com.app.Model.Pin;

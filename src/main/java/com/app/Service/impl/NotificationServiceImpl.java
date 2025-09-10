@@ -1,7 +1,7 @@
 package com.app.Service.impl;
 
-import com.app.DAO.notification.NotificationDao;
 import com.app.DAO.UserDao;
+import com.app.DAO.notification.NotificationDao;
 import com.app.Model.Notification;
 import com.app.Model.User;
 import com.app.Service.NotificationService;

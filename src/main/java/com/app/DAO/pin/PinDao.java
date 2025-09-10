@@ -1,12 +1,15 @@
-package com.app.DAO;
+package com.app.DAO.pin;
 
+import com.app.DAO.base.Creatable;
+import com.app.DAO.base.Deletable;
+import com.app.DAO.base.Updatable;
 import com.app.Model.DetailsType;
 import com.app.Model.Pin;
 import com.app.Model.SortType;
 import java.util.List;
 
 /** Interface for managing Pin data access operations. */
-public interface PinDao {
+public interface PinDao extends Creatable<Pin>, Updatable<Pin>, Deletable {
 
   /**
    * Retrieves all pins stored in the database.
@@ -16,16 +19,6 @@ public interface PinDao {
   List<Pin> getAllPins(SortType sortType, int limit, int offset);
 
   List<Pin> getAllPinsByHashtag(String tag, int limit, int offset);
-
-  /**
-   * Saves a pin object into the database.
-   *
-   * @param pin The pin object to be saved.
-   * @return The saved pin object.
-   */
-  Pin save(Pin pin);
-
-  Pin update(Long id, Pin pin);
 
   /**
    * Finds a basic detail pin by its id.
@@ -43,12 +36,4 @@ public interface PinDao {
    * @return a list of pin.
    */
   List<Pin> findPinByUserId(Long userId, int limit, int offset);
-
-  /**
-   * Deletes a pin from the database by its id.
-   *
-   * @param id The id of the pin to be deleted.
-   * @return The number of pins deleted (should be 1 if successful, 0 if not found).
-   */
-  int deleteById(Long id);
 }
