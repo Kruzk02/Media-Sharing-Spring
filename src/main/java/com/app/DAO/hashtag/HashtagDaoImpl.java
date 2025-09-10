@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.hashtag;
 
-import com.app.DAO.HashtagDao;
 import com.app.Model.Hashtag;
 import java.sql.PreparedStatement;
 import java.sql.Statement;

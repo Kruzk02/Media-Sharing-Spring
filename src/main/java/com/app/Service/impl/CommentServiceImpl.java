@@ -2,6 +2,7 @@ package com.app.Service.impl;
 
 import com.app.DAO.*;
 import com.app.DAO.comment.CommentDao;
+import com.app.DAO.hashtag.HashtagDao;
 import com.app.DTO.request.CreateCommentRequest;
 import com.app.DTO.request.UpdatedCommentRequest;
 import com.app.Model.*;

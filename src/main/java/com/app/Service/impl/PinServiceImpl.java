@@ -1,6 +1,6 @@
 package com.app.Service.impl;
 
-import com.app.DAO.HashtagDao;
+import com.app.DAO.hashtag.HashtagDao;
 import com.app.DAO.MediaDao;
 import com.app.DAO.PinDao;
 import com.app.DAO.UserDao;

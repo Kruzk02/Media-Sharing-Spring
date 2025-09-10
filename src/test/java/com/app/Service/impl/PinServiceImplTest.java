@@ -2,7 +2,7 @@ package com.app.Service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.DAO.HashtagDao;
+import com.app.DAO.hashtag.HashtagDao;
 import com.app.DAO.MediaDao;
 import com.app.DAO.PinDao;
 import com.app.DAO.UserDao;
