@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.user;
 
-import com.app.DAO.UserDao;
 import com.app.Model.*;
 import com.app.annotations.NoLogging;
 import com.app.exception.sub.UserNotFoundException;

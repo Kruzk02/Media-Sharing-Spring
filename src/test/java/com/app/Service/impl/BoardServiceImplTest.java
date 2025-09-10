@@ -2,7 +2,7 @@ package com.app.Service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.DAO.UserDao;
+import com.app.DAO.user.UserDao;
 import com.app.DAO.board.BoardDao;
 import com.app.DAO.pin.PinDao;
 import com.app.DTO.request.BoardRequest;

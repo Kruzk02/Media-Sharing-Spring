@@ -1,6 +1,6 @@
 package com.app.Service;
 
-import com.app.DAO.UserDao;
+import com.app.DAO.user.UserDao;
 import com.app.DAO.VerificationTokenDao;
 import com.app.Model.User;
 import com.app.Model.VerificationToken;
