@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.follower;
 
-import com.app.DAO.FollowerDao;
 import com.app.Model.Follower;
 import com.app.Model.Gender;
 import com.app.Model.Media;

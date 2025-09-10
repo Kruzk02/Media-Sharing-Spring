@@ -1,4 +1,4 @@
-package com.app.DAO;
+package com.app.DAO.follower;
 
 import com.app.Model.Follower;
 import com.app.Model.User;
