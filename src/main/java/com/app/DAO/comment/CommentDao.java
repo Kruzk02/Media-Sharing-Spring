@@ -1,30 +1,15 @@
-package com.app.DAO;
+package com.app.DAO.comment;
 
+import com.app.DAO.base.Creatable;
+import com.app.DAO.base.Deletable;
+import com.app.DAO.base.Updatable;
 import com.app.Model.Comment;
 import com.app.Model.DetailsType;
 import com.app.Model.SortType;
 import java.util.List;
 
 /** Data Access Object interface for managing Comment entities. */
-public interface CommentDao {
-
-  /**
-   * Saves a new comment.
-   *
-   * @param comment The comment to be saved
-   * @return the saved comment
-   */
-  Comment save(Comment comment);
-
-  /**
-   * Update a existing comment
-   *
-   * @param id The ID of the comment to be updated
-   * @param comment The comment to be saved
-   * @return The updated comment
-   */
-  Comment update(Long id, Comment comment);
-
+public interface CommentDao extends Creatable<Comment>, Updatable<Comment>, Deletable {
   /**
    * Find a comment by its ID.
    *
@@ -54,12 +39,4 @@ public interface CommentDao {
    * @return a list of comments
    */
   List<Comment> findByHashtag(String tag, int limit, int offset);
-
-  /**
-   * Deletes a comment by its id.
-   *
-   * @param id The id of the comment to delete
-   * @return the number of rows affected
-   */
-  int deleteById(Long id);
 }

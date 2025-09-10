@@ -1,6 +1,5 @@
-package com.app.DAO.Impl;
+package com.app.DAO.comment;
 
-import com.app.DAO.CommentDao;
 import com.app.Model.Comment;
 import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;

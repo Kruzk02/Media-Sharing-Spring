@@ -2,7 +2,7 @@ package com.app.Service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.DAO.CommentDao;
+import com.app.DAO.comment.CommentDao;
 import com.app.DAO.MediaDao;
 import com.app.DAO.SubCommentDao;
 import com.app.DAO.UserDao;

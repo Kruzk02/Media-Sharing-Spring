@@ -3,7 +3,8 @@ package com.app.DAO.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.DAO.AbstractMySQLTest;
-import com.app.DAO.CommentDao;
+import com.app.DAO.comment.CommentDao;
+import com.app.DAO.comment.CommentDaoImpl;
 import com.app.Model.Comment;
 import com.app.Model.DetailsType;
 import com.app.Model.Hashtag;
