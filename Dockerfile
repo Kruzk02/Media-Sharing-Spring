@@ -1,8 +1,11 @@
-FROM maven:3.9.9-eclipse-temurin-21 AS builder
+FROM gradle:jdk24-alpine AS builder
 WORKDIR /app
 
-COPY pom.xml ./
+COPY build.gradle settings.gradle gradlew ./
+COPY gradle ./gradle
+
+RUN ./gradlew dependencies --no-daemon || return 0
 
 COPY . ./
 
-CMD ["mvn", "spring-boot:run"]
+CMD ["./gradlew", "bootRun"]
