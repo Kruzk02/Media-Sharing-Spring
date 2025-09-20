@@ -33,7 +33,7 @@ jobs:
         run: mvn spotless:check || true  # Continue even if check fails
 
       - name: Run Spotless to auto-format code
-        run: mvn spotless:apply
+        run: ./gradlew spotlessApply
 
       - name: Check for changes
         id: changes
