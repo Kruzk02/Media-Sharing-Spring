@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.6'
 
     id 'jacoco'                                    // for code coverage
-    id 'com.diffplug.spotless' version '7.2.1'    // for formatting
+    id 'com.diffplug.spotless' version '8.0.0'    // for formatting
 }
 
 group = 'com'
