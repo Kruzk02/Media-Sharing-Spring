@@ -1,6 +1,9 @@
 networks:
   my_network:
 
+volumes:
+  mysql_data:
+
 services:
   nginx:
     build:
@@ -25,8 +28,6 @@ services:
       - mysql
       - redis
       - kafka
-    volumes:
-      - .:/app
     env_file:
       - .env
     networks:
@@ -45,6 +46,8 @@ services:
       retries: 5
     ports:
       - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
     networks:
       - my_network
 
