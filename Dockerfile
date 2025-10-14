@@ -1,11 +1,17 @@
-FROM gradle:jdk24-alpine AS builder
+FROM gradle:jdk24 AS build
 WORKDIR /app
 
-COPY build.gradle settings.gradle gradlew ./
+COPY build.gradle settings.gradle gradle.properties ./
 COPY gradle ./gradle
+RUN gradle --version
 
-RUN ./gradlew dependencies --no-daemon || return 0
+COPY src ./src
 
-COPY . ./
+RUN gradle bootJar --no-daemon
 
-CMD ["./gradlew", "bootRun"]
+FROM eclipse-temurin:24-jdk-alpine
+WORKDIR /app
+
+COPY --from=build /app/build/libs/*.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
