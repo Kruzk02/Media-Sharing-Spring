@@ -21,7 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
-class PinControllerTest {
+class PinControllerUnitTest {
 
   @Mock private PinService pinService;
 
