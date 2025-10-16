@@ -74,7 +74,7 @@ public class CommentController {
                 comment.getUserId(),
                 comment.getMediaId(),
                 comment.getCreated_at(),
-                view.equalsIgnoreCase("detail")
+                view.equalsIgnoreCase("details")
                     ? new ArrayList<>(comment.getHashtags())
                     : new ArrayList<>()));
   }
