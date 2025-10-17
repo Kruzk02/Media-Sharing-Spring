@@ -14,4 +14,6 @@ WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar app.jar
 
+COPY image /app/image
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
