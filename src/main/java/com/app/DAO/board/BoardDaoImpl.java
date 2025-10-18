@@ -5,15 +5,13 @@ import com.app.Model.Pin;
 import com.app.Model.User;
 import com.app.exception.sub.BoardNotFoundException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -113,10 +111,9 @@ public class BoardDaoImpl implements BoardDao {
         """;
 
       Board board =
-          jdbcTemplate.query(
+          jdbcTemplate.queryForObject(
               boardSql,
-              rs -> {
-                if (!rs.next()) return null;
+              (rs, _) -> {
                 var b =
                     Board.builder()
                         .id(rs.getLong("board_id"))
@@ -147,9 +144,9 @@ public class BoardDaoImpl implements BoardDao {
       List<Pin> pins =
           jdbcTemplate.query(
               pinsSql,
-              (rs, rowNum) ->
+              (rs, _) ->
                   Pin.builder()
-                      .id(rs.getLong("id"))
+                      .id(rs.getLong("pin_id"))
                       .mediaId(rs.getLong("media_id"))
                       .userId(rs.getLong("pin_user_id"))
                       .createdAt(rs.getTimestamp("pin_created_at").toLocalDateTime())
@@ -159,22 +156,81 @@ public class BoardDaoImpl implements BoardDao {
       board.setPins(pins);
       return board;
     } catch (DataAccessException e) {
-      throw new RuntimeException(e.getMessage());
+      throw new RuntimeException("Database error in findById(" + id + "): " + e.getMessage(), e);
     }
   }
 
   @Override
   public List<Board> findAllByUserId(Long userId, int limit, int offset) {
-    String sql =
-        "SELECT b.id AS board_id, b.board_name, b.create_at, "
-            + "u.id AS user_id, u.username, "
-            + "p.id AS pin_id, p.media_id, p.user_id AS pin_user_id "
-            + "FROM boards b "
-            + "JOIN users u ON b.user_id = u.id "
-            + "LEFT JOIN board_pin bp ON b.id = bp.board_id "
-            + "LEFT JOIN pins p ON p.id = bp.pin_id "
-            + "WHERE b.user_id = ? limit ? offset ?";
-    return jdbcTemplate.query(sql, new BoardResultSetExtractor(), userId, limit, offset);
+    String boardSql =
+        """
+        SELECT b.id AS board_id, b.board_name,
+            u.id AS user_id, u.username
+        FROM boards b
+        JOIN users u ON b.user_id = u.id
+        WHERE b.user_id = ?
+        ORDER BY b.id DESC
+        LIMIT ? OFFSET ?
+        """;
+    var boards =
+        jdbcTemplate.query(
+            boardSql,
+            (rs, _) -> {
+              Board board = new Board();
+              board.setId(rs.getLong("board_id"));
+              board.setName(rs.getString("board_name"));
+
+              User user = new User();
+              user.setId(rs.getLong("user_id"));
+              user.setUsername(rs.getString("username"));
+              board.setUser(user);
+
+              board.setPins(new ArrayList<>());
+              return board;
+            },
+            userId,
+            limit,
+            offset);
+
+    if (boards.isEmpty()) return boards;
+
+    List<Long> boardsIds = boards.stream().map(Board::getId).toList();
+
+    String inSql = boardsIds.stream().map(id -> "?").collect(Collectors.joining(", "));
+
+    String pinSql =
+        String.format(
+            """
+      SELECT bp.board_id, p.id AS pin_id, p.media_id,
+             p.user_id AS pin_user_id, p.created_at AS pin_created_at
+      FROM board_pin bp
+      JOIN pins p ON p.id = bp.pin_id
+      WHERE bp.board_id IN (%s)
+      """,
+            inSql);
+
+    Map<Long, List<Pin>> pinMap = new HashMap<>();
+
+    jdbcTemplate.query(
+        pinSql,
+        rs -> {
+          long boardId = rs.getLong("board_id");
+          Pin pin = new Pin();
+          pin.setId(rs.getLong("pin_id"));
+          pin.setMediaId(rs.getLong("media_id"));
+          pin.setUserId(rs.getLong("pin_user_id"));
+          pin.setCreatedAt(rs.getTimestamp("pin_created_at").toLocalDateTime());
+          pinMap.computeIfAbsent(boardId, k -> new ArrayList<>()).add(pin);
+        },
+        boardsIds.toArray());
+
+    for (Board board : boards) {
+      var pins = pinMap.get(board.getId());
+      if (pins != null) {
+        board.getPins().addAll(pins);
+      }
+    }
+    return boards;
   }
 
   @Override
@@ -185,44 +241,5 @@ public class BoardDaoImpl implements BoardDao {
     } catch (EmptyResultDataAccessException e) {
       throw new BoardNotFoundException("Board not found with a id: " + id);
     }
-  }
-}
-
-class BoardResultSetExtractor implements ResultSetExtractor<List<Board>> {
-
-  @Override
-  public List<Board> extractData(ResultSet rs) throws SQLException {
-    Map<Long, Board> boardMap = new HashMap<>();
-
-    while (rs.next()) {
-      Long boardId = rs.getLong("board_id");
-
-      Board board = boardMap.get(boardId);
-      if (board == null) {
-        board = Board.builder().id(boardId).name(rs.getString("board_name")).build();
-
-        User user =
-            User.builder().id(rs.getLong("user_id")).username(rs.getString("username")).build();
-        board.setUser(user);
-
-        board.setPins(new ArrayList<>());
-        boardMap.put(boardId, board);
-      }
-
-      long pinId = rs.getLong("pin_id");
-      if (pinId != 0) {
-        Pin pin =
-            Pin.builder()
-                .id(pinId)
-                .mediaId(rs.getLong("media_id"))
-                .userId(rs.getLong("pin_user_id"))
-                .build();
-        board.getPins().add(pin);
-      } else {
-        board.setPins(Collections.emptyList());
-      }
-    }
-
-    return new ArrayList<>(boardMap.values());
   }
 }
