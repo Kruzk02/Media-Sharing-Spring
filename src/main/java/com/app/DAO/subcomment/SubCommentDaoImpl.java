@@ -143,32 +143,32 @@ public class SubCommentDaoImpl implements SubCommentDao {
       throw new SubCommentNotFoundException("Sub comment not found with a id: " + id);
     }
   }
-}
 
-class SubCommentRowMapper implements RowMapper<SubComment> {
+  static class SubCommentRowMapper implements RowMapper<SubComment> {
 
-  @Override
-  public SubComment mapRow(ResultSet rs, int rowNum) throws SQLException {
-    SubComment subComment = new SubComment();
-    subComment.setId(rs.getLong("sc_id"));
+    @Override
+    public SubComment mapRow(ResultSet rs, int rowNum) throws SQLException {
+      SubComment subComment = new SubComment();
+      subComment.setId(rs.getLong("sc_id"));
 
-    subComment.setContent(rs.getString("sc_content"));
+      subComment.setContent(rs.getString("sc_content"));
 
-    Media media = new Media();
-    media.setId(rs.getLong("sc_media_id"));
-    subComment.setMedia(media);
+      Media media = new Media();
+      media.setId(rs.getLong("sc_media_id"));
+      subComment.setMedia(media);
 
-    User user = new User();
-    user.setId(rs.getLong("user_id"));
-    user.setUsername(rs.getString("user_username"));
-    subComment.setUser(user);
+      User user = new User();
+      user.setId(rs.getLong("user_id"));
+      user.setUsername(rs.getString("user_username"));
+      subComment.setUser(user);
 
-    Comment comment = new Comment();
-    comment.setId(rs.getLong("sc_comment_id"));
-    comment.setContent(rs.getString("comment_content"));
-    subComment.setComment(comment);
+      Comment comment = new Comment();
+      comment.setId(rs.getLong("sc_comment_id"));
+      comment.setContent(rs.getString("comment_content"));
+      subComment.setComment(comment);
 
-    subComment.setCreateAt(rs.getTimestamp("sc_create_at").toLocalDateTime());
-    return subComment;
+      subComment.setCreateAt(rs.getTimestamp("sc_create_at").toLocalDateTime());
+      return subComment;
+    }
   }
 }
