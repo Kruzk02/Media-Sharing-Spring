@@ -15,12 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 /** Implementation of PinDao using Spring JDBC for data access. */
 @Repository
@@ -45,7 +43,6 @@ public class PinDaoImpl implements PinDao {
     return jdbcTemplate.query(sql, new PinRowMapper(false, true), limit, offset);
   }
 
-  @Transactional(readOnly = true)
   @Override
   public List<Pin> getAllPinsByHashtag(String tag, int limit, int offset) {
     String sql =
@@ -81,7 +78,6 @@ public class PinDaoImpl implements PinDao {
         return null;
       }
     } catch (Exception e) {
-      e.printStackTrace();
       return null;
     }
   }
@@ -153,14 +149,39 @@ public class PinDaoImpl implements PinDao {
             "SELECT p.id AS pin_id, p.user_id, p.description, p.media_id, p.created_at, "
                 + "h.id AS hashtag_id, h.tag "
                 + "FROM pins p "
-                + "LEFT JOIN hashtags_pins hp ON hp.pin_id = p.id "
-                + "LEFT JOIN hashtags h ON h.id = hp.hashtag_id "
+                + "JOIN hashtags_pins hp ON hp.pin_id = p.id "
+                + "JOIN hashtags h ON h.id = hp.hashtag_id "
                 + "WHERE p.id = ?";
-        return jdbcTemplate.query(sql, new PinRSE(), id);
-      } else {
-        String sql = "SELECT id, media_id, user_id, created_at FROM pins where id = ?";
-        return jdbcTemplate.queryForObject(sql, new PinRowMapper(false, true), id);
+        return jdbcTemplate.query(
+            sql,
+            (rs) -> {
+              Pin pin = null;
+
+              while (rs.next()) {
+                if (pin == null) {
+                  pin = new Pin();
+                  pin.setId(rs.getLong("pin_id"));
+                  pin.setUserId(rs.getLong("user_id"));
+                  pin.setDescription(rs.getString("description"));
+                  pin.setMediaId(rs.getLong("media_id"));
+                  pin.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                  pin.setHashtags(new ArrayList<>());
+                }
+
+                if (!rs.wasNull()) {
+                  Hashtag hashtag = new Hashtag();
+                  hashtag.setId(rs.getLong("hashtag_id"));
+                  hashtag.setTag(rs.getString("tag"));
+                  pin.getHashtags().add(hashtag);
+                }
+              }
+              return pin;
+            },
+            id);
       }
+
+      String sql = "SELECT id, media_id, user_id, created_at FROM pins where id = ?";
+      return jdbcTemplate.queryForObject(sql, new PinRowMapper(false, true), id);
     } catch (DataAccessException e) {
       throw new PinNotFoundException("Pin not found with a id: " + id);
     }
@@ -186,63 +207,27 @@ public class PinDaoImpl implements PinDao {
       throw new PinNotFoundException("Pin not found with a id: " + id);
     }
   }
-}
 
-class PinRSE implements ResultSetExtractor<Pin> {
-  @Override
-  public Pin extractData(ResultSet rs) throws SQLException {
-    Pin pin = null;
+  record PinRowMapper(boolean includedDescription, boolean includedMediaId)
+      implements RowMapper<Pin> {
 
-    while (rs.next()) {
-      if (pin == null) {
-        pin = new Pin();
-        pin.setId(rs.getLong("pin_id"));
-        pin.setUserId(rs.getLong("user_id"));
+    @Override
+    public Pin mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+      Pin pin = new Pin();
+      pin.setId(rs.getLong("id"));
+
+      if (includedDescription) {
         pin.setDescription(rs.getString("description"));
+      }
+
+      if (includedMediaId) {
         pin.setMediaId(rs.getLong("media_id"));
-        pin.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        pin.setHashtags(new ArrayList<>());
       }
 
-      Long hashtagId = rs.getLong("hashtag_id");
-      if (!rs.wasNull()) {
-        Hashtag hashtag = new Hashtag();
-        hashtag.setId(hashtagId);
-        hashtag.setTag(rs.getString("tag"));
-        pin.getHashtags().add(hashtag);
-      }
+      pin.setUserId(rs.getLong("user_id"));
+      pin.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+      return pin;
     }
-
-    return pin;
-  }
-}
-
-class PinRowMapper implements RowMapper<Pin> {
-
-  private final boolean includedDescription;
-  private final boolean includedMediaId;
-
-  PinRowMapper(boolean includedDescription, boolean includedMediaId) {
-    this.includedDescription = includedDescription;
-    this.includedMediaId = includedMediaId;
-  }
-
-  @Override
-  public Pin mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-    Pin pin = new Pin();
-    pin.setId(rs.getLong("id"));
-
-    if (includedDescription) {
-      pin.setDescription(rs.getString("description"));
-    }
-
-    if (includedMediaId) {
-      pin.setMediaId(rs.getLong("media_id"));
-    }
-
-    pin.setUserId(rs.getLong("user_id"));
-    pin.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-    return pin;
   }
 }
