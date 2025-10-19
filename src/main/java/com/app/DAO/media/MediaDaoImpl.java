@@ -70,7 +70,7 @@ public class MediaDaoImpl implements MediaDao {
       String sql = "SELECT id, url, media_type, status FROM media WHERE id = ?";
       return template.queryForObject(
           sql,
-          (rs, rowNum) -> {
+          (rs, _) -> {
             Media media = new Media();
             media.setId(rs.getLong("id"));
             media.setUrl(rs.getString("url"));
@@ -89,11 +89,11 @@ public class MediaDaoImpl implements MediaDao {
     try {
       String sql =
           "SELECT m.id, m.url, m.media_type FROM media m "
-              + "INNER JOIN comments c ON m.id = c.media_id "
+              + "JOIN comments c ON m.id = c.media_id "
               + "WHERE c.id = ?";
       return template.queryForObject(
           sql,
-          (rs, rowNum) -> {
+          (rs, _) -> {
             Media media = new Media();
             media.setId(rs.getLong("id"));
             media.setUrl(rs.getString("url"));
