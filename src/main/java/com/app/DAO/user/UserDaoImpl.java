@@ -253,50 +253,40 @@ public class UserDaoImpl implements UserDao {
       throw new RuntimeException("An error occurred while verifying account: " + e.getMessage(), e);
     }
   }
-}
 
-class UserRowMapper implements RowMapper<User> {
-  private final boolean includeProfilePicture;
-  private final boolean includeBio;
-  private final boolean includePassword;
-  private final boolean includeGender;
-
-  public UserRowMapper(
+  record UserRowMapper(
       boolean includeProfilePicture,
       boolean includeBio,
       boolean includePassword,
-      boolean includeGender) {
-    this.includeProfilePicture = includeProfilePicture;
-    this.includeBio = includeBio;
-    this.includePassword = includePassword;
-    this.includeGender = includeGender;
-  }
+      boolean includeGender)
+      implements RowMapper<User> {
 
-  @Override
-  public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-    User user = new User();
-    user.setId(rs.getLong("id"));
-    user.setUsername(rs.getString("username"));
-    user.setEmail(rs.getString("email"));
-    user.setEnable(rs.getBoolean("enable"));
+    @Override
+    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+      User user = new User();
+      user.setId(rs.getLong("id"));
+      user.setUsername(rs.getString("username"));
+      user.setEmail(rs.getString("email"));
+      user.setEnable(rs.getBoolean("enable"));
 
-    if (includeProfilePicture) {
-      Media media = new Media();
-      media.setId(rs.getLong("media_id"));
-      user.setMedia(media);
-    }
-    if (includeBio) {
-      user.setBio(rs.getString("bio"));
-    }
-    if (includePassword) {
-      user.setPassword(rs.getString("password"));
-    }
-    if (includeGender) {
-      String genderString = rs.getString("gender");
-      if (genderString != null) {
-        user.setGender(Gender.valueOf(genderString.toUpperCase()));
+      if (includeProfilePicture) {
+        Media media = new Media();
+        media.setId(rs.getLong("media_id"));
+        user.setMedia(media);
       }
+      if (includeBio) {
+        user.setBio(rs.getString("bio"));
+      }
+      if (includePassword) {
+        user.setPassword(rs.getString("password"));
+      }
+      if (includeGender) {
+        String genderString = rs.getString("gender");
+        if (genderString != null) {
+          user.setGender(Gender.valueOf(genderString.toUpperCase()));
+        }
+      }
+      return user;
     }
-    return user;
   }
 }
