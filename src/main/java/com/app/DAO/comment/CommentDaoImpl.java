@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -134,14 +133,43 @@ public class CommentDaoImpl implements CommentDao {
             "SELECT c.id AS comment_id, c.user_id, c.pin_id, c.created_at, "
                 + "h.id AS hashtag_id, h.tag "
                 + "FROM comments c "
-                + "LEFT JOIN hashtags_comments hc ON hc.comment_id = c.id "
-                + "LEFT JOIN hashtags h ON h.id = hc.hashtag_id "
+                + "JOIN hashtags_comments hc ON hc.comment_id = c.id "
+                + "JOIN hashtags h ON h.id = hc.hashtag_id "
                 + "WHERE c.id = ?";
-        return jdbcTemplate.query(sql, new CommentRSE(), id);
-      } else {
-        String sql = "SELECT id, user_id, pin_id, created_at FROM comments WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new CommentRowMapper(false, false, true), id);
+        return jdbcTemplate.query(
+            sql,
+            (rs) -> {
+              Comment comment = null;
+
+              while (rs.next()) {
+                if (comment == null) {
+                  comment =
+                      Comment.builder()
+                          .id(rs.getLong("comment_id"))
+                          .userId(rs.getLong("user_id"))
+                          .pinId(rs.getLong("pin_id"))
+                          .created_at(rs.getTimestamp("created_at").toLocalDateTime())
+                          .hashtags(new ArrayList<>())
+                          .build();
+                }
+
+                if (!rs.wasNull()) {
+                  Hashtag hashtag =
+                      Hashtag.builder()
+                          .id(rs.getLong("hashtag_id"))
+                          .tag(rs.getString("tag"))
+                          .build();
+                  comment.getHashtags().add(hashtag);
+                }
+              }
+              return comment;
+            },
+            id);
       }
+
+      String sql = "SELECT id, user_id, pin_id, created_at FROM comments WHERE id = ?";
+      return jdbcTemplate.queryForObject(sql, new CommentRowMapper(false, false, true), id);
+
     } catch (DataAccessException e) {
       throw new CommentNotFoundException("Comment not found with a id: " + id);
     }
@@ -181,66 +209,29 @@ public class CommentDaoImpl implements CommentDao {
       throw new CommentNotFoundException("Comment not found with a id: " + id);
     }
   }
-}
 
-class CommentRSE implements ResultSetExtractor<Comment> {
+  record CommentRowMapper(boolean includeContent, boolean includeMediaId, boolean includePinId)
+      implements RowMapper<Comment> {
 
-  @Override
-  public Comment extractData(ResultSet rs) throws SQLException, DataAccessException {
-    Comment comment = null;
-
-    while (rs.next()) {
-      if (comment == null) {
-        comment =
-            Comment.builder()
-                .id(rs.getLong("comment_id"))
-                .userId(rs.getLong("user_id"))
-                .pinId(rs.getLong("pin_id"))
-                .created_at(rs.getTimestamp("created_at").toLocalDateTime())
-                .hashtags(new ArrayList<>())
-                .build();
+    @Override
+    public Comment mapRow(ResultSet rs, int rowNum) throws SQLException {
+      Comment comment = new Comment();
+      comment.setId(rs.getLong("id"));
+      if (includeContent) {
+        comment.setContent(rs.getString("content"));
       }
 
-      if (!rs.wasNull()) {
-        Hashtag hashtag =
-            Hashtag.builder().id(rs.getLong("hashtag_id")).tag(rs.getString("tag")).build();
-        comment.getHashtags().add(hashtag);
+      comment.setUserId(rs.getLong("user_id"));
+      if (includePinId) {
+        comment.setPinId(rs.getLong("pin_id"));
       }
+
+      if (includeMediaId) {
+        comment.setMediaId(rs.getLong("media_id"));
+      }
+
+      comment.setCreated_at(rs.getTimestamp("created_at").toLocalDateTime());
+      return comment;
     }
-    return comment;
-  }
-}
-
-class CommentRowMapper implements RowMapper<Comment> {
-
-  private final boolean includeContent;
-  private final boolean includeMediaId;
-  private final boolean includePinId;
-
-  CommentRowMapper(boolean includeContent, boolean includeMediaId, boolean includePinId) {
-    this.includeContent = includeContent;
-    this.includeMediaId = includeMediaId;
-    this.includePinId = includePinId;
-  }
-
-  @Override
-  public Comment mapRow(ResultSet rs, int rowNum) throws SQLException {
-    Comment comment = new Comment();
-    comment.setId(rs.getLong("id"));
-    if (includeContent) {
-      comment.setContent(rs.getString("content"));
-    }
-
-    comment.setUserId(rs.getLong("user_id"));
-    if (includePinId) {
-      comment.setPinId(rs.getLong("pin_id"));
-    }
-
-    if (includeMediaId) {
-      comment.setMediaId(rs.getLong("media_id"));
-    }
-
-    comment.setCreated_at(rs.getTimestamp("created_at").toLocalDateTime());
-    return comment;
   }
 }
