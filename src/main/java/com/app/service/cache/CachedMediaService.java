@@ -1,7 +1,6 @@
 package com.app.service.cache;
 
 import com.app.exception.sub.MediaNotFoundException;
-import com.app.helper.CachedServiceHelper;
 import com.app.model.Media;
 import com.app.service.MediaService;
 import java.time.Duration;

@@ -3,7 +3,6 @@ package com.app.service.cache;
 import com.app.dto.request.CreateCommentRequest;
 import com.app.dto.request.UpdatedCommentRequest;
 import com.app.exception.sub.CommentNotFoundException;
-import com.app.helper.CachedServiceHelper;
 import com.app.model.Comment;
 import com.app.model.DetailsType;
 import com.app.model.SortType;

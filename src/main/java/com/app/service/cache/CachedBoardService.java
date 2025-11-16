@@ -2,7 +2,6 @@ package com.app.service.cache;
 
 import com.app.dto.request.BoardRequest;
 import com.app.exception.sub.BoardNotFoundException;
-import com.app.helper.CachedServiceHelper;
 import com.app.model.Board;
 import com.app.service.BoardService;
 import java.time.Duration;

@@ -2,7 +2,6 @@ package com.app.service.cache;
 
 import com.app.dto.request.PinRequest;
 import com.app.exception.sub.PinNotFoundException;
-import com.app.helper.CachedServiceHelper;
 import com.app.model.DetailsType;
 import com.app.model.Pin;
 import com.app.model.SortType;

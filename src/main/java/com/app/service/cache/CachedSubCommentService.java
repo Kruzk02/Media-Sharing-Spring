@@ -3,7 +3,6 @@ package com.app.service.cache;
 import com.app.dto.request.CreateSubCommentRequest;
 import com.app.dto.request.UpdatedCommentRequest;
 import com.app.exception.sub.SubCommentNotFoundException;
-import com.app.helper.CachedServiceHelper;
 import com.app.model.SortType;
 import com.app.model.SubComment;
 import com.app.service.SubCommentService;
