@@ -32,6 +32,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.modulith:spring-modulith-starter-core'
 
     // --- Jackson ---
     implementation 'com.fasterxml.jackson.core:jackson-core:2.20.0'
@@ -71,6 +72,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.testcontainers:testcontainers-bom:1.21.3"
+        mavenBom 'org.springframework.modulith:spring-modulith-bom:1.4.4'
     }
 }
 
