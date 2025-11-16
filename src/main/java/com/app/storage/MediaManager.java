@@ -1,7 +1,7 @@
 package com.app.storage;
 
-import com.app.Model.MediaType;
 import com.app.exception.sub.MediaNotSupportException;
+import com.app.model.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;

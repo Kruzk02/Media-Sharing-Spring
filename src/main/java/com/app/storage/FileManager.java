@@ -1,8 +1,8 @@
 package com.app.storage;
 
-import com.app.Model.MediaType;
 import com.app.exception.sub.FileDeleteException;
 import com.app.exception.sub.FileSaveException;
+import com.app.model.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;

@@ -1,7 +1,7 @@
 package com.app.message.consumer;
 
-import com.app.Model.VerificationEmailEvent;
-import com.app.Service.VerificationSender;
+import com.app.model.VerificationEmailEvent;
+import com.app.service.VerificationSender;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.kafka.annotation.KafkaListener;

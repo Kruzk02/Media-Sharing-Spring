@@ -1,6 +1,6 @@
 package com.app.serde.serializer;
 
-import com.app.Model.Notification;
+import com.app.model.Notification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
