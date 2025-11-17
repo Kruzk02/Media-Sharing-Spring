@@ -2,13 +2,13 @@ package com.app.dao.Impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.comment.dao.CommentDao;
-import com.app.comment.dao.CommentDaoImpl;
-import com.app.comment.model.Comment;
 import com.app.dao.AbstractMySQLTest;
-import com.app.model.DetailsType;
-import com.app.model.Hashtag;
-import com.app.model.SortType;
+import com.app.module.comment.dao.CommentDao;
+import com.app.module.comment.dao.CommentDaoImpl;
+import com.app.module.comment.model.Comment;
+import com.app.module.hashtag.model.Hashtag;
+import com.app.shared.type.DetailsType;
+import com.app.shared.type.SortType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

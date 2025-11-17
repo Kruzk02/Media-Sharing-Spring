@@ -2,13 +2,13 @@ package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.exception.sub.UserNotFoundException;
-import com.app.follower.dao.FollowerDao;
-import com.app.follower.model.Follower;
-import com.app.follower.service.FollowerServiceImpl;
-import com.app.user.dao.user.UserDao;
-import com.app.user.model.Gender;
-import com.app.user.model.User;
+import com.app.module.follower.dao.FollowerDao;
+import com.app.module.follower.model.Follower;
+import com.app.module.follower.service.FollowerServiceImpl;
+import com.app.module.user.dao.user.UserDao;
+import com.app.module.user.model.Gender;
+import com.app.module.user.model.User;
+import com.app.shared.exception.sub.UserNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

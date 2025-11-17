@@ -3,9 +3,9 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.dao.hashtag.HashtagDao;
-import com.app.dao.hashtag.HashtagDaoImpl;
-import com.app.model.Hashtag;
+import com.app.module.hashtag.dao.HashtagDao;
+import com.app.module.hashtag.dao.HashtagDaoImpl;
+import com.app.module.hashtag.model.Hashtag;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;

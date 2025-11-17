@@ -1,7 +1,7 @@
 package com.app.config;
 
-import com.app.serde.serializer.NotificationEventSerializer;
-import com.app.serde.serializer.VerificationEmailEventSerializer;
+import com.app.shared.serde.serializer.NotificationEventSerializer;
+import com.app.shared.serde.serializer.VerificationEmailEventSerializer;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;

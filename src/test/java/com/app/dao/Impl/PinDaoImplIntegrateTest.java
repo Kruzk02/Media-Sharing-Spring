@@ -3,12 +3,12 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.model.DetailsType;
-import com.app.model.Hashtag;
-import com.app.model.SortType;
-import com.app.pin.dao.PinDao;
-import com.app.pin.dao.PinDaoImpl;
-import com.app.pin.model.Pin;
+import com.app.module.hashtag.model.Hashtag;
+import com.app.module.pin.dao.PinDao;
+import com.app.module.pin.dao.PinDaoImpl;
+import com.app.module.pin.model.Pin;
+import com.app.shared.type.DetailsType;
+import com.app.shared.type.SortType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

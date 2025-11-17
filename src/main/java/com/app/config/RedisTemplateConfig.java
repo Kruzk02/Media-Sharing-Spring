@@ -1,10 +1,10 @@
 package com.app.config;
 
-import com.app.board.model.Board;
-import com.app.comment.model.Comment;
-import com.app.model.*;
-import com.app.pin.model.Pin;
-import com.app.subcomment.model.SubComment;
+import com.app.module.board.model.Board;
+import com.app.module.comment.model.Comment;
+import com.app.module.media.model.Media;
+import com.app.module.pin.model.Pin;
+import com.app.module.subcomment.model.SubComment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

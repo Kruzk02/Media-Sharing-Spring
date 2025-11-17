@@ -3,9 +3,9 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.notification.dao.NotificationDao;
-import com.app.notification.dao.NotificationDaoImpl;
-import com.app.notification.model.Notification;
+import com.app.module.notification.dao.NotificationDao;
+import com.app.module.notification.dao.NotificationDaoImpl;
+import com.app.module.notification.model.Notification;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;

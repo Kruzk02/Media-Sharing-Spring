@@ -2,14 +2,14 @@ package com.app.dao.Impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.board.dao.BoardDao;
-import com.app.board.dao.BoardDaoImpl;
-import com.app.board.model.Board;
 import com.app.dao.AbstractMySQLTest;
-import com.app.model.Media;
-import com.app.pin.model.Pin;
-import com.app.user.model.Gender;
-import com.app.user.model.User;
+import com.app.module.board.dao.BoardDao;
+import com.app.module.board.dao.BoardDaoImpl;
+import com.app.module.board.model.Board;
+import com.app.module.media.model.Media;
+import com.app.module.pin.model.Pin;
+import com.app.module.user.model.Gender;
+import com.app.module.user.model.User;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

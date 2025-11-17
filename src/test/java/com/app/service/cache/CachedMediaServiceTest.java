@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.app.model.Media;
-import com.app.model.MediaType;
-import com.app.service.MediaService;
+import com.app.module.media.model.Media;
+import com.app.module.media.model.MediaType;
+import com.app.module.media.service.CachedMediaService;
+import com.app.module.media.service.MediaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

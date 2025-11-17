@@ -2,17 +2,17 @@ package com.app.dao.Impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.comment.model.Comment;
 import com.app.dao.AbstractMySQLTest;
-import com.app.model.Hashtag;
-import com.app.model.Media;
-import com.app.model.MediaType;
-import com.app.model.SortType;
-import com.app.subcomment.dao.SubCommentDao;
-import com.app.subcomment.dao.SubCommentDaoImpl;
-import com.app.subcomment.model.SubComment;
-import com.app.user.model.Gender;
-import com.app.user.model.User;
+import com.app.module.comment.model.Comment;
+import com.app.module.hashtag.model.Hashtag;
+import com.app.module.media.model.Media;
+import com.app.module.media.model.MediaType;
+import com.app.module.subcomment.dao.SubCommentDao;
+import com.app.module.subcomment.dao.SubCommentDaoImpl;
+import com.app.module.subcomment.model.SubComment;
+import com.app.module.user.model.Gender;
+import com.app.module.user.model.User;
+import com.app.shared.type.SortType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

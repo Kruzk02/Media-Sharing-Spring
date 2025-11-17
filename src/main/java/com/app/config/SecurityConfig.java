@@ -1,8 +1,8 @@
 package com.app.config;
 
-import com.app.exception.CustomAccessDeniedHandler;
-import com.app.service.CustomUserDetailsService;
-import com.app.user.security.JwtAuthenticationFilter;
+import com.app.module.user.security.CustomUserDetailsService;
+import com.app.module.user.security.JwtAuthenticationFilter;
+import com.app.shared.exception.CustomAccessDeniedHandler;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -2,10 +2,11 @@ package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.dao.media.MediaDao;
-import com.app.exception.sub.MediaNotFoundException;
-import com.app.model.Media;
-import com.app.model.MediaType;
+import com.app.module.media.dao.MediaDao;
+import com.app.module.media.model.Media;
+import com.app.module.media.model.MediaType;
+import com.app.module.media.service.MediaServiceImpl;
+import com.app.shared.exception.sub.MediaNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

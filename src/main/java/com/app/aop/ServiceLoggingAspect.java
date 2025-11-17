@@ -1,6 +1,6 @@
 package com.app.aop;
 
-import com.app.annotations.NoLogging;
+import com.app.shared.annotations.NoLogging;
 import java.util.Arrays;
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.JoinPoint;

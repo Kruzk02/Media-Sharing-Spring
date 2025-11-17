@@ -1,0 +1,106 @@
+package com.app.module.hashtag.controller;
+
+import com.app.module.comment.dto.response.CommentResponse;
+import com.app.module.comment.model.Comment;
+import com.app.module.comment.service.CommentService;
+import com.app.module.pin.dto.PinResponse;
+import com.app.module.pin.model.Pin;
+import com.app.module.pin.service.PinService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.Comparator;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/hashtag")
+@AllArgsConstructor
+public class HashtagController {
+
+  private final CommentService commentService;
+  private final PinService pinService;
+
+  @Operation(summary = "Get all Pins")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully get all pins",
+            content = {
+              @Content(mediaType = "application/json", schema = @Schema(implementation = Pin.class))
+            }),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(mediaType = "application/json"))
+      })
+  @GetMapping("/{tag}/pins")
+  public ResponseEntity<List<PinResponse>> getAllPinsByTag(
+      @Parameter(description = "tag of the pin", required = true) @PathVariable String tag,
+      @Parameter(description = "Maximum number of pins to be retrieved")
+          @RequestParam(defaultValue = "10")
+          int limit,
+      @Parameter(description = "Offset for pagination, indicating the starting point")
+          @RequestParam(defaultValue = "0")
+          int offset) {
+    if (limit <= 0 || offset < 0) {
+      throw new IllegalArgumentException(
+          "Limit must be greater than 0 and offset must be non-negative.");
+    }
+
+    List<PinResponse> pins =
+        pinService.getAllPinsByHashtag(tag, limit, offset).stream()
+            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
+            .map(PinResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
+  }
+
+  @Operation(summary = "Get all Pins")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully get all pins",
+            content = {
+              @Content(mediaType = "application/json", schema = @Schema(implementation = Pin.class))
+            }),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(mediaType = "application/json"))
+      })
+  @GetMapping("/{tag}/comments")
+  public ResponseEntity<List<CommentResponse>> getAllCommentByTag(
+      @Parameter(description = "tag of the comments", required = true) @PathVariable String tag,
+      @Parameter(description = "Maximum number of comments to be retrieved")
+          @RequestParam(defaultValue = "10")
+          int limit,
+      @Parameter(description = "Offset for pagination, indicating the starting point")
+          @RequestParam(defaultValue = "0")
+          int offset) {
+    if (limit <= 0 || offset < 0) {
+      throw new IllegalArgumentException(
+          "Limit must be greater than 0 and offset must be non-negative.");
+    }
+
+    List<CommentResponse> comments =
+        commentService.findByHashtag(tag, limit, offset).stream()
+            .sorted(Comparator.comparing(Comment::getCreated_at).reversed())
+            .map(CommentResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(comments);
+  }
+}
