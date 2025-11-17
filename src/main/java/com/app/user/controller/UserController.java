@@ -4,6 +4,8 @@ import com.app.board.dto.response.BoardResponse;
 import com.app.board.model.Board;
 import com.app.board.service.BoardService;
 import com.app.dto.response.*;
+import com.app.follower.dto.FollowerResponse;
+import com.app.follower.service.FollowerService;
 import com.app.model.Notification;
 import com.app.pin.dto.PinResponse;
 import com.app.pin.model.Pin;

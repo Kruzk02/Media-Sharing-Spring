@@ -1,6 +1,6 @@
-package com.app.dao.follower;
+package com.app.follower.dao;
 
-import com.app.model.Follower;
+import com.app.follower.model.Follower;
 import com.app.user.model.User;
 import java.util.List;
 

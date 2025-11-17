@@ -3,9 +3,9 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.dao.follower.FollowerDao;
-import com.app.dao.follower.FollowerDaoImpl;
-import com.app.model.Follower;
+import com.app.follower.dao.FollowerDao;
+import com.app.follower.dao.FollowerDaoImpl;
+import com.app.follower.model.Follower;
 import com.app.model.Media;
 import com.app.user.model.Gender;
 import com.app.user.model.User;

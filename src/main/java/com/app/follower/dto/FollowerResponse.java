@@ -1,3 +1,3 @@
-package com.app.dto.response;
+package com.app.follower.dto;
 
 public record FollowerResponse(long userId) {}

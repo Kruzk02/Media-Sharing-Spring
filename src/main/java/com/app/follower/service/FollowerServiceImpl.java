@@ -1,9 +1,8 @@
-package com.app.service.impl;
+package com.app.follower.service;
 
-import com.app.dao.follower.FollowerDao;
 import com.app.exception.sub.UserNotFoundException;
-import com.app.model.Follower;
-import com.app.service.FollowerService;
+import com.app.follower.dao.FollowerDao;
+import com.app.follower.model.Follower;
 import com.app.user.dao.user.UserDao;
 import com.app.user.model.User;
 import java.util.Collections;
