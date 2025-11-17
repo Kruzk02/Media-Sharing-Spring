@@ -2,10 +2,10 @@ package com.app.dao.Impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.app.board.dao.BoardDao;
+import com.app.board.dao.BoardDaoImpl;
+import com.app.board.model.Board;
 import com.app.dao.AbstractMySQLTest;
-import com.app.dao.board.BoardDao;
-import com.app.dao.board.BoardDaoImpl;
-import com.app.model.Board;
 import com.app.model.Media;
 import com.app.pin.model.Pin;
 import com.app.user.model.Gender;

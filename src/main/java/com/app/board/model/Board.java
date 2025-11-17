@@ -1,4 +1,4 @@
-package com.app.model;
+package com.app.board.model;
 
 import com.app.pin.model.Pin;
 import com.app.user.model.User;

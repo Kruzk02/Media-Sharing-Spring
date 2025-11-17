@@ -1,13 +1,12 @@
-package com.app.service.impl;
+package com.app.board.service;
 
-import com.app.dao.board.BoardDao;
-import com.app.dto.request.BoardRequest;
+import com.app.board.dao.BoardDao;
+import com.app.board.dto.request.BoardRequest;
+import com.app.board.model.Board;
 import com.app.exception.sub.*;
-import com.app.model.Board;
 import com.app.model.DetailsType;
 import com.app.pin.dao.PinDao;
 import com.app.pin.model.Pin;
-import com.app.service.BoardService;
 import com.app.user.dao.user.UserDao;
 import com.app.user.model.User;
 import java.util.*;

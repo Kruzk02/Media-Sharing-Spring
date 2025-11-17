@@ -1,5 +1,6 @@
 package com.app.config;
 
+import com.app.board.model.Board;
 import com.app.model.*;
 import com.app.pin.model.Pin;
 import org.springframework.context.annotation.Bean;

@@ -4,10 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.app.model.Board;
+import com.app.board.model.Board;
+import com.app.board.service.BoardService;
+import com.app.board.service.CachedBoardService;
 import com.app.model.Media;
 import com.app.model.MediaType;
-import com.app.service.BoardService;
 import com.app.user.model.Gender;
 import com.app.user.model.User;
 import java.util.List;

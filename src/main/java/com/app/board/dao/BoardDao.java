@@ -1,7 +1,7 @@
-package com.app.dao.board;
+package com.app.board.dao;
 
+import com.app.board.model.Board;
 import com.app.dao.base.CRUDDao;
-import com.app.model.Board;
 import com.app.pin.model.Pin;
 import java.util.List;
 

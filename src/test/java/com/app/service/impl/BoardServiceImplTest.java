@@ -2,11 +2,12 @@ package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.dao.board.BoardDao;
-import com.app.dto.request.BoardRequest;
+import com.app.board.dao.BoardDao;
+import com.app.board.dto.request.BoardRequest;
+import com.app.board.model.Board;
+import com.app.board.service.BoardServiceImpl;
 import com.app.exception.sub.BoardNotFoundException;
 import com.app.exception.sub.PinNotFoundException;
-import com.app.model.Board;
 import com.app.model.DetailsType;
 import com.app.pin.dao.PinDao;
 import com.app.pin.model.Pin;

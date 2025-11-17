@@ -1,6 +1,8 @@
-package com.app.dto.response;
+package com.app.board.dto.response;
 
-import com.app.model.Board;
+import com.app.board.model.Board;
+import com.app.dto.response.PinDTO;
+import com.app.dto.response.UserDTO;
 import java.util.List;
 
 public record BoardResponse(long id, String name, UserDTO userDTO, List<PinDTO> pinDTOs) {

@@ -1,7 +1,7 @@
-package com.app.dao.board;
+package com.app.board.dao;
 
+import com.app.board.model.Board;
 import com.app.exception.sub.BoardNotFoundException;
-import com.app.model.Board;
 import com.app.pin.model.Pin;
 import com.app.user.model.User;
 import java.sql.PreparedStatement;

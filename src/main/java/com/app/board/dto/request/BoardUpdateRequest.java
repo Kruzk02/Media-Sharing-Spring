@@ -1,3 +1,3 @@
-package com.app.dto.request;
+package com.app.board.dto.request;
 
 public record BoardUpdateRequest(String name) {}

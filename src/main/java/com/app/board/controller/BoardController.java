@@ -1,12 +1,12 @@
-package com.app.controller;
+package com.app.board.controller;
 
-import com.app.dto.request.BoardRequest;
-import com.app.dto.request.BoardUpdateRequest;
-import com.app.dto.response.BoardResponse;
+import com.app.board.dto.request.BoardRequest;
+import com.app.board.dto.request.BoardUpdateRequest;
+import com.app.board.dto.response.BoardResponse;
+import com.app.board.model.Board;
+import com.app.board.service.BoardService;
 import com.app.dto.response.PinDTO;
 import com.app.dto.response.UserDTO;
-import com.app.model.Board;
-import com.app.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

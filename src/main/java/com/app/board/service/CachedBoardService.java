@@ -1,9 +1,9 @@
-package com.app.service.cache;
+package com.app.board.service;
 
-import com.app.dto.request.BoardRequest;
+import com.app.board.dto.request.BoardRequest;
+import com.app.board.model.Board;
 import com.app.exception.sub.BoardNotFoundException;
-import com.app.model.Board;
-import com.app.service.BoardService;
+import com.app.service.cache.CachedServiceHelper;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
