@@ -5,9 +5,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.app.comment.dto.request.UpdatedCommentRequest;
+import com.app.comment.model.Comment;
 import com.app.dto.request.CreateSubCommentRequest;
-import com.app.dto.request.UpdatedCommentRequest;
-import com.app.model.Comment;
 import com.app.model.Media;
 import com.app.model.MediaType;
 import com.app.model.SortType;

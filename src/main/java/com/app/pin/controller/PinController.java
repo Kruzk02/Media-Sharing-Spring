@@ -1,14 +1,14 @@
 package com.app.pin.controller;
 
-import com.app.dto.response.*;
-import com.app.model.Comment;
+import com.app.comment.dto.response.CommentResponse;
+import com.app.comment.model.Comment;
+import com.app.comment.service.CommentService;
 import com.app.model.DetailsType;
 import com.app.model.SortType;
 import com.app.pin.dto.PinRequest;
 import com.app.pin.dto.PinResponse;
 import com.app.pin.model.Pin;
 import com.app.pin.service.PinService;
-import com.app.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

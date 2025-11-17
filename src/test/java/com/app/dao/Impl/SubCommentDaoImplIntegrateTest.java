@@ -2,10 +2,10 @@ package com.app.dao.Impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.app.comment.model.Comment;
 import com.app.dao.AbstractMySQLTest;
 import com.app.dao.subcomment.SubCommentDao;
 import com.app.dao.subcomment.SubCommentDaoImpl;
-import com.app.model.Comment;
 import com.app.model.Hashtag;
 import com.app.model.Media;
 import com.app.model.MediaType;

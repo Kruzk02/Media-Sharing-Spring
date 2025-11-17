@@ -5,13 +5,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.app.dto.request.CreateCommentRequest;
-import com.app.dto.request.UpdatedCommentRequest;
-import com.app.model.Comment;
+import com.app.comment.dto.request.CreateCommentRequest;
+import com.app.comment.dto.request.UpdatedCommentRequest;
+import com.app.comment.model.Comment;
+import com.app.comment.service.CachedCommentService;
+import com.app.comment.service.CommentService;
 import com.app.model.DetailsType;
 import com.app.model.Hashtag;
 import com.app.model.SortType;
-import com.app.service.CommentService;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;

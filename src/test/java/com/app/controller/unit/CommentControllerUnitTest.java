@@ -4,15 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.app.controller.CommentController;
-import com.app.model.Comment;
+import com.app.comment.controller.CommentController;
+import com.app.comment.model.Comment;
+import com.app.comment.service.CommentService;
 import com.app.model.DetailsType;
 import com.app.model.Hashtag;
 import com.app.model.Media;
 import com.app.model.MediaType;
 import com.app.model.SortType;
 import com.app.model.SubComment;
-import com.app.service.CommentService;
 import com.app.service.SubCommentService;
 import com.app.user.model.Gender;
 import com.app.user.model.User;

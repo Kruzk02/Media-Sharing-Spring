@@ -1,5 +1,6 @@
-package com.app.model;
+package com.app.comment.model;
 
+import com.app.model.Hashtag;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;

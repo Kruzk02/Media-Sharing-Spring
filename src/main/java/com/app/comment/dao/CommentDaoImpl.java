@@ -1,7 +1,7 @@
-package com.app.dao.comment;
+package com.app.comment.dao;
 
+import com.app.comment.model.Comment;
 import com.app.exception.sub.CommentNotFoundException;
-import com.app.model.Comment;
 import com.app.model.DetailsType;
 import com.app.model.Hashtag;
 import com.app.model.SortType;

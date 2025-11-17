@@ -1,12 +1,12 @@
-package com.app.service.cache;
+package com.app.comment.service;
 
-import com.app.dto.request.CreateCommentRequest;
-import com.app.dto.request.UpdatedCommentRequest;
+import com.app.comment.dto.request.CreateCommentRequest;
+import com.app.comment.dto.request.UpdatedCommentRequest;
+import com.app.comment.model.Comment;
 import com.app.exception.sub.CommentNotFoundException;
-import com.app.model.Comment;
 import com.app.model.DetailsType;
 import com.app.model.SortType;
-import com.app.service.CommentService;
+import com.app.service.cache.CachedServiceHelper;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;

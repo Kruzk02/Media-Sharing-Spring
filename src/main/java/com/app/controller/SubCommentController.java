@@ -1,7 +1,7 @@
 package com.app.controller;
 
+import com.app.comment.dto.request.UpdatedCommentRequest;
 import com.app.dto.request.CreateSubCommentRequest;
-import com.app.dto.request.UpdatedCommentRequest;
 import com.app.dto.response.CommentDTO;
 import com.app.dto.response.SubCommentResponse;
 import com.app.dto.response.UserDTO;

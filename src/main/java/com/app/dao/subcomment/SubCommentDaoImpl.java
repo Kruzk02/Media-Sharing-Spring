@@ -1,5 +1,6 @@
 package com.app.dao.subcomment;
 
+import com.app.comment.model.Comment;
 import com.app.exception.sub.SaveDataFailedException;
 import com.app.exception.sub.SubCommentNotFoundException;
 import com.app.model.*;

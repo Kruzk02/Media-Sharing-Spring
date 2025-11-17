@@ -1,14 +1,14 @@
-package com.app.controller;
+package com.app.comment.controller;
 
-import com.app.dto.request.CreateCommentRequest;
-import com.app.dto.request.UpdatedCommentRequest;
-import com.app.dto.response.CommentResponse;
+import com.app.comment.dto.request.CreateCommentRequest;
+import com.app.comment.dto.request.UpdatedCommentRequest;
+import com.app.comment.dto.response.CommentResponse;
+import com.app.comment.model.Comment;
+import com.app.comment.service.CommentService;
 import com.app.dto.response.SubCommentResponse;
-import com.app.model.Comment;
 import com.app.model.DetailsType;
 import com.app.model.SortType;
 import com.app.model.SubComment;
-import com.app.service.CommentService;
 import com.app.service.SubCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

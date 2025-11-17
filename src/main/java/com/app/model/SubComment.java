@@ -1,5 +1,6 @@
 package com.app.model;
 
+import com.app.comment.model.Comment;
 import com.app.user.model.User;
 import java.io.Serializable;
 import java.time.LocalDateTime;

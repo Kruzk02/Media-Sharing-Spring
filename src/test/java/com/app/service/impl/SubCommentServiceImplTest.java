@@ -2,11 +2,12 @@ package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.dao.comment.CommentDao;
+import com.app.comment.dao.CommentDao;
+import com.app.comment.dto.request.UpdatedCommentRequest;
+import com.app.comment.model.Comment;
 import com.app.dao.media.MediaDao;
 import com.app.dao.subcomment.SubCommentDao;
 import com.app.dto.request.CreateSubCommentRequest;
-import com.app.dto.request.UpdatedCommentRequest;
 import com.app.message.producer.NotificationEventProducer;
 import com.app.model.*;
 import com.app.storage.FileManager;

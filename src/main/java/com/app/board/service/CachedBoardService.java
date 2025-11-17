@@ -18,7 +18,7 @@ public class CachedBoardService extends CachedServiceHelper<Board> implements Bo
 
   private final BoardService boardService;
 
-  protected CachedBoardService(
+  public CachedBoardService(
       RedisTemplate<String, Board> boardRedisTemplate,
       @Qualifier("boardServiceImpl") BoardService boardService) {
     super(boardRedisTemplate);

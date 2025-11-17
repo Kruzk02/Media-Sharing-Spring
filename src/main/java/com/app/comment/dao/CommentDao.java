@@ -1,9 +1,9 @@
-package com.app.dao.comment;
+package com.app.comment.dao;
 
+import com.app.comment.model.Comment;
 import com.app.dao.base.Creatable;
 import com.app.dao.base.Deletable;
 import com.app.dao.base.Updatable;
-import com.app.model.Comment;
 import com.app.model.DetailsType;
 import com.app.model.SortType;
 import java.util.List;
