@@ -1,9 +1,9 @@
 package com.app.dao.follower;
 
 import com.app.model.Follower;
-import com.app.model.Gender;
 import com.app.model.Media;
-import com.app.model.User;
+import com.app.user.model.Gender;
+import com.app.user.model.User;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;

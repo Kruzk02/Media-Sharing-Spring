@@ -1,10 +1,10 @@
 package com.app.service;
 
 import com.app.dao.role.RoleDao;
-import com.app.dao.user.UserDao;
-import com.app.model.Privilege;
-import com.app.model.Role;
-import com.app.model.User;
+import com.app.user.dao.user.UserDao;
+import com.app.user.model.Privilege;
+import com.app.user.model.Role;
+import com.app.user.model.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

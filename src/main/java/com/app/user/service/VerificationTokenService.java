@@ -1,11 +1,11 @@
-package com.app.service;
+package com.app.user.service;
 
-import com.app.dao.user.UserDao;
-import com.app.dao.verificationtoken.VerificationTokenDao;
 import com.app.exception.sub.TokenExpireException;
 import com.app.exception.sub.UserNotMatchException;
-import com.app.model.User;
-import com.app.model.VerificationToken;
+import com.app.user.dao.user.UserDao;
+import com.app.user.dao.verificationtoken.VerificationTokenDao;
+import com.app.user.model.User;
+import com.app.user.model.VerificationToken;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.AllArgsConstructor;

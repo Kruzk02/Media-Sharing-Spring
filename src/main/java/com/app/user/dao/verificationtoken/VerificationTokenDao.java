@@ -1,7 +1,7 @@
-package com.app.dao.verificationtoken;
+package com.app.user.dao.verificationtoken;
 
 import com.app.dao.base.Creatable;
-import com.app.model.VerificationToken;
+import com.app.user.model.VerificationToken;
 
 public interface VerificationTokenDao extends Creatable<VerificationToken> {
 

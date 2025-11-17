@@ -1,11 +1,11 @@
 package com.app.service.impl;
 
 import com.app.dao.notification.NotificationDao;
-import com.app.dao.user.UserDao;
 import com.app.exception.sub.UserNotFoundException;
 import com.app.model.Notification;
-import com.app.model.User;
 import com.app.service.NotificationService;
+import com.app.user.dao.user.UserDao;
+import com.app.user.model.User;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;

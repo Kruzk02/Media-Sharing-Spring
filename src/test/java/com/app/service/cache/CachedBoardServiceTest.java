@@ -5,11 +5,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.app.model.Board;
-import com.app.model.Gender;
 import com.app.model.Media;
 import com.app.model.MediaType;
-import com.app.model.User;
 import com.app.service.BoardService;
+import com.app.user.model.Gender;
+import com.app.user.model.User;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

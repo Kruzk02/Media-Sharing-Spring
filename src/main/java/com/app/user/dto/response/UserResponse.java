@@ -1,7 +1,7 @@
-package com.app.dto.response;
+package com.app.user.dto.response;
 
-import com.app.model.Gender;
-import com.app.model.User;
+import com.app.user.model.Gender;
+import com.app.user.model.User;
 
 public record UserResponse(
     Long id, String username, String email, long mediaId, String bio, Gender gender) {

@@ -1,4 +1,4 @@
-package com.app.model;
+package com.app.user.model;
 
 import java.util.Collection;
 import lombok.*;

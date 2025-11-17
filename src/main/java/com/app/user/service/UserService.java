@@ -1,9 +1,9 @@
-package com.app.service;
+package com.app.user.service;
 
-import com.app.dto.request.LoginUserRequest;
-import com.app.dto.request.RegisterUserRequest;
-import com.app.dto.request.UpdateUserRequest;
-import com.app.model.User;
+import com.app.user.dto.request.LoginUserRequest;
+import com.app.user.dto.request.RegisterUserRequest;
+import com.app.user.dto.request.UpdateUserRequest;
+import com.app.user.model.User;
 
 public interface UserService {
   User register(RegisterUserRequest request);

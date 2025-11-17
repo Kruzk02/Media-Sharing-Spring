@@ -3,6 +3,7 @@ package com.app.dao.subcomment;
 import com.app.exception.sub.SaveDataFailedException;
 import com.app.exception.sub.SubCommentNotFoundException;
 import com.app.model.*;
+import com.app.user.model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

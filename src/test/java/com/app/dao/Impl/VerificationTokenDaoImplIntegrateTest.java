@@ -3,9 +3,9 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.dao.verificationtoken.VerificationTokenDao;
-import com.app.dao.verificationtoken.VerificationTokenDaoImpl;
-import com.app.model.VerificationToken;
+import com.app.user.dao.verificationtoken.VerificationTokenDao;
+import com.app.user.dao.verificationtoken.VerificationTokenDaoImpl;
+import com.app.user.model.VerificationToken;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

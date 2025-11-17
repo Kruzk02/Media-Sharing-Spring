@@ -1,8 +1,11 @@
-package com.app.dao.user;
+package com.app.user.dao.user;
 
 import com.app.annotations.NoLogging;
 import com.app.exception.sub.UserNotFoundException;
 import com.app.model.*;
+import com.app.user.model.Gender;
+import com.app.user.model.Role;
+import com.app.user.model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

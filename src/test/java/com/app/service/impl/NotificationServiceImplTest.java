@@ -3,11 +3,11 @@ package com.app.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.notification.NotificationDao;
-import com.app.dao.user.UserDao;
 import com.app.exception.sub.UserNotFoundException;
-import com.app.model.Gender;
 import com.app.model.Notification;
-import com.app.model.User;
+import com.app.user.dao.user.UserDao;
+import com.app.user.model.Gender;
+import com.app.user.model.User;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;

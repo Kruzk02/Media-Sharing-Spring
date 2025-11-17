@@ -1,7 +1,7 @@
 package com.app.dao.role;
 
 import com.app.dao.base.Creatable;
-import com.app.model.Role;
+import com.app.user.model.Role;
 
 /** Interface for managing Role data access operations. */
 public interface RoleDao extends Creatable<Role> {

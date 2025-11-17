@@ -1,5 +1,6 @@
-package com.app.model;
+package com.app.user.model;
 
+import com.app.model.Media;
 import java.io.Serializable;
 import java.util.List;
 import lombok.*;

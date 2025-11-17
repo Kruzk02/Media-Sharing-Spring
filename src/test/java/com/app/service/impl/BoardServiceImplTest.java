@@ -4,15 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.board.BoardDao;
 import com.app.dao.pin.PinDao;
-import com.app.dao.user.UserDao;
 import com.app.dto.request.BoardRequest;
 import com.app.exception.sub.BoardNotFoundException;
 import com.app.exception.sub.PinNotFoundException;
 import com.app.model.Board;
 import com.app.model.DetailsType;
-import com.app.model.Gender;
 import com.app.model.Pin;
-import com.app.model.User;
+import com.app.user.dao.user.UserDao;
+import com.app.user.model.Gender;
+import com.app.user.model.User;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

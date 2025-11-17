@@ -1,6 +1,6 @@
-package com.app.jwt;
+package com.app.user.security;
 
-import com.app.dto.request.TokenRequest;
+import com.app.user.dto.request.TokenRequest;
 import io.jsonwebtoken.Claims;
 import java.util.Date;
 import java.util.function.Function;

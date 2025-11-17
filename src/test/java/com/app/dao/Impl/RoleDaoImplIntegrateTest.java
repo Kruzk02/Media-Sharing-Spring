@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.app.dao.AbstractMySQLTest;
 import com.app.dao.role.RoleDao;
 import com.app.dao.role.RoleDaoImpl;
-import com.app.model.Role;
+import com.app.user.model.Role;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import org.junit.jupiter.api.BeforeEach;

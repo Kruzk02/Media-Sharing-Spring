@@ -1,7 +1,7 @@
-package com.app.dao.verificationtoken;
+package com.app.user.dao.verificationtoken;
 
 import com.app.exception.sub.VerificationTokenNotFoundException;
-import com.app.model.VerificationToken;
+import com.app.user.model.VerificationToken;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;

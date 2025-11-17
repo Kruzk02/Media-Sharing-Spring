@@ -3,9 +3,13 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.dao.user.UserDao;
-import com.app.dao.user.UserDaoImpl;
 import com.app.model.*;
+import com.app.user.dao.user.UserDao;
+import com.app.user.dao.user.UserDaoImpl;
+import com.app.user.model.Gender;
+import com.app.user.model.Privilege;
+import com.app.user.model.Role;
+import com.app.user.model.User;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

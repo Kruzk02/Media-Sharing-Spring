@@ -1,6 +1,6 @@
-package com.app.dao.user;
+package com.app.user.dao.user;
 
-import com.app.model.User;
+import com.app.user.model.User;
 
 /** Interface for managing User data access operations. */
 public interface UserDao {

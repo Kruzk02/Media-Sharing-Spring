@@ -1,7 +1,7 @@
 package com.app.dao.follower;
 
 import com.app.model.Follower;
-import com.app.model.User;
+import com.app.user.model.User;
 import java.util.List;
 
 public interface FollowerDao {
