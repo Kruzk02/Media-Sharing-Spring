@@ -1,4 +1,4 @@
-package com.app.dao.role;
+package com.app.user.dao.role;
 
 import com.app.dao.base.Creatable;
 import com.app.user.model.Role;

@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import com.app.dao.media.MediaDao;
-import com.app.dao.role.RoleDao;
 import com.app.exception.sub.UserAlreadyExistsException;
 import com.app.message.producer.EmailEventProducer;
 import com.app.model.*;
+import com.app.user.dao.role.RoleDao;
 import com.app.user.dao.user.UserDao;
 import com.app.user.dto.request.LoginUserRequest;
 import com.app.user.dto.request.RegisterUserRequest;

@@ -1,6 +1,6 @@
 package com.app.service;
 
-import com.app.dao.role.RoleDao;
+import com.app.user.dao.role.RoleDao;
 import com.app.user.dao.user.UserDao;
 import com.app.user.model.Privilege;
 import com.app.user.model.Role;

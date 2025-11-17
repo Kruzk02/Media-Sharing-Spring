@@ -3,8 +3,8 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.dao.role.RoleDao;
-import com.app.dao.role.RoleDaoImpl;
+import com.app.user.dao.role.RoleDao;
+import com.app.user.dao.role.RoleDaoImpl;
 import com.app.user.model.Role;
 import java.sql.PreparedStatement;
 import java.sql.Statement;

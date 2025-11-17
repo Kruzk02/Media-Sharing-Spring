@@ -1,4 +1,4 @@
-package com.app.dao.role;
+package com.app.user.dao.role;
 
 import com.app.user.model.Privilege;
 import com.app.user.model.Role;

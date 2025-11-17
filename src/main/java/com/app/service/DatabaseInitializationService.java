@@ -1,10 +1,10 @@
 package com.app.service;
 
 import com.app.dao.media.MediaDao;
-import com.app.dao.privilege.PrivilegeDao;
-import com.app.dao.role.RoleDao;
 import com.app.model.*;
 import com.app.storage.MediaManager;
+import com.app.user.dao.privilege.PrivilegeDao;
+import com.app.user.dao.role.RoleDao;
 import com.app.user.model.Gender;
 import com.app.user.model.Privilege;
 import com.app.user.model.Role;

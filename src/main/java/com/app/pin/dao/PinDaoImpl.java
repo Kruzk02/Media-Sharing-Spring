@@ -1,11 +1,11 @@
-package com.app.dao.pin;
+package com.app.pin.dao;
 
 import com.app.exception.sub.PinNotFoundException;
 import com.app.exception.sub.UserNotFoundException;
 import com.app.model.DetailsType;
 import com.app.model.Hashtag;
-import com.app.model.Pin;
 import com.app.model.SortType;
+import com.app.pin.model.Pin;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

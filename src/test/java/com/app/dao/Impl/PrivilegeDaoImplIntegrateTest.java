@@ -3,8 +3,8 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.dao.privilege.PrivilegeDao;
-import com.app.dao.privilege.PrivilegeDaoImpl;
+import com.app.user.dao.privilege.PrivilegeDao;
+import com.app.user.dao.privilege.PrivilegeDaoImpl;
 import com.app.user.model.Privilege;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

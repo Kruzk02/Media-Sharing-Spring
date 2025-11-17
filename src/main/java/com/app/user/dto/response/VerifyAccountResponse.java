@@ -1,3 +1,3 @@
-package com.app.dto.response;
+package com.app.user.dto.response;
 
 public record VerifyAccountResponse(String message) {}

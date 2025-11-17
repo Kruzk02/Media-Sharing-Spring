@@ -2,7 +2,6 @@ package com.app.user.service;
 
 import com.app.annotations.NoLogging;
 import com.app.dao.media.MediaDao;
-import com.app.dao.role.RoleDao;
 import com.app.exception.sub.FileNotFoundException;
 import com.app.exception.sub.UserAlreadyExistsException;
 import com.app.exception.sub.UserNotFoundException;
@@ -10,6 +9,7 @@ import com.app.message.producer.EmailEventProducer;
 import com.app.model.*;
 import com.app.storage.FileManager;
 import com.app.storage.MediaManager;
+import com.app.user.dao.role.RoleDao;
 import com.app.user.dao.user.UserDao;
 import com.app.user.dto.request.LoginUserRequest;
 import com.app.user.dto.request.RegisterUserRequest;

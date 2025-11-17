@@ -1,17 +1,20 @@
 package com.app.user.controller;
 
-import com.app.dto.request.VerifyAccountRequest;
 import com.app.dto.response.*;
 import com.app.model.Board;
 import com.app.model.Notification;
-import com.app.model.Pin;
+import com.app.pin.dto.PinResponse;
+import com.app.pin.model.Pin;
+import com.app.pin.service.PinService;
 import com.app.service.*;
 import com.app.user.dto.request.LoginUserRequest;
 import com.app.user.dto.request.RegisterUserRequest;
 import com.app.user.dto.request.TokenRequest;
 import com.app.user.dto.request.UpdateUserRequest;
+import com.app.user.dto.request.VerifyAccountRequest;
 import com.app.user.dto.response.JwtResponse;
 import com.app.user.dto.response.UserResponse;
+import com.app.user.dto.response.VerifyAccountResponse;
 import com.app.user.model.User;
 import com.app.user.security.JwtProvider;
 import com.app.user.service.UserService;

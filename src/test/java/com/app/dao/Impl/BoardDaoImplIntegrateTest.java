@@ -7,7 +7,7 @@ import com.app.dao.board.BoardDao;
 import com.app.dao.board.BoardDaoImpl;
 import com.app.model.Board;
 import com.app.model.Media;
-import com.app.model.Pin;
+import com.app.pin.model.Pin;
 import com.app.user.model.Gender;
 import com.app.user.model.User;
 import java.util.ArrayList;

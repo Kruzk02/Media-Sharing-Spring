@@ -1,9 +1,9 @@
-package com.app.service;
+package com.app.pin.service;
 
-import com.app.dto.request.PinRequest;
 import com.app.model.DetailsType;
-import com.app.model.Pin;
 import com.app.model.SortType;
+import com.app.pin.dto.PinRequest;
+import com.app.pin.model.Pin;
 import java.io.IOException;
 import java.util.List;
 

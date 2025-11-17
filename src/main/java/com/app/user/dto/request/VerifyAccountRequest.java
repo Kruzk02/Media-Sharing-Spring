@@ -1,3 +1,3 @@
-package com.app.dto.request;
+package com.app.user.dto.request;
 
 public record VerifyAccountRequest(String token) {}

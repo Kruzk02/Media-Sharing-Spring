@@ -4,13 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.app.controller.PinController;
-import com.app.dto.response.PinResponse;
 import com.app.model.DetailsType;
 import com.app.model.Hashtag;
-import com.app.model.Pin;
 import com.app.model.SortType;
-import com.app.service.PinService;
+import com.app.pin.controller.PinController;
+import com.app.pin.dto.PinResponse;
+import com.app.pin.model.Pin;
+import com.app.pin.service.PinService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

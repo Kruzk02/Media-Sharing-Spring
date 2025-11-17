@@ -1,6 +1,7 @@
 package com.app.config;
 
 import com.app.model.*;
+import com.app.pin.model.Pin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

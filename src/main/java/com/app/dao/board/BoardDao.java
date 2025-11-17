@@ -2,7 +2,7 @@ package com.app.dao.board;
 
 import com.app.dao.base.CRUDDao;
 import com.app.model.Board;
-import com.app.model.Pin;
+import com.app.pin.model.Pin;
 import java.util.List;
 
 /** Interface for managing Board data access operations. */

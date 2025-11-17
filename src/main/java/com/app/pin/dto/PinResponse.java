@@ -1,7 +1,7 @@
-package com.app.dto.response;
+package com.app.pin.dto;
 
 import com.app.model.Hashtag;
-import com.app.model.Pin;
+import com.app.pin.model.Pin;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

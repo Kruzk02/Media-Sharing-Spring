@@ -3,13 +3,13 @@ package com.app.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.board.BoardDao;
-import com.app.dao.pin.PinDao;
 import com.app.dto.request.BoardRequest;
 import com.app.exception.sub.BoardNotFoundException;
 import com.app.exception.sub.PinNotFoundException;
 import com.app.model.Board;
 import com.app.model.DetailsType;
-import com.app.model.Pin;
+import com.app.pin.dao.PinDao;
+import com.app.pin.model.Pin;
 import com.app.user.dao.user.UserDao;
 import com.app.user.model.Gender;
 import com.app.user.model.User;

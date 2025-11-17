@@ -1,4 +1,4 @@
-package com.app.dto.request;
+package com.app.pin.dto;
 
 import java.util.Set;
 import org.springframework.web.multipart.MultipartFile;

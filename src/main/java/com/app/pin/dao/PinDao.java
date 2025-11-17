@@ -1,11 +1,11 @@
-package com.app.dao.pin;
+package com.app.pin.dao;
 
 import com.app.dao.base.Creatable;
 import com.app.dao.base.Deletable;
 import com.app.dao.base.Updatable;
 import com.app.model.DetailsType;
-import com.app.model.Pin;
 import com.app.model.SortType;
+import com.app.pin.model.Pin;
 import java.util.List;
 
 /** Interface for managing Pin data access operations. */

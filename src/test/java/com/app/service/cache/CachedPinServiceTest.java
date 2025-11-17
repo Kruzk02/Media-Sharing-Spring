@@ -5,12 +5,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.app.dto.request.PinRequest;
 import com.app.model.DetailsType;
 import com.app.model.Hashtag;
-import com.app.model.Pin;
 import com.app.model.SortType;
-import com.app.service.PinService;
+import com.app.pin.dto.PinRequest;
+import com.app.pin.model.Pin;
+import com.app.pin.service.CachedPinService;
+import com.app.pin.service.PinService;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
