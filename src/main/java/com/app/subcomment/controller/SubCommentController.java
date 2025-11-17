@@ -1,12 +1,12 @@
-package com.app.controller;
+package com.app.subcomment.controller;
 
 import com.app.comment.dto.request.UpdatedCommentRequest;
-import com.app.dto.request.CreateSubCommentRequest;
 import com.app.dto.response.CommentDTO;
-import com.app.dto.response.SubCommentResponse;
 import com.app.dto.response.UserDTO;
-import com.app.model.SubComment;
-import com.app.service.SubCommentService;
+import com.app.subcomment.dto.CreateSubCommentRequest;
+import com.app.subcomment.dto.SubCommentResponse;
+import com.app.subcomment.model.SubComment;
+import com.app.subcomment.service.SubCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

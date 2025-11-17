@@ -1,4 +1,4 @@
-package com.app.dto.request;
+package com.app.subcomment.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 

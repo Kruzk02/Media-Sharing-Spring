@@ -4,13 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.comment.model.Comment;
 import com.app.dao.AbstractMySQLTest;
-import com.app.dao.subcomment.SubCommentDao;
-import com.app.dao.subcomment.SubCommentDaoImpl;
 import com.app.model.Hashtag;
 import com.app.model.Media;
 import com.app.model.MediaType;
 import com.app.model.SortType;
-import com.app.model.SubComment;
+import com.app.subcomment.dao.SubCommentDao;
+import com.app.subcomment.dao.SubCommentDaoImpl;
+import com.app.subcomment.model.SubComment;
 import com.app.user.model.Gender;
 import com.app.user.model.User;
 import java.util.List;

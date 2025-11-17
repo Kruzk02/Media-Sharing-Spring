@@ -1,9 +1,9 @@
-package com.app.service;
+package com.app.subcomment.service;
 
 import com.app.comment.dto.request.UpdatedCommentRequest;
-import com.app.dto.request.CreateSubCommentRequest;
 import com.app.model.SortType;
-import com.app.model.SubComment;
+import com.app.subcomment.dto.CreateSubCommentRequest;
+import com.app.subcomment.model.SubComment;
 import java.util.List;
 
 public interface SubCommentService {

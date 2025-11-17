@@ -1,6 +1,7 @@
-package com.app.model;
+package com.app.subcomment.model;
 
 import com.app.comment.model.Comment;
+import com.app.model.Media;
 import com.app.user.model.User;
 import java.io.Serializable;
 import java.time.LocalDateTime;

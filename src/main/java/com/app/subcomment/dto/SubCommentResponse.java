@@ -1,6 +1,8 @@
-package com.app.dto.response;
+package com.app.subcomment.dto;
 
-import com.app.model.SubComment;
+import com.app.dto.response.CommentDTO;
+import com.app.dto.response.UserDTO;
+import com.app.subcomment.model.SubComment;
 import java.time.LocalDateTime;
 
 public record SubCommentResponse(

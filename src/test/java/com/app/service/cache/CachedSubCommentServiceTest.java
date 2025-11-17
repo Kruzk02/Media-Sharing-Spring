@@ -7,12 +7,13 @@ import static org.mockito.Mockito.when;
 
 import com.app.comment.dto.request.UpdatedCommentRequest;
 import com.app.comment.model.Comment;
-import com.app.dto.request.CreateSubCommentRequest;
 import com.app.model.Media;
 import com.app.model.MediaType;
 import com.app.model.SortType;
-import com.app.model.SubComment;
-import com.app.service.SubCommentService;
+import com.app.subcomment.dto.CreateSubCommentRequest;
+import com.app.subcomment.model.SubComment;
+import com.app.subcomment.service.CachedSubCommentService;
+import com.app.subcomment.service.SubCommentService;
 import com.app.user.model.Gender;
 import com.app.user.model.User;
 import java.util.Collections;

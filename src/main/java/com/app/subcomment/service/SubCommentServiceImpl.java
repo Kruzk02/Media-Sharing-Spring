@@ -1,20 +1,20 @@
-package com.app.service.impl;
+package com.app.subcomment.service;
 
 import com.app.comment.dao.CommentDao;
 import com.app.comment.dto.request.UpdatedCommentRequest;
 import com.app.comment.model.Comment;
 import com.app.dao.media.MediaDao;
-import com.app.dao.subcomment.SubCommentDao;
-import com.app.dto.request.CreateSubCommentRequest;
 import com.app.exception.sub.CommentIsEmptyException;
 import com.app.exception.sub.CommentNotFoundException;
 import com.app.exception.sub.SubCommentNotFoundException;
 import com.app.exception.sub.UserNotMatchException;
 import com.app.message.producer.NotificationEventProducer;
 import com.app.model.*;
-import com.app.service.SubCommentService;
 import com.app.storage.FileManager;
 import com.app.storage.MediaManager;
+import com.app.subcomment.dao.SubCommentDao;
+import com.app.subcomment.dto.CreateSubCommentRequest;
+import com.app.subcomment.model.SubComment;
 import com.app.user.dao.user.UserDao;
 import com.app.user.model.User;
 import java.util.*;

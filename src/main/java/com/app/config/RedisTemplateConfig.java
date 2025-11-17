@@ -4,6 +4,7 @@ import com.app.board.model.Board;
 import com.app.comment.model.Comment;
 import com.app.model.*;
 import com.app.pin.model.Pin;
+import com.app.subcomment.model.SubComment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
