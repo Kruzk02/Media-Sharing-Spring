@@ -12,6 +12,7 @@ import com.app.exception.sub.PinNotFoundException;
 import com.app.exception.sub.UserNotMatchException;
 import com.app.message.producer.NotificationEventProducer;
 import com.app.model.*;
+import com.app.notification.model.Notification;
 import com.app.pin.dao.PinDao;
 import com.app.pin.model.Pin;
 import com.app.storage.FileManager;

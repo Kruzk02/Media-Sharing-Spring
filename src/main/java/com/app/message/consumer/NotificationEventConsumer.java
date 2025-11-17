@@ -1,7 +1,7 @@
 package com.app.message.consumer;
 
-import com.app.model.Notification;
-import com.app.service.NotificationService;
+import com.app.notification.model.Notification;
+import com.app.notification.service.NotificationService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;

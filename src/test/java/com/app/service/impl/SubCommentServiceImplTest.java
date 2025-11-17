@@ -8,6 +8,7 @@ import com.app.comment.model.Comment;
 import com.app.dao.media.MediaDao;
 import com.app.message.producer.NotificationEventProducer;
 import com.app.model.*;
+import com.app.notification.model.Notification;
 import com.app.storage.FileManager;
 import com.app.storage.MediaManager;
 import com.app.subcomment.dao.SubCommentDao;

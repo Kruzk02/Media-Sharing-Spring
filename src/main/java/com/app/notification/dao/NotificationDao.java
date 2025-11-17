@@ -1,9 +1,9 @@
-package com.app.dao.notification;
+package com.app.notification.dao;
 
 import com.app.dao.base.Creatable;
 import com.app.dao.base.Deletable;
 import com.app.dao.base.Readable;
-import com.app.model.Notification;
+import com.app.notification.model.Notification;
 import java.util.List;
 
 public interface NotificationDao

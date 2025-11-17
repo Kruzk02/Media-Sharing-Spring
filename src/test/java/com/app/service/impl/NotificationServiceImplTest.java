@@ -2,9 +2,10 @@ package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.dao.notification.NotificationDao;
+import com.app.notification.dao.NotificationDao;
 import com.app.exception.sub.UserNotFoundException;
-import com.app.model.Notification;
+import com.app.notification.model.Notification;
+import com.app.notification.service.NotificationServiceImpl;
 import com.app.user.dao.user.UserDao;
 import com.app.user.model.Gender;
 import com.app.user.model.User;
@@ -29,7 +30,8 @@ class NotificationServiceImplTest {
   @Mock private UserDao userDao;
   @Mock Map<Long, SseEmitter> sseEmitters;
 
-  @InjectMocks NotificationServiceImpl notificationService;
+  @InjectMocks
+  NotificationServiceImpl notificationService;
 
   private User user;
   private Notification notification;

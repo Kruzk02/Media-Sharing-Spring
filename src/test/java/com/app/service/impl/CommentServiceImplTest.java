@@ -11,6 +11,7 @@ import com.app.dao.hashtag.HashtagDao;
 import com.app.dao.media.MediaDao;
 import com.app.message.producer.NotificationEventProducer;
 import com.app.model.*;
+import com.app.notification.model.Notification;
 import com.app.pin.dao.PinDao;
 import com.app.pin.model.Pin;
 import com.app.storage.FileManager;

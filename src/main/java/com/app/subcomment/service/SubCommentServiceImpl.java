@@ -10,6 +10,7 @@ import com.app.exception.sub.SubCommentNotFoundException;
 import com.app.exception.sub.UserNotMatchException;
 import com.app.message.producer.NotificationEventProducer;
 import com.app.model.*;
+import com.app.notification.model.Notification;
 import com.app.storage.FileManager;
 import com.app.storage.MediaManager;
 import com.app.subcomment.dao.SubCommentDao;

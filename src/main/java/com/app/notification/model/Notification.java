@@ -1,4 +1,4 @@
-package com.app.model;
+package com.app.notification.model;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
-package com.app.controller;
+package com.app.notification.controller;
 
-import com.app.service.NotificationService;
+import com.app.notification.service.NotificationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
