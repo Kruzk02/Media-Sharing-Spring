@@ -19,7 +19,6 @@ import com.app.module.user.infrastructure.role.RoleDao;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.event.VerificationEmailEvent;
 import com.app.shared.exception.sub.UserAlreadyExistsException;
-import com.app.shared.message.producer.EmailEventProducer;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,7 +46,7 @@ class UserServiceImplTest {
   @Mock private VerificationTokenService verificationTokenService;
   @Mock private PasswordEncoder passwordEncoder;
   @Mock private AuthenticationManager authenticationManager;
-  @Mock private EmailEventProducer emailEventProducer;
+  @Mock private ApplicationEventPublisher events;
 
   @InjectMocks UserServiceImpl userService;
 
@@ -130,7 +130,7 @@ class UserServiceImplTest {
     assertEquals("username", result.getUsername());
     assertEquals("email@gmail.com", result.getEmail());
 
-    Mockito.verify(emailEventProducer).send(Mockito.any(VerificationEmailEvent.class));
+    Mockito.verify(events).publishEvent(Mockito.any(VerificationEmailEvent.class));
   }
 
   @Test
