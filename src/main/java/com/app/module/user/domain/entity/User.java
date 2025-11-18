@@ -1,4 +1,4 @@
-package com.app.module.user.model;
+package com.app.module.user.domain;
 
 import com.app.module.media.model.Media;
 import java.io.Serializable;

@@ -1,7 +1,7 @@
 package com.app.module.user.dao.role;
 
-import com.app.module.user.model.Privilege;
-import com.app.module.user.model.Role;
+import com.app.module.user.domain.entity.Privilege;
+import com.app.module.user.domain.entity.Role;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.HashSet;

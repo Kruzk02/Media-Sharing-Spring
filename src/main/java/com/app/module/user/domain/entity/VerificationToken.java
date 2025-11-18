@@ -1,4 +1,4 @@
-package com.app.module.user.model;
+package com.app.module.user.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

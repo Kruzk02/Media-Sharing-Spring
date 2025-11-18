@@ -1,6 +1,6 @@
 package com.app.module.user.dao.verificationtoken;
 
-import com.app.module.user.model.VerificationToken;
+import com.app.module.user.domain.entity.VerificationToken;
 import com.app.shared.exception.sub.VerificationTokenNotFoundException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;

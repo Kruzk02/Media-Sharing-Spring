@@ -1,6 +1,6 @@
 package com.app.module.user.dao.role;
 
-import com.app.module.user.model.Role;
+import com.app.module.user.domain.entity.Role;
 import com.app.shared.dao.Creatable;
 
 /** Interface for managing Role data access operations. */

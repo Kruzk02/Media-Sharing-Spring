@@ -1,6 +1,6 @@
 package com.app.module.user.dao.privilege;
 
-import com.app.module.user.model.Privilege;
+import com.app.module.user.domain.entity.Privilege;
 import java.sql.PreparedStatement;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
