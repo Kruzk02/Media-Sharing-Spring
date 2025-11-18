@@ -1,4 +1,4 @@
-package com.app.module.user.domain;
+package com.app.module.user.domain.status;
 
 public enum Gender {
   MALE,

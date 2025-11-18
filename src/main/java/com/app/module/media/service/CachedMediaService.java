@@ -15,7 +15,7 @@ public class CachedMediaService extends CachedServiceHelper<Media> implements Me
 
   private final MediaService mediaService;
 
-  protected CachedMediaService(
+  public CachedMediaService(
       RedisTemplate<String, Media> mediaRedisTemplate,
       @Qualifier("mediaServiceImpl") MediaService mediaService) {
     super(mediaRedisTemplate);

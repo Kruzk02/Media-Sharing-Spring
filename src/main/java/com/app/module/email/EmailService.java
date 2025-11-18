@@ -1,4 +1,4 @@
-package com.app.shared.email;
+package com.app.module.email;
 
 import lombok.AllArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;

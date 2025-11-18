@@ -1,6 +1,6 @@
 package com.app.module.user.dto.request;
 
-import com.app.module.user.model.Gender;
+import com.app.module.user.domain.status.Gender;
 import org.springframework.web.multipart.MultipartFile;
 
 public record UpdateUserRequest(

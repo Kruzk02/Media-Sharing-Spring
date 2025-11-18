@@ -3,9 +3,9 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.module.user.dao.role.RoleDao;
-import com.app.module.user.dao.role.RoleDaoImpl;
-import com.app.module.user.model.Role;
+import com.app.module.user.domain.entity.Role;
+import com.app.module.user.infrastructure.role.RoleDao;
+import com.app.module.user.infrastructure.role.RoleDaoImpl;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import org.junit.jupiter.api.BeforeEach;

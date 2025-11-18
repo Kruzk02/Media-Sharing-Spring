@@ -1,9 +1,9 @@
-package com.app.module.user.service;
+package com.app.module.user.application;
 
-import com.app.module.user.dao.user.UserDao;
-import com.app.module.user.dao.verificationtoken.VerificationTokenDao;
-import com.app.module.user.model.User;
-import com.app.module.user.model.VerificationToken;
+import com.app.module.user.domain.entity.User;
+import com.app.module.user.domain.entity.VerificationToken;
+import com.app.module.user.infrastructure.user.UserDao;
+import com.app.module.user.infrastructure.verificationtoken.VerificationTokenDao;
 import com.app.shared.exception.sub.TokenExpireException;
 import com.app.shared.exception.sub.UserNotMatchException;
 import java.time.LocalDateTime;

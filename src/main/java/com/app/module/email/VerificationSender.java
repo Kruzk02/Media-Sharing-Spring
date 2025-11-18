@@ -1,4 +1,4 @@
-package com.app.shared.email;
+package com.app.module.email;
 
 public interface VerificationSender {
   void sendVerification(String to, String token);

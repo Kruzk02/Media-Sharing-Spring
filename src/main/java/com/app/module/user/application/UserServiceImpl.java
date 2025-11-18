@@ -1,30 +1,30 @@
-package com.app.module.user.service;
+package com.app.module.user.application;
 
 import com.app.module.media.dao.MediaDao;
 import com.app.module.media.model.Media;
 import com.app.module.media.model.MediaType;
-import com.app.module.user.dao.role.RoleDao;
-import com.app.module.user.dao.user.UserDao;
+import com.app.module.user.domain.entity.User;
+import com.app.module.user.domain.entity.VerificationToken;
+import com.app.module.user.domain.status.Gender;
 import com.app.module.user.dto.request.LoginUserRequest;
 import com.app.module.user.dto.request.RegisterUserRequest;
 import com.app.module.user.dto.request.UpdateUserRequest;
-import com.app.module.user.model.Gender;
-import com.app.module.user.model.User;
-import com.app.module.user.model.VerificationToken;
+import com.app.module.user.infrastructure.role.RoleDao;
+import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.annotations.NoLogging;
+import com.app.shared.event.VerificationEmailEvent;
 import com.app.shared.exception.sub.FileNotFoundException;
 import com.app.shared.exception.sub.UserAlreadyExistsException;
 import com.app.shared.exception.sub.UserNotFoundException;
-import com.app.shared.message.producer.EmailEventProducer;
 import com.app.shared.storage.FileManager;
 import com.app.shared.storage.MediaManager;
 import com.app.shared.type.Status;
-import com.app.shared.type.VerificationEmailEvent;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletionException;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
   private final VerificationTokenService verificationTokenService;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
-  private final EmailEventProducer emailEventProducer;
+  private final ApplicationEventPublisher events;
 
   /**
    * Registers a new user based on the provided registerDTO.
@@ -88,8 +88,10 @@ public class UserServiceImpl implements UserService {
                 .enable(false)
                 .build());
     VerificationToken verificationToken = verificationTokenService.generateVerificationToken(user);
-    emailEventProducer.send(
+
+    events.publishEvent(
         new VerificationEmailEvent(user.getEmail(), verificationToken.getToken(), Instant.now()));
+
     return user;
   }
 
@@ -231,7 +233,7 @@ public class UserServiceImpl implements UserService {
 
     User user = userDao.findUserByUsername(username);
     VerificationToken verificationToken = verificationTokenService.generateVerificationToken(user);
-    emailEventProducer.send(
+    events.publishEvent(
         new VerificationEmailEvent(user.getEmail(), verificationToken.getToken(), Instant.now()));
   }
 

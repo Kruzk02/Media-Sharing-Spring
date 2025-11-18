@@ -3,7 +3,7 @@ package com.app.module.subcomment.dao;
 import com.app.module.comment.model.Comment;
 import com.app.module.media.model.Media;
 import com.app.module.subcomment.model.SubComment;
-import com.app.module.user.model.User;
+import com.app.module.user.domain.entity.User;
 import com.app.shared.exception.sub.SaveDataFailedException;
 import com.app.shared.exception.sub.SubCommentNotFoundException;
 import com.app.shared.type.SortType;

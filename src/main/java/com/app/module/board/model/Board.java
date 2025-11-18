@@ -1,7 +1,7 @@
 package com.app.module.board.model;
 
 import com.app.module.pin.model.Pin;
-import com.app.module.user.model.User;
+import com.app.module.user.domain.entity.User;
 import java.io.Serializable;
 import java.util.List;
 import lombok.*;

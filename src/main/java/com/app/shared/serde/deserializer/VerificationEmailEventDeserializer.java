@@ -1,6 +1,6 @@
 package com.app.shared.serde.deserializer;
 
-import com.app.shared.type.VerificationEmailEvent;
+import com.app.shared.event.VerificationEmailEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;

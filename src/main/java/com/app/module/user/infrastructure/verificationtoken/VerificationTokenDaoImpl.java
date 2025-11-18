@@ -1,4 +1,4 @@
-package com.app.module.user.dao.verificationtoken;
+package com.app.module.user.infrastructure.verificationtoken;
 
 import com.app.module.user.domain.entity.VerificationToken;
 import com.app.shared.exception.sub.VerificationTokenNotFoundException;

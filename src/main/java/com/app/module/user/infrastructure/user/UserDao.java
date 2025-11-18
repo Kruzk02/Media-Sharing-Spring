@@ -1,4 +1,4 @@
-package com.app.module.user.dao.user;
+package com.app.module.user.infrastructure.user;
 
 import com.app.module.user.domain.entity.User;
 

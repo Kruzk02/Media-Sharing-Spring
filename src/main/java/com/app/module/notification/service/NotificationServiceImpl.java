@@ -2,8 +2,8 @@ package com.app.module.notification.service;
 
 import com.app.module.notification.dao.NotificationDao;
 import com.app.module.notification.model.Notification;
-import com.app.module.user.dao.user.UserDao;
-import com.app.module.user.model.User;
+import com.app.module.user.domain.entity.User;
+import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.exception.sub.UserNotFoundException;
 import java.io.IOException;
 import java.util.Collections;

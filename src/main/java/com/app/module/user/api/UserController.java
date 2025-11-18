@@ -1,4 +1,4 @@
-package com.app.module.user.controller;
+package com.app.module.user.api;
 
 import com.app.module.board.dto.response.BoardResponse;
 import com.app.module.board.model.Board;
@@ -11,6 +11,8 @@ import com.app.module.notification.service.NotificationService;
 import com.app.module.pin.dto.PinResponse;
 import com.app.module.pin.model.Pin;
 import com.app.module.pin.service.PinService;
+import com.app.module.user.application.UserService;
+import com.app.module.user.domain.entity.User;
 import com.app.module.user.dto.request.LoginUserRequest;
 import com.app.module.user.dto.request.RegisterUserRequest;
 import com.app.module.user.dto.request.TokenRequest;
@@ -19,9 +21,7 @@ import com.app.module.user.dto.request.VerifyAccountRequest;
 import com.app.module.user.dto.response.JwtResponse;
 import com.app.module.user.dto.response.UserResponse;
 import com.app.module.user.dto.response.VerifyAccountResponse;
-import com.app.module.user.domain.entity.User;
 import com.app.module.user.security.JwtProvider;
-import com.app.module.user.application.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

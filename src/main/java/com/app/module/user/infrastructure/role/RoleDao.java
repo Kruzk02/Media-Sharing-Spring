@@ -1,4 +1,4 @@
-package com.app.module.user.dao.role;
+package com.app.module.user.infrastructure.role;
 
 import com.app.module.user.domain.entity.Role;
 import com.app.shared.dao.Creatable;

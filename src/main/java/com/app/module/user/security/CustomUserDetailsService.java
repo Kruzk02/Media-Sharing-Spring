@@ -1,10 +1,10 @@
 package com.app.module.user.security;
 
-import com.app.module.user.dao.role.RoleDao;
-import com.app.module.user.dao.user.UserDao;
-import com.app.module.user.model.Privilege;
-import com.app.module.user.model.Role;
-import com.app.module.user.model.User;
+import com.app.module.user.domain.entity.Privilege;
+import com.app.module.user.domain.entity.Role;
+import com.app.module.user.domain.entity.User;
+import com.app.module.user.infrastructure.role.RoleDao;
+import com.app.module.user.infrastructure.user.UserDao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

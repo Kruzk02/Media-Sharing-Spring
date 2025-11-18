@@ -33,6 +33,7 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.modulith:spring-modulith-starter-core'
+    implementation 'org.springframework.modulith:spring-modulith-events-api:1.4.4'
 
     // --- Jackson ---
     implementation 'com.fasterxml.jackson.core:jackson-core:2.20.0'

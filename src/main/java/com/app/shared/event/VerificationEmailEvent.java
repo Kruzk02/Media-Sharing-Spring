@@ -1,4 +1,4 @@
-package com.app.shared.type;
+package com.app.shared.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;

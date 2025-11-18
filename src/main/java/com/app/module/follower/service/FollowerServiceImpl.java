@@ -2,8 +2,8 @@ package com.app.module.follower.service;
 
 import com.app.module.follower.dao.FollowerDao;
 import com.app.module.follower.model.Follower;
-import com.app.module.user.dao.user.UserDao;
-import com.app.module.user.model.User;
+import com.app.module.user.domain.entity.User;
+import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.exception.sub.UserNotFoundException;
 import java.util.Collections;
 import java.util.List;

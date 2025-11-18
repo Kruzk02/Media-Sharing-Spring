@@ -1,4 +1,4 @@
-package com.app.module.user.dao.privilege;
+package com.app.module.user.infrastructure.privilege;
 
 import com.app.module.user.domain.entity.Privilege;
 import java.sql.PreparedStatement;

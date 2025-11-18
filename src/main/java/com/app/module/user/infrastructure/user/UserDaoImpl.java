@@ -1,9 +1,9 @@
-package com.app.module.user.dao.user;
+package com.app.module.user.infrastructure.user;
 
 import com.app.module.media.model.Media;
-import com.app.module.user.domain.status.Gender;
 import com.app.module.user.domain.entity.Role;
 import com.app.module.user.domain.entity.User;
+import com.app.module.user.domain.status.Gender;
 import com.app.shared.annotations.NoLogging;
 import com.app.shared.exception.sub.UserNotFoundException;
 import java.sql.PreparedStatement;

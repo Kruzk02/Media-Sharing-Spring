@@ -2,7 +2,7 @@ package com.app.module.subcomment.model;
 
 import com.app.module.comment.model.Comment;
 import com.app.module.media.model.Media;
-import com.app.module.user.model.User;
+import com.app.module.user.domain.entity.User;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

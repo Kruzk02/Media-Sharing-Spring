@@ -1,4 +1,4 @@
-package com.app.module.user.domain;
+package com.app.module.user.domain.entity;
 
 import java.util.Collection;
 import lombok.*;
