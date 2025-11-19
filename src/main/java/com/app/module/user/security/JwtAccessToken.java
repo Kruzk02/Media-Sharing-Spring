@@ -1,6 +1,6 @@
 package com.app.module.user.security;
 
-import com.app.module.user.dto.request.TokenRequest;
+import com.app.module.user.application.dto.request.TokenRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

@@ -1,4 +1,4 @@
-package com.app.module.user.dto.response;
+package com.app.module.user.application.dto.response;
 
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
