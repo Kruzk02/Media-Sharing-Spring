@@ -1,19 +1,14 @@
-FROM gradle:jdk24 AS build
+FROM gradle:jdk24
+
 WORKDIR /app
 
 COPY build.gradle settings.gradle gradle.properties ./
 COPY gradle ./gradle
+
 RUN gradle --version
+RUN gradle build -x test --no-daemon || true
 
 COPY src ./src
+COPY image ./image
 
-RUN gradle bootJar --no-daemon
-
-FROM eclipse-temurin:24-jdk-alpine
-WORKDIR /app
-
-COPY --from=build /app/build/libs/*.jar app.jar
-
-COPY image /app/image
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["gradle", "bootRun", "--no-daemon"]
