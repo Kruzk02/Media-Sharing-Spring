@@ -1,4 +1,4 @@
-package com.app.shared.exception.sub;
+package com.app.module.user.domain.exception;
 
 public class UserNotFoundException extends RuntimeException {
   public UserNotFoundException(String message) {
