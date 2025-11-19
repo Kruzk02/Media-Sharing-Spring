@@ -1,10 +1,10 @@
-package com.app.module.user.application;
+package com.app.module.user.application.service;
 
+import com.app.module.user.application.exception.TokenExpireException;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.entity.VerificationToken;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.module.user.infrastructure.verificationtoken.VerificationTokenDao;
-import com.app.shared.exception.sub.TokenExpireException;
 import com.app.shared.exception.sub.UserNotMatchException;
 import java.time.LocalDateTime;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package com.app.module.user.domain.exception;
+package com.app.module.user.application.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
   public UserAlreadyExistsException(String message) {

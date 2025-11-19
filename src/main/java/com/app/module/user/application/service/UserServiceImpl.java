@@ -1,21 +1,21 @@
-package com.app.module.user.application;
+package com.app.module.user.application.service;
 
 import com.app.module.media.dao.MediaDao;
 import com.app.module.media.model.Media;
 import com.app.module.media.model.MediaType;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.entity.VerificationToken;
-import com.app.module.user.domain.status.Gender;
 import com.app.module.user.application.dto.request.LoginUserRequest;
 import com.app.module.user.application.dto.request.RegisterUserRequest;
 import com.app.module.user.application.dto.request.UpdateUserRequest;
+import com.app.module.user.application.exception.UserAlreadyExistsException;
+import com.app.module.user.application.exception.UserNotFoundException;
+import com.app.module.user.domain.entity.User;
+import com.app.module.user.domain.entity.VerificationToken;
+import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.role.RoleDao;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.annotations.NoLogging;
 import com.app.shared.event.VerificationEmailEvent;
 import com.app.shared.exception.sub.FileNotFoundException;
-import com.app.shared.exception.sub.UserAlreadyExistsException;
-import com.app.shared.exception.sub.UserNotFoundException;
 import com.app.shared.storage.FileManager;
 import com.app.shared.storage.MediaManager;
 import com.app.shared.type.Status;
@@ -67,28 +67,31 @@ public class UserServiceImpl implements UserService {
   @NoLogging
   @Override
   public User register(RegisterUserRequest request) {
+    final String username = request.username();
+    final String email = request.email();
+    final String password = request.password();
 
-    if (userDao.findUserByEmail(request.email()) != null) {
+    if (userDao.findUserByEmail(email) != null) {
       throw new UserAlreadyExistsException("Email is already taken.");
     }
 
-    if (userDao.findUserByUsername(request.username()) != null) {
+    if (userDao.findUserByUsername(username) != null) {
       throw new UserAlreadyExistsException("Username is already taken.");
     }
 
     User user =
         userDao.register(
             User.builder()
-                .username(request.username())
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
+                .username(username)
+                .email(email)
+                .password(passwordEncoder.encode(password))
                 .gender(Gender.OTHER)
                 .media(getDefaultProfilePicturePath())
                 .roles(Arrays.asList(roleDao.findByName("ROLE_USER")))
                 .enable(false)
                 .build());
-    VerificationToken verificationToken = verificationTokenService.generateVerificationToken(user);
 
+    VerificationToken verificationToken = verificationTokenService.generateVerificationToken(user);
     events.publishEvent(
         new VerificationEmailEvent(user.getEmail(), verificationToken.getToken(), Instant.now()));
 
