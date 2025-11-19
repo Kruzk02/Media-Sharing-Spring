@@ -1,7 +1,7 @@
 package com.app.module.user.infrastructure.verificationtoken;
 
 import com.app.module.user.domain.entity.VerificationToken;
-import com.app.shared.exception.sub.VerificationTokenNotFoundException;
+import com.app.module.user.infrastructure.exception.VerificationTokenNotFoundException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;

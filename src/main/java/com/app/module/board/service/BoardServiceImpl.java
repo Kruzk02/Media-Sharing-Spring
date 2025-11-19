@@ -8,6 +8,7 @@ import com.app.module.pin.model.Pin;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.exception.sub.*;
+import com.app.shared.exception.sub.UserNotMatchException;
 import com.app.shared.type.DetailsType;
 import java.util.*;
 import lombok.AllArgsConstructor;

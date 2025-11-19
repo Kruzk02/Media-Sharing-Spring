@@ -2,8 +2,8 @@ package com.app.module.pin.dao;
 
 import com.app.module.hashtag.model.Hashtag;
 import com.app.module.pin.model.Pin;
+import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.shared.exception.sub.PinNotFoundException;
-import com.app.shared.exception.sub.UserNotFoundException;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.sql.PreparedStatement;
