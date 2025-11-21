@@ -13,6 +13,7 @@ import com.app.module.user.domain.entity.VerificationToken;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.role.RoleDao;
 import com.app.module.user.infrastructure.user.UserDao;
+import com.app.module.user.internal.UserValidator;
 import com.app.shared.annotations.NoLogging;
 import com.app.shared.event.VerificationEmailEvent;
 import com.app.shared.exception.sub.FileNotFoundException;
@@ -70,6 +71,10 @@ public class UserServiceImpl implements UserService {
     final String username = request.username();
     final String email = request.email();
     final String password = request.password();
+
+    UserValidator.validateUsername(username);
+    UserValidator.validateEmail(email);
+    UserValidator.validatePassword(password);
 
     if (userDao.findUserByEmail(email) != null) {
       throw new UserAlreadyExistsException("Email is already taken.");

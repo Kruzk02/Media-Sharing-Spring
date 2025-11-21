@@ -1,9 +1,6 @@
 package com.app.module.user.api;
 
-import com.app.module.user.application.exception.TokenExpireException;
-import com.app.module.user.application.exception.UserAlreadyExistsException;
-import com.app.module.user.application.exception.UserEmptyException;
-import com.app.module.user.application.exception.UserNotFoundException;
+import com.app.module.user.application.exception.*;
 import com.app.shared.exception.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.time.LocalDateTime;
@@ -54,6 +51,13 @@ public class UserRestExceptionHandler {
 
   @ExceptionHandler(UserEmptyException.class)
   public ResponseEntity<ErrorResponse> handleUserEmptyException(UserEmptyException e) {
+    return ResponseEntity.status(400)
+        .body(
+            new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()));
+  }
+
+  @ExceptionHandler(UserValidationException.class)
+  public ResponseEntity<ErrorResponse> handleUserValidationException(UserValidationException e) {
     return ResponseEntity.status(400)
         .body(
             new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now()));
