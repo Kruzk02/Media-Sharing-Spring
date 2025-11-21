@@ -59,7 +59,8 @@ class UserServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    registerUserRequest = new RegisterUserRequest("username", "email@gmail.com", "password");
+    registerUserRequest =
+        new RegisterUserRequest("username", "email@gmail.com", "encodedPassword123!");
     loginUserRequest = new LoginUserRequest("username", "password");
     updateUserRequest =
         new UpdateUserRequest(
@@ -77,7 +78,7 @@ class UserServiceImplTest {
         User.builder()
             .username(registerUserRequest.username())
             .email(registerUserRequest.email())
-            .password("encodedPassword")
+            .password("encodedPassword123!")
             .roles(List.of(role))
             .media(media)
             .gender(Gender.OTHER)
@@ -102,7 +103,7 @@ class UserServiceImplTest {
     Mockito.when(userDao.findUserByEmail(registerUserRequest.email())).thenReturn(null);
     Mockito.when(userDao.findUserByUsername(registerUserRequest.username())).thenReturn(null);
     Mockito.when(passwordEncoder.encode(registerUserRequest.password()))
-        .thenReturn("encodedPassword");
+        .thenReturn("encodedPassword123!");
 
     Mockito.when(roleDao.findByName("ROLE_USER")).thenReturn(role);
 
