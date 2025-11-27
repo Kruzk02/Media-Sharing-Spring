@@ -1,6 +1,6 @@
-package com.app.module.notification.dao;
+package com.app.module.notification.infrastructure;
 
-import com.app.module.notification.model.Notification;
+import com.app.module.notification.domain.Notification;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;

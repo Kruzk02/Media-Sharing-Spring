@@ -1,6 +1,6 @@
-package com.app.module.notification.service;
+package com.app.module.notification.application.service;
 
-import com.app.module.notification.model.Notification;
+import com.app.module.notification.domain.Notification;
 import java.util.List;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 

@@ -1,7 +1,8 @@
-package com.app.module.notification.service;
+package com.app.module.notification.application.service;
 
-import com.app.module.notification.dao.NotificationDao;
-import com.app.module.notification.model.Notification;
+import com.app.module.notification.application.exception.NotificationNotFoundException;
+import com.app.module.notification.domain.Notification;
+import com.app.module.notification.infrastructure.NotificationDao;
 import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
@@ -82,7 +83,7 @@ public class NotificationServiceImpl implements NotificationService {
   public void deleteById(Long id) {
     Notification notification = notificationDao.findById(id);
     if (notification == null) {
-      throw new RuntimeException("Notification not found with a id: " + id);
+      throw new NotificationNotFoundException("Notification not found with a id: " + id);
     }
 
     notificationDao.deleteById(notification.getId());
@@ -92,7 +93,8 @@ public class NotificationServiceImpl implements NotificationService {
   public void markAsRead(Long notificationId) {
     Notification notification = notificationDao.findById(notificationId);
     if (notification == null) {
-      throw new RuntimeException("Notification not found with a id: " + notificationId);
+      throw new NotificationNotFoundException(
+          "Notification not found with a id: " + notificationId);
     }
 
     notificationDao.markAsRead(notification.getId());

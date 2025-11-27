@@ -1,6 +1,6 @@
-package com.app.module.notification.dao;
+package com.app.module.notification.infrastructure;
 
-import com.app.module.notification.model.Notification;
+import com.app.module.notification.domain.Notification;
 import com.app.shared.dao.Creatable;
 import com.app.shared.dao.Deletable;
 import com.app.shared.dao.Readable;

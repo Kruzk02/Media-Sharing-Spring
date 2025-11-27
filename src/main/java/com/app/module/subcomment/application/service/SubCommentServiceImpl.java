@@ -6,7 +6,7 @@ import com.app.module.comment.model.Comment;
 import com.app.module.media.dao.MediaDao;
 import com.app.module.media.model.Media;
 import com.app.module.media.model.MediaType;
-import com.app.module.notification.model.Notification;
+import com.app.module.notification.domain.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.domain.SubCommentNotFoundException;
