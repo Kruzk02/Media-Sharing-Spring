@@ -1,12 +1,12 @@
-package com.app.module.pin.controller;
+package com.app.module.pin.api;
 
 import com.app.module.comment.dto.response.CommentResponse;
 import com.app.module.comment.model.Comment;
 import com.app.module.comment.service.CommentService;
-import com.app.module.pin.dto.PinRequest;
-import com.app.module.pin.dto.PinResponse;
-import com.app.module.pin.model.Pin;
-import com.app.module.pin.service.PinService;
+import com.app.module.pin.application.dto.PinRequest;
+import com.app.module.pin.application.dto.PinResponse;
+import com.app.module.pin.application.service.PinService;
+import com.app.module.pin.domain.Pin;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import io.swagger.v3.oas.annotations.Operation;

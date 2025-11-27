@@ -1,4 +1,4 @@
-package com.app.module.pin.model;
+package com.app.module.pin.domain;
 
 import com.app.module.hashtag.model.Hashtag;
 import java.io.Serializable;

@@ -1,16 +1,16 @@
-package com.app.module.pin.service;
+package com.app.module.pin.application.service;
 
 import com.app.module.hashtag.dao.HashtagDao;
 import com.app.module.hashtag.model.Hashtag;
 import com.app.module.media.dao.MediaDao;
 import com.app.module.media.model.Media;
 import com.app.module.media.model.MediaType;
-import com.app.module.pin.dao.PinDao;
-import com.app.module.pin.dto.PinRequest;
-import com.app.module.pin.model.Pin;
+import com.app.module.pin.application.dto.PinRequest;
+import com.app.module.pin.application.exception.PinIsEmptyException;
+import com.app.module.pin.domain.Pin;
+import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
-import com.app.shared.exception.sub.PinIsEmptyException;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
 import com.app.shared.storage.FileManager;
@@ -91,7 +91,7 @@ public class PinServiceImpl implements PinService {
               mediaDao.updateStatus(media.getId(), Status.READY);
             })
         .exceptionally(
-            (err) -> {
+            (_) -> {
               mediaDao.updateStatus(media.getId(), Status.FAILED);
 
               pinDao.deleteById(pin.getId());
@@ -192,7 +192,7 @@ public class PinServiceImpl implements PinService {
    * Retrieves a pin with little or full details, using database or cache
    *
    * @param id The id of the pin to be found.
-   * @param fetchDetails The details of little or full details of the pin
+   * @param detailsType The details of little or full details of the pin
    * @return A pin with specified id, either fetch from database or cache. If no pin are found, an
    *     exception is thrown
    */

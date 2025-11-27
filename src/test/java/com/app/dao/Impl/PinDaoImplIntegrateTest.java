@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
 import com.app.module.hashtag.model.Hashtag;
-import com.app.module.pin.dao.PinDao;
-import com.app.module.pin.dao.PinDaoImpl;
-import com.app.module.pin.model.Pin;
+import com.app.module.pin.domain.Pin;
+import com.app.module.pin.infrastructure.PinDao;
+import com.app.module.pin.infrastructure.PinDaoImpl;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.List;

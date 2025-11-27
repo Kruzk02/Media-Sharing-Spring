@@ -5,10 +5,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import com.app.module.hashtag.model.Hashtag;
-import com.app.module.pin.controller.PinController;
-import com.app.module.pin.dto.PinResponse;
-import com.app.module.pin.model.Pin;
-import com.app.module.pin.service.PinService;
+import com.app.module.pin.api.PinController;
+import com.app.module.pin.application.dto.PinResponse;
+import com.app.module.pin.application.service.PinService;
+import com.app.module.pin.domain.Pin;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.List;

@@ -3,7 +3,7 @@ package com.app.config;
 import com.app.module.board.model.Board;
 import com.app.module.comment.model.Comment;
 import com.app.module.media.model.Media;
-import com.app.module.pin.model.Pin;
+import com.app.module.pin.domain.Pin;
 import com.app.module.subcomment.domain.SubComment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

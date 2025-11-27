@@ -1,7 +1,7 @@
-package com.app.module.pin.dao;
+package com.app.module.pin.infrastructure;
 
 import com.app.module.hashtag.model.Hashtag;
-import com.app.module.pin.model.Pin;
+import com.app.module.pin.domain.Pin;
 import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.type.DetailsType;

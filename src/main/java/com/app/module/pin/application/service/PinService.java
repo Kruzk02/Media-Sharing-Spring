@@ -1,7 +1,7 @@
-package com.app.module.pin.service;
+package com.app.module.pin.application.service;
 
-import com.app.module.pin.dto.PinRequest;
-import com.app.module.pin.model.Pin;
+import com.app.module.pin.application.dto.PinRequest;
+import com.app.module.pin.domain.Pin;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.io.IOException;

@@ -1,6 +1,6 @@
-package com.app.module.pin.dao;
+package com.app.module.pin.infrastructure;
 
-import com.app.module.pin.model.Pin;
+import com.app.module.pin.domain.Pin;
 import com.app.shared.dao.Creatable;
 import com.app.shared.dao.Deletable;
 import com.app.shared.dao.Updatable;
