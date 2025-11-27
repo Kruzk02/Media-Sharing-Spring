@@ -1,5 +1,6 @@
 package com.app.shared.exception;
 
+import com.app.module.subcomment.domain.SubCommentNotFoundException;
 import com.app.shared.exception.sub.*;
 import com.app.shared.exception.sub.UserNotMatchException;
 import java.time.LocalDateTime;

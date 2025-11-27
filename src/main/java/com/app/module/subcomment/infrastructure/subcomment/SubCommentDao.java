@@ -1,6 +1,6 @@
-package com.app.module.subcomment.dao;
+package com.app.module.subcomment.infrastructure.subcomment;
 
-import com.app.module.subcomment.model.SubComment;
+import com.app.module.subcomment.domain.SubComment;
 import com.app.shared.dao.CRUDDao;
 import com.app.shared.type.SortType;
 import java.util.List;

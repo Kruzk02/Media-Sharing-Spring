@@ -1,4 +1,4 @@
-package com.app.module.subcomment.service;
+package com.app.module.subcomment.application.service;
 
 import com.app.module.comment.dao.CommentDao;
 import com.app.module.comment.dto.request.UpdatedCommentRequest;
@@ -7,14 +7,13 @@ import com.app.module.media.dao.MediaDao;
 import com.app.module.media.model.Media;
 import com.app.module.media.model.MediaType;
 import com.app.module.notification.model.Notification;
-import com.app.module.subcomment.dao.SubCommentDao;
-import com.app.module.subcomment.dto.CreateSubCommentRequest;
-import com.app.module.subcomment.model.SubComment;
+import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
+import com.app.module.subcomment.application.exception.SubCommentIsEmptyException;
+import com.app.module.subcomment.domain.SubCommentNotFoundException;
+import com.app.module.subcomment.domain.SubComment;
+import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
-import com.app.shared.exception.sub.CommentIsEmptyException;
-import com.app.shared.exception.sub.CommentNotFoundException;
-import com.app.shared.exception.sub.SubCommentNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
 import com.app.shared.message.producer.NotificationEventProducer;
 import com.app.shared.storage.FileManager;
@@ -53,13 +52,13 @@ public class SubCommentServiceImpl implements SubCommentService {
   public SubComment save(CreateSubCommentRequest request) {
     if ((request.content() == null || request.content().trim().isEmpty())
         && (request.media() == null || request.media().isEmpty())) {
-      throw new CommentIsEmptyException(
+      throw new SubCommentIsEmptyException(
           "A comment must have either content or a media attachment.");
     }
 
     Comment comment = commentDao.findById(request.commentId(), DetailsType.BASIC);
     if (comment == null) {
-      throw new CommentNotFoundException("Comment not found with a id: " + request.commentId());
+      throw new SubCommentNotFoundException("Comment not found with a id: " + request.commentId());
     }
 
     Media media = null;
@@ -125,7 +124,7 @@ public class SubCommentServiceImpl implements SubCommentService {
 
     if ((request.content() == null || request.content().trim().isEmpty())
         && (request.media().isEmpty() || request.media().isEmpty())) {
-      throw new CommentIsEmptyException(
+      throw new SubCommentIsEmptyException(
           "A comment must have either content or a media attachment.");
     }
 

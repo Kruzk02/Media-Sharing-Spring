@@ -1,6 +1,6 @@
-package com.app.module.subcomment.dto;
+package com.app.module.subcomment.application.dto;
 
-import com.app.module.subcomment.model.SubComment;
+import com.app.module.subcomment.domain.SubComment;
 import com.app.shared.dto.response.CommentDTO;
 import com.app.shared.dto.response.UserDTO;
 import java.time.LocalDateTime;

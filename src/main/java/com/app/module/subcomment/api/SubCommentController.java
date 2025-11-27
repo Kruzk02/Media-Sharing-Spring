@@ -1,10 +1,10 @@
-package com.app.module.subcomment.controller;
+package com.app.module.subcomment.api;
 
 import com.app.module.comment.dto.request.UpdatedCommentRequest;
-import com.app.module.subcomment.dto.CreateSubCommentRequest;
-import com.app.module.subcomment.dto.SubCommentResponse;
-import com.app.module.subcomment.model.SubComment;
-import com.app.module.subcomment.service.SubCommentService;
+import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
+import com.app.module.subcomment.application.dto.SubCommentResponse;
+import com.app.module.subcomment.application.service.SubCommentService;
+import com.app.module.subcomment.domain.SubComment;
 import com.app.shared.dto.response.CommentDTO;
 import com.app.shared.dto.response.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;

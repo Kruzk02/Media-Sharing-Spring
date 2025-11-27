@@ -4,7 +4,7 @@ import com.app.module.board.model.Board;
 import com.app.module.comment.model.Comment;
 import com.app.module.media.model.Media;
 import com.app.module.pin.model.Pin;
-import com.app.module.subcomment.model.SubComment;
+import com.app.module.subcomment.domain.SubComment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

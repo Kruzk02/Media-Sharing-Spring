@@ -1,4 +1,4 @@
-package com.app.shared.exception.sub;
+package com.app.module.subcomment.domain;
 
 public class SubCommentNotFoundException extends RuntimeException {
   public SubCommentNotFoundException(String message) {

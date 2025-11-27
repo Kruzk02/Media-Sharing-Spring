@@ -1,8 +1,8 @@
-package com.app.module.subcomment.service;
+package com.app.module.subcomment.application.service;
 
 import com.app.module.comment.dto.request.UpdatedCommentRequest;
-import com.app.module.subcomment.dto.CreateSubCommentRequest;
-import com.app.module.subcomment.model.SubComment;
+import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
+import com.app.module.subcomment.domain.SubComment;
 import com.app.shared.type.SortType;
 import java.util.List;
 

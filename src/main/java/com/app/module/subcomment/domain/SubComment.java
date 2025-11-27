@@ -1,4 +1,4 @@
-package com.app.module.subcomment.model;
+package com.app.module.subcomment.domain;
 
 import com.app.module.comment.model.Comment;
 import com.app.module.media.model.Media;
