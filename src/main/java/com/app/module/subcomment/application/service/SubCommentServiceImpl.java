@@ -8,10 +8,10 @@ import com.app.module.media.model.Media;
 import com.app.module.media.model.MediaType;
 import com.app.module.notification.model.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
-import com.app.module.subcomment.application.exception.SubCommentIsEmptyException;
-import com.app.module.subcomment.domain.SubCommentNotFoundException;
 import com.app.module.subcomment.domain.SubComment;
+import com.app.module.subcomment.domain.SubCommentNotFoundException;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
+import com.app.module.subcomment.internal.SubCommentValidator;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.exception.sub.UserNotMatchException;
@@ -50,11 +50,8 @@ public class SubCommentServiceImpl implements SubCommentService {
 
   @Override
   public SubComment save(CreateSubCommentRequest request) {
-    if ((request.content() == null || request.content().trim().isEmpty())
-        && (request.media() == null || request.media().isEmpty())) {
-      throw new SubCommentIsEmptyException(
-          "A comment must have either content or a media attachment.");
-    }
+
+    SubCommentValidator.validateContent(request.content(), request.media());
 
     Comment comment = commentDao.findById(request.commentId(), DetailsType.BASIC);
     if (comment == null) {
@@ -122,11 +119,7 @@ public class SubCommentServiceImpl implements SubCommentService {
       throw new UserNotMatchException("User does not match with sub comment");
     }
 
-    if ((request.content() == null || request.content().trim().isEmpty())
-        && (request.media().isEmpty() || request.media().isEmpty())) {
-      throw new SubCommentIsEmptyException(
-          "A comment must have either content or a media attachment.");
-    }
+    SubCommentValidator.validateContent(request.content(), request.media());
 
     if (request.media() != null && !request.media().isEmpty()) {
       handleUpdateMediaAsync(subComment, request.media());
