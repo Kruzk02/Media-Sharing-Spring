@@ -1,10 +1,10 @@
-package com.app.module.board.controller;
+package com.app.module.board.api;
 
-import com.app.module.board.dto.request.BoardRequest;
-import com.app.module.board.dto.request.BoardUpdateRequest;
-import com.app.module.board.dto.response.BoardResponse;
-import com.app.module.board.model.Board;
-import com.app.module.board.service.BoardService;
+import com.app.module.board.application.dto.request.BoardRequest;
+import com.app.module.board.application.dto.request.BoardUpdateRequest;
+import com.app.module.board.application.dto.response.BoardResponse;
+import com.app.module.board.application.service.BoardService;
+import com.app.module.board.domain.Board;
 import com.app.shared.dto.response.PinDTO;
 import com.app.shared.dto.response.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;

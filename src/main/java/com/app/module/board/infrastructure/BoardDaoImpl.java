@@ -1,9 +1,9 @@
-package com.app.module.board.dao;
+package com.app.module.board.infrastructure;
 
-import com.app.module.board.model.Board;
+import com.app.module.board.domain.Board;
+import com.app.module.board.domain.BoardNotFoundException;
 import com.app.module.pin.domain.Pin;
 import com.app.module.user.domain.entity.User;
-import com.app.shared.exception.sub.BoardNotFoundException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;

@@ -3,9 +3,9 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.module.board.dao.BoardDao;
-import com.app.module.board.dao.BoardDaoImpl;
-import com.app.module.board.model.Board;
+import com.app.module.board.domain.Board;
+import com.app.module.board.infrastructure.BoardDao;
+import com.app.module.board.infrastructure.BoardDaoImpl;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.pin.domain.Pin;
 import com.app.module.user.domain.entity.User;

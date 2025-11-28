@@ -1,8 +1,8 @@
 package com.app.module.user.api;
 
-import com.app.module.board.dto.response.BoardResponse;
-import com.app.module.board.model.Board;
-import com.app.module.board.service.BoardService;
+import com.app.module.board.application.dto.response.BoardResponse;
+import com.app.module.board.application.service.BoardService;
+import com.app.module.board.domain.Board;
 import com.app.module.follower.application.dto.FollowerResponse;
 import com.app.module.follower.application.service.FollowerService;
 import com.app.module.notification.application.dto.NotificationResponse;

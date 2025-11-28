@@ -2,16 +2,16 @@ package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.module.board.dao.BoardDao;
-import com.app.module.board.dto.request.BoardRequest;
-import com.app.module.board.model.Board;
-import com.app.module.board.service.BoardServiceImpl;
+import com.app.module.board.application.dto.request.BoardRequest;
+import com.app.module.board.application.service.BoardServiceImpl;
+import com.app.module.board.domain.Board;
+import com.app.module.board.domain.BoardNotFoundException;
+import com.app.module.board.infrastructure.BoardDao;
 import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;
-import com.app.shared.exception.sub.BoardNotFoundException;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.type.DetailsType;
 import java.util.Collections;

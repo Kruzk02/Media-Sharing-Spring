@@ -1,4 +1,4 @@
-package com.app.module.board.model;
+package com.app.module.board.domain;
 
 import com.app.module.pin.domain.Pin;
 import com.app.module.user.domain.entity.User;

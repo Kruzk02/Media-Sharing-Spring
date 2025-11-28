@@ -1,8 +1,11 @@
-package com.app.module.board.service;
+package com.app.module.board.application.service;
 
-import com.app.module.board.dao.BoardDao;
-import com.app.module.board.dto.request.BoardRequest;
-import com.app.module.board.model.Board;
+import com.app.module.board.application.dto.request.BoardRequest;
+import com.app.module.board.application.exception.NameValidationException;
+import com.app.module.board.application.exception.PinNotInBoardException;
+import com.app.module.board.domain.Board;
+import com.app.module.board.domain.BoardNotFoundException;
+import com.app.module.board.infrastructure.BoardDao;
 import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;

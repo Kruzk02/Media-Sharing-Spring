@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.app.module.board.model.Board;
-import com.app.module.board.service.BoardService;
-import com.app.module.board.service.CachedBoardService;
+import com.app.module.board.application.service.BoardService;
+import com.app.module.board.application.service.CachedBoardService;
+import com.app.module.board.domain.Board;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
 import com.app.module.user.domain.entity.User;

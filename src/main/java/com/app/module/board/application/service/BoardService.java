@@ -1,7 +1,7 @@
-package com.app.module.board.service;
+package com.app.module.board.application.service;
 
-import com.app.module.board.dto.request.BoardRequest;
-import com.app.module.board.model.Board;
+import com.app.module.board.application.dto.request.BoardRequest;
+import com.app.module.board.domain.Board;
 import java.util.List;
 
 public interface BoardService {
