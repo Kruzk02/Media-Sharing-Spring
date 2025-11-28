@@ -1,4 +1,4 @@
-package com.app.module.media.dao;
+package com.app.module.media.infrastructure;
 
 import com.app.module.media.application.exception.MediaNotFoundException;
 import com.app.module.media.domain.entity.Media;

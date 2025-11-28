@@ -1,6 +1,6 @@
 package com.app.config;
 
-import com.app.module.media.dao.MediaDao;
+import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
 import com.app.module.user.domain.entity.Privilege;

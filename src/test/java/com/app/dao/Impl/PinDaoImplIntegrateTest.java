@@ -3,7 +3,7 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.module.hashtag.model.Hashtag;
+import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.pin.infrastructure.PinDaoImpl;

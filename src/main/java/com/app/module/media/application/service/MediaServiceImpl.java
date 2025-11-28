@@ -1,7 +1,7 @@
 package com.app.module.media.application.service;
 
 import com.app.module.media.application.exception.MediaNotFoundException;
-import com.app.module.media.dao.MediaDao;
+import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.media.domain.entity.Media;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;

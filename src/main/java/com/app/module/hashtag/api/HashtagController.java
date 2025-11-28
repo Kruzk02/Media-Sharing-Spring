@@ -1,4 +1,4 @@
-package com.app.module.hashtag.controller;
+package com.app.module.hashtag.api;
 
 import com.app.module.comment.dto.response.CommentResponse;
 import com.app.module.comment.model.Comment;

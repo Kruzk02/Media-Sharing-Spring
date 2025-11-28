@@ -3,7 +3,7 @@ package com.app.module.subcomment.application.service;
 import com.app.module.comment.dao.CommentDao;
 import com.app.module.comment.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.model.Comment;
-import com.app.module.media.dao.MediaDao;
+import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
 import com.app.module.notification.domain.Notification;

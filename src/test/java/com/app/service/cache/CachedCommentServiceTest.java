@@ -10,7 +10,7 @@ import com.app.module.comment.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.model.Comment;
 import com.app.module.comment.service.CachedCommentService;
 import com.app.module.comment.service.CommentService;
-import com.app.module.hashtag.model.Hashtag;
+import com.app.module.hashtag.domain.Hashtag;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.List;

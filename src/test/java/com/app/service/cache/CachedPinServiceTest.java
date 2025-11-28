@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.app.module.hashtag.model.Hashtag;
+import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.service.CachedPinService;
 import com.app.module.pin.application.service.PinService;

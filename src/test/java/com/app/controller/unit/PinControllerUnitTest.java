@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.app.module.hashtag.model.Hashtag;
+import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.api.PinController;
 import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;

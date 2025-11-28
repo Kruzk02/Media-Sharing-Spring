@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import com.app.module.comment.controller.CommentController;
 import com.app.module.comment.model.Comment;
 import com.app.module.comment.service.CommentService;
-import com.app.module.hashtag.model.Hashtag;
+import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
 import com.app.module.subcomment.application.service.SubCommentService;

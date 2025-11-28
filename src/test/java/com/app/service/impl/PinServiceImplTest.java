@@ -2,9 +2,9 @@ package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.module.hashtag.dao.HashtagDao;
-import com.app.module.hashtag.model.Hashtag;
-import com.app.module.media.dao.MediaDao;
+import com.app.module.hashtag.domain.Hashtag;
+import com.app.module.hashtag.infrastructure.HashtagDao;
+import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
 import com.app.module.pin.application.dto.PinRequest;

@@ -1,6 +1,6 @@
-package com.app.module.hashtag.dao;
+package com.app.module.hashtag.infrastructure;
 
-import com.app.module.hashtag.model.Hashtag;
+import com.app.module.hashtag.domain.Hashtag;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
@@ -28,9 +28,7 @@ public class HashtagDaoImpl implements HashtagDao {
     List<Hashtag> foundItems = getHashtags(tag, sql);
 
     return foundItems.stream()
-        .collect(
-            Collectors.toMap(
-                Hashtag::getTag, hashtag -> hashtag, (existing, replacement) -> existing));
+        .collect(Collectors.toMap(Hashtag::getTag, hashtag -> hashtag, (existing, _) -> existing));
   }
 
   private List<Hashtag> getHashtags(Set<String> tag, String sql) {
@@ -41,7 +39,7 @@ public class HashtagDaoImpl implements HashtagDao {
     return namedJdbcTemplate.query(
         sql,
         params,
-        (rs, rowNum) ->
+        (rs, _) ->
             Hashtag.builder()
                 .id(rs.getLong("id"))
                 .tag(rs.getString("tag"))

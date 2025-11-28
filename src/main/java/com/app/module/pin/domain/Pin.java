@@ -1,6 +1,6 @@
 package com.app.module.pin.domain;
 
-import com.app.module.hashtag.model.Hashtag;
+import com.app.module.hashtag.domain.Hashtag;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;

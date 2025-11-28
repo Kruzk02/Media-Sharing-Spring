@@ -1,4 +1,4 @@
-package com.app.module.hashtag.model;
+package com.app.module.hashtag.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

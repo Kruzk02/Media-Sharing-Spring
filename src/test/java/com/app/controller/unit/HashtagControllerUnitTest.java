@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.app.module.comment.model.Comment;
 import com.app.module.comment.service.CommentService;
-import com.app.module.hashtag.controller.HashtagController;
-import com.app.module.hashtag.model.Hashtag;
+import com.app.module.hashtag.api.HashtagController;
+import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
