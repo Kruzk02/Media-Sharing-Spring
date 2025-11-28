@@ -1,8 +1,8 @@
-package com.app.module.comment.service;
+package com.app.module.comment.application.service;
 
-import com.app.module.comment.dto.request.CreateCommentRequest;
-import com.app.module.comment.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.model.Comment;
+import com.app.module.comment.application.dto.request.CreateCommentRequest;
+import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
+import com.app.module.comment.domain.Comment;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.List;

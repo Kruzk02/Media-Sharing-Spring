@@ -12,13 +12,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(CommentNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleCommentNotFoundException(CommentNotFoundException ex) {
-    ErrorResponse response =
-        new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value(), LocalDateTime.now());
-    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-  }
-
   @ExceptionHandler(BoardNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleBoardNotFoundException(BoardNotFoundException ex) {
     ErrorResponse response =
@@ -50,13 +43,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(MediaNotSupportException.class)
   public ResponseEntity<ErrorResponse> handleMediaNotSupportException(MediaNotSupportException e) {
-    ErrorResponse response =
-        new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
-    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-  }
-
-  @ExceptionHandler(CommentIsEmptyException.class)
-  public ResponseEntity<ErrorResponse> handleCommentIsEmptyException(CommentIsEmptyException e) {
     ErrorResponse response =
         new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

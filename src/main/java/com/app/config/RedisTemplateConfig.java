@@ -1,7 +1,7 @@
 package com.app.config;
 
 import com.app.module.board.model.Board;
-import com.app.module.comment.model.Comment;
+import com.app.module.comment.domain.Comment;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.pin.domain.Pin;
 import com.app.module.subcomment.domain.SubComment;

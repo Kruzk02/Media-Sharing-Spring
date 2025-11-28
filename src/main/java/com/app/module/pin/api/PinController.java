@@ -1,8 +1,8 @@
 package com.app.module.pin.api;
 
-import com.app.module.comment.dto.response.CommentResponse;
-import com.app.module.comment.model.Comment;
-import com.app.module.comment.service.CommentService;
+import com.app.module.comment.application.dto.response.CommentResponse;
+import com.app.module.comment.application.service.CommentService;
+import com.app.module.comment.domain.Comment;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;

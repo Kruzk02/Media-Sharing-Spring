@@ -1,10 +1,10 @@
-package com.app.module.comment.controller;
+package com.app.module.comment.api;
 
-import com.app.module.comment.dto.request.CreateCommentRequest;
-import com.app.module.comment.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.dto.response.CommentResponse;
-import com.app.module.comment.model.Comment;
-import com.app.module.comment.service.CommentService;
+import com.app.module.comment.application.dto.request.CreateCommentRequest;
+import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
+import com.app.module.comment.application.dto.response.CommentResponse;
+import com.app.module.comment.application.service.CommentService;
+import com.app.module.comment.domain.Comment;
 import com.app.module.subcomment.application.dto.SubCommentResponse;
 import com.app.module.subcomment.application.service.SubCommentService;
 import com.app.module.subcomment.domain.SubComment;

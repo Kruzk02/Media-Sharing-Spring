@@ -1,9 +1,9 @@
-package com.app.module.comment.service;
+package com.app.module.comment.application.service;
 
-import com.app.module.comment.dto.request.CreateCommentRequest;
-import com.app.module.comment.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.model.Comment;
-import com.app.shared.exception.sub.CommentNotFoundException;
+import com.app.module.comment.application.dto.request.CreateCommentRequest;
+import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
+import com.app.module.comment.domain.Comment;
+import com.app.module.comment.domain.CommentNotFoundException;
 import com.app.shared.helper.CachedServiceHelper;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;

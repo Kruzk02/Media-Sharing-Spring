@@ -1,4 +1,4 @@
-package com.app.module.comment.model;
+package com.app.module.comment.domain;
 
 import com.app.module.hashtag.domain.Hashtag;
 import java.io.Serializable;

@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.app.module.comment.model.Comment;
-import com.app.module.comment.service.CommentService;
+import com.app.module.comment.application.service.CommentService;
+import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.api.HashtagController;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.application.dto.PinResponse;

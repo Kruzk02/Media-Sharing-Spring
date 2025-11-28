@@ -1,9 +1,11 @@
-package com.app.module.comment.service;
+package com.app.module.comment.application.service;
 
-import com.app.module.comment.dao.CommentDao;
-import com.app.module.comment.dto.request.CreateCommentRequest;
-import com.app.module.comment.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.model.Comment;
+import com.app.module.comment.application.dto.request.CreateCommentRequest;
+import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
+import com.app.module.comment.application.exception.CommentIsEmptyException;
+import com.app.module.comment.domain.Comment;
+import com.app.module.comment.domain.CommentNotFoundException;
+import com.app.module.comment.infrastructure.CommentDao;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.media.domain.entity.Media;
@@ -14,8 +16,6 @@ import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
-import com.app.shared.exception.sub.CommentIsEmptyException;
-import com.app.shared.exception.sub.CommentNotFoundException;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
 import com.app.shared.message.producer.NotificationEventProducer;

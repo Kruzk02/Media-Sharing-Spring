@@ -1,6 +1,6 @@
-package com.app.module.comment.dao;
+package com.app.module.comment.infrastructure;
 
-import com.app.module.comment.model.Comment;
+import com.app.module.comment.domain.Comment;
 import com.app.shared.dao.Creatable;
 import com.app.shared.dao.Deletable;
 import com.app.shared.dao.Updatable;

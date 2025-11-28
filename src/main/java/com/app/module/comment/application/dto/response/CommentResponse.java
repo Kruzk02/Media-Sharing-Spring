@@ -1,6 +1,6 @@
-package com.app.module.comment.dto.response;
+package com.app.module.comment.application.dto.response;
 
-import com.app.module.comment.model.Comment;
+import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.domain.Hashtag;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;

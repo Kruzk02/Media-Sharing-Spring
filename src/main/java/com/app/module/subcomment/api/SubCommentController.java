@@ -1,6 +1,6 @@
 package com.app.module.subcomment.api;
 
-import com.app.module.comment.dto.request.UpdatedCommentRequest;
+import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.dto.SubCommentResponse;
 import com.app.module.subcomment.application.service.SubCommentService;

@@ -1,6 +1,6 @@
 package com.app.module.subcomment.infrastructure.subcomment;
 
-import com.app.module.comment.model.Comment;
+import com.app.module.comment.domain.Comment;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.domain.SubCommentNotFoundException;

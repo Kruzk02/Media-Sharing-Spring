@@ -1,4 +1,4 @@
-package com.app.module.comment.dto.request;
+package com.app.module.comment.application.dto.request;
 
 import java.util.Set;
 import org.springframework.web.multipart.MultipartFile;

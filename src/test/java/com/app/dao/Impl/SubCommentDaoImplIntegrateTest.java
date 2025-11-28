@@ -3,7 +3,7 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.module.comment.model.Comment;
+import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;

@@ -5,11 +5,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.app.module.comment.dto.request.CreateCommentRequest;
-import com.app.module.comment.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.model.Comment;
-import com.app.module.comment.service.CachedCommentService;
-import com.app.module.comment.service.CommentService;
+import com.app.module.comment.application.dto.request.CreateCommentRequest;
+import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
+import com.app.module.comment.application.service.CachedCommentService;
+import com.app.module.comment.application.service.CommentService;
+import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
