@@ -1,6 +1,6 @@
 package com.app.module.media.dao;
 
-import com.app.module.media.model.Media;
+import com.app.module.media.domain.entity.Media;
 import com.app.shared.dao.CRUDDao;
 import com.app.shared.type.Status;
 

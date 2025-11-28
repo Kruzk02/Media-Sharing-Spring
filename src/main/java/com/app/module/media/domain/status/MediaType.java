@@ -1,4 +1,4 @@
-package com.app.module.media.model;
+package com.app.module.media.domain.status;
 
 import java.util.Arrays;
 import java.util.HashSet;

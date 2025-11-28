@@ -7,8 +7,8 @@ import static org.mockito.Mockito.when;
 
 import com.app.module.comment.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.model.Comment;
-import com.app.module.media.model.Media;
-import com.app.module.media.model.MediaType;
+import com.app.module.media.domain.entity.Media;
+import com.app.module.media.domain.status.MediaType;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.service.CachedSubCommentService;
 import com.app.module.subcomment.application.service.SubCommentService;

@@ -1,8 +1,8 @@
 package com.app.module.media.dao;
 
-import com.app.module.media.model.Media;
-import com.app.module.media.model.MediaType;
-import com.app.shared.exception.sub.MediaNotFoundException;
+import com.app.module.media.application.exception.MediaNotFoundException;
+import com.app.module.media.domain.entity.Media;
+import com.app.module.media.domain.status.MediaType;
 import com.app.shared.type.Status;
 import java.sql.PreparedStatement;
 import java.sql.Statement;

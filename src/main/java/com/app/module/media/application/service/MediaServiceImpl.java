@@ -1,8 +1,8 @@
-package com.app.module.media.service;
+package com.app.module.media.application.service;
 
+import com.app.module.media.application.exception.MediaNotFoundException;
 import com.app.module.media.dao.MediaDao;
-import com.app.module.media.model.Media;
-import com.app.shared.exception.sub.MediaNotFoundException;
+import com.app.module.media.domain.entity.Media;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,4 +1,4 @@
-package com.app.shared.exception.sub;
+package com.app.module.media.application.exception;
 
 public class MediaNotFoundException extends RuntimeException {
   public MediaNotFoundException(String message) {

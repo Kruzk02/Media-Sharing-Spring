@@ -6,7 +6,7 @@ import com.app.dao.AbstractMySQLTest;
 import com.app.module.board.dao.BoardDao;
 import com.app.module.board.dao.BoardDaoImpl;
 import com.app.module.board.model.Board;
-import com.app.module.media.model.Media;
+import com.app.module.media.domain.entity.Media;
 import com.app.module.pin.domain.Pin;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;

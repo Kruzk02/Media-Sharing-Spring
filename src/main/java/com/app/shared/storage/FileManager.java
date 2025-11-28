@@ -1,6 +1,6 @@
 package com.app.shared.storage;
 
-import com.app.module.media.model.MediaType;
+import com.app.module.media.domain.status.MediaType;
 import com.app.shared.exception.sub.FileDeleteException;
 import com.app.shared.exception.sub.FileSaveException;
 import java.io.IOException;

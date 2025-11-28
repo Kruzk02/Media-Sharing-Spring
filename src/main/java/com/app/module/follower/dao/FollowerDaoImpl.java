@@ -1,7 +1,7 @@
 package com.app.module.follower.dao;
 
 import com.app.module.follower.model.Follower;
-import com.app.module.media.model.Media;
+import com.app.module.media.domain.entity.Media;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import java.util.List;

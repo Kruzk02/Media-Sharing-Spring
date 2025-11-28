@@ -1,6 +1,5 @@
 package com.app.shared.exception;
 
-import com.app.module.subcomment.domain.SubCommentNotFoundException;
 import com.app.shared.exception.sub.*;
 import com.app.shared.exception.sub.UserNotMatchException;
 import java.time.LocalDateTime;
@@ -34,26 +33,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler(MediaNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleMediaNotFoundException(MediaNotFoundException ex) {
-    ErrorResponse response =
-        new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value(), LocalDateTime.now());
-    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-  }
-
   @ExceptionHandler(UserNotMatchException.class)
   public ResponseEntity<ErrorResponse> handleUserNotMatchException(UserNotMatchException ex) {
     ErrorResponse response =
         new ErrorResponse(ex.getMessage(), HttpStatus.FORBIDDEN.value(), LocalDateTime.now());
     return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-  }
-
-  @ExceptionHandler(SubCommentNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleSubCommentNotFoundException(
-      SubCommentNotFoundException e) {
-    ErrorResponse response =
-        new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND.value(), LocalDateTime.now());
-    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(SaveDataFailedException.class)

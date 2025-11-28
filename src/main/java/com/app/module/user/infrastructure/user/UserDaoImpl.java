@@ -1,6 +1,6 @@
 package com.app.module.user.infrastructure.user;
 
-import com.app.module.media.model.Media;
+import com.app.module.media.domain.entity.Media;
 import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.module.user.domain.entity.Role;
 import com.app.module.user.domain.entity.User;

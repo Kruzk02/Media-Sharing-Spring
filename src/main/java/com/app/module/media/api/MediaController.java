@@ -1,8 +1,8 @@
-package com.app.module.media.controller;
+package com.app.module.media.api;
 
-import com.app.module.media.model.Media;
-import com.app.module.media.model.MediaType;
-import com.app.module.media.service.MediaService;
+import com.app.module.media.application.service.MediaService;
+import com.app.module.media.domain.entity.Media;
+import com.app.module.media.domain.status.MediaType;
 import com.app.shared.storage.MediaManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

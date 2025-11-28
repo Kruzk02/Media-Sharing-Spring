@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import com.app.module.media.dao.MediaDao;
-import com.app.module.media.model.Media;
-import com.app.module.media.model.MediaType;
+import com.app.module.media.domain.entity.Media;
+import com.app.module.media.domain.status.MediaType;
 import com.app.module.user.application.dto.request.LoginUserRequest;
 import com.app.module.user.application.dto.request.RegisterUserRequest;
 import com.app.module.user.application.dto.request.UpdateUserRequest;

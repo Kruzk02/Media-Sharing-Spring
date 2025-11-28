@@ -1,5 +1,6 @@
-package com.app.module.media.model;
+package com.app.module.media.domain.entity;
 
+import com.app.module.media.domain.status.MediaType;
 import com.app.shared.type.Status;
 import java.io.Serializable;
 import java.sql.Timestamp;

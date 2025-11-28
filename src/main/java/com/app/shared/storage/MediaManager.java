@@ -1,6 +1,6 @@
 package com.app.shared.storage;
 
-import com.app.module.media.model.MediaType;
+import com.app.module.media.domain.status.MediaType;
 import com.app.shared.exception.sub.MediaNotSupportException;
 import java.io.File;
 import java.io.IOException;
