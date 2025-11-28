@@ -1,6 +1,6 @@
-package com.app.module.follower.service;
+package com.app.module.follower.application.service;
 
-import com.app.module.follower.model.Follower;
+import com.app.module.follower.domain.Follower;
 import com.app.module.user.domain.entity.User;
 import java.util.List;
 

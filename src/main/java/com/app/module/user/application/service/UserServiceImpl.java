@@ -1,8 +1,8 @@
 package com.app.module.user.application.service;
 
-import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
+import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.user.application.dto.request.LoginUserRequest;
 import com.app.module.user.application.dto.request.RegisterUserRequest;
 import com.app.module.user.application.dto.request.UpdateUserRequest;

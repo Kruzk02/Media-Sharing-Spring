@@ -1,6 +1,6 @@
-package com.app.module.follower.dao;
+package com.app.module.follower.infrastructure;
 
-import com.app.module.follower.model.Follower;
+import com.app.module.follower.domain.Follower;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;

@@ -1,4 +1,4 @@
-package com.app.module.follower.model;
+package com.app.module.follower.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

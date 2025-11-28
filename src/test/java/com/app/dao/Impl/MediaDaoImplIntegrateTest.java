@@ -3,10 +3,10 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.module.media.infrastructure.MediaDao;
-import com.app.module.media.infrastructure.MediaDaoImpl;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
+import com.app.module.media.infrastructure.MediaDao;
+import com.app.module.media.infrastructure.MediaDaoImpl;
 import com.app.shared.type.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

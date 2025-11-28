@@ -2,9 +2,9 @@ package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.app.module.follower.dao.FollowerDao;
-import com.app.module.follower.model.Follower;
-import com.app.module.follower.service.FollowerServiceImpl;
+import com.app.module.follower.application.service.FollowerServiceImpl;
+import com.app.module.follower.domain.Follower;
+import com.app.module.follower.infrastructure.FollowerDao;
 import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;

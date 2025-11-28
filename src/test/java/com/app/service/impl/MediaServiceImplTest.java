@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.module.media.application.exception.MediaNotFoundException;
 import com.app.module.media.application.service.MediaServiceImpl;
-import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
+import com.app.module.media.infrastructure.MediaDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
