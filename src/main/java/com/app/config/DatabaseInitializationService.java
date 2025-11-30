@@ -11,8 +11,6 @@ import com.app.module.user.infrastructure.privilege.PrivilegeDao;
 import com.app.module.user.infrastructure.role.RoleDao;
 import com.app.shared.storage.MediaManager;
 import com.app.shared.type.Status;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,7 +19,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -31,7 +28,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.FileCopyUtils;
 
 @Service
 @Log4j2
@@ -62,24 +58,6 @@ public class DatabaseInitializationService implements ApplicationListener<Contex
   @Transactional
   public void onApplicationEvent(ContextRefreshedEvent event) {
     if (alreadySetup) return;
-
-    executeSqlScript("media.sql");
-    executeSqlScript("user.sql");
-    executeSqlScript("board.sql");
-    executeSqlScript("pin.sql");
-    executeSqlScript("board_pin.sql");
-    executeSqlScript("roles.sql");
-    executeSqlScript("privileges.sql");
-    executeSqlScript("roles_privileges.sql");
-    executeSqlScript("users_roles.sql");
-    executeSqlScript("comment.sql");
-    executeSqlScript("sub_comment.sql");
-    executeSqlScript("verification_token.sql");
-    executeSqlScript("followers.sql");
-    executeSqlScript("notification.sql");
-    executeSqlScript("hashtag.sql");
-    executeSqlScript("hashtags_comments.sql");
-    executeSqlScript("hashtags_pins.sql");
 
     Privilege readPrivilege = createPrivilegeIfNotFound("READ_PRIVILEGE");
     Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
@@ -114,18 +92,6 @@ public class DatabaseInitializationService implements ApplicationListener<Contex
     mappingRolePrivilege(roleUser, readPrivilege);
 
     alreadySetup = true;
-  }
-
-  private void executeSqlScript(String fileName) {
-    Resource resource = new ClassPathResource(fileName);
-    try (InputStreamReader reader =
-        new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
-      String sqlScript = FileCopyUtils.copyToString(reader);
-      jdbcTemplate.execute(sqlScript);
-      log.info("Successfully executed SQL script from file: {}", fileName);
-    } catch (Exception e) {
-      log.error("Error executing SQL script from file {}: {}", fileName, e.getMessage());
-    }
   }
 
   private void createAdminAccount(User user) {
