@@ -3,8 +3,6 @@ package com.app.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
 import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.user.application.dto.request.LoginUserRequest;
 import com.app.module.user.application.dto.request.RegisterUserRequest;
@@ -66,12 +64,6 @@ class UserServiceImplTest {
         new UpdateUserRequest(
             "newUsername", "new@example.com", "newPassword", "Updated bio", Gender.FEMALE, null);
 
-    Media media =
-        Media.builder()
-            .id(1L)
-            .mediaType(MediaType.IMAGE)
-            .url("default_profile_picture.png")
-            .build();
     role = Role.builder().id(1L).name("ROLE_USER").build();
 
     user =
@@ -80,7 +72,7 @@ class UserServiceImplTest {
             .email(registerUserRequest.email())
             .password("encodedPassword123!")
             .roles(List.of(role))
-            .media(media)
+            .mediaId(1L)
             .gender(Gender.OTHER)
             .build();
   }

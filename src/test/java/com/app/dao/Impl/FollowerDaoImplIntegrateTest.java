@@ -6,7 +6,6 @@ import com.app.dao.AbstractMySQLTest;
 import com.app.module.follower.domain.Follower;
 import com.app.module.follower.infrastructure.FollowerDao;
 import com.app.module.follower.infrastructure.FollowerDaoImpl;
-import com.app.module.media.domain.entity.Media;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import java.util.List;
@@ -57,7 +56,7 @@ class FollowerDaoImplIntegrateTest extends AbstractMySQLTest {
                 .username("username2")
                 .email("email2@gmail.com")
                 .roles(null)
-                .media(Media.builder().id(1L).url(null).mediaType(null).build())
+                .mediaId(1L)
                 .bio("bio")
                 .gender(Gender.MALE)
                 .enable(null)

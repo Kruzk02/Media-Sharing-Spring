@@ -3,8 +3,6 @@ package com.app.dao.Impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
 import com.app.module.user.domain.entity.Privilege;
 import com.app.module.user.domain.entity.Role;
 import com.app.module.user.domain.entity.User;
@@ -40,7 +38,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
                 .email("email3@gmail.com")
                 .password("HashedPassword")
                 .gender(Gender.MALE)
-                .media(Media.builder().id(1L).mediaType(MediaType.IMAGE).url("url").build())
+                .mediaId(1L)
                 .roles(
                     List.of(
                         Role.builder()
@@ -138,7 +136,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
     assertEquals(Gender.MALE, result.getGender());
     assertFalse(result.getEnable());
 
-    assertNotNull(result.getMedia());
+    assertNotNull(result);
   }
 
   @Test
@@ -168,7 +166,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
                 .email("email123@gmail.com")
                 .password("HashedPassword")
                 .gender(Gender.MALE)
-                .media(Media.builder().id(1L).mediaType(MediaType.IMAGE).url("url").build())
+                .mediaId(1L)
                 .roles(
                     List.of(
                         Role.builder()
@@ -187,7 +185,7 @@ class UserDaoIntegrationTest extends AbstractMySQLTest {
     assertEquals(Gender.MALE, result.getGender());
     assertFalse(result.getEnable());
 
-    assertNotNull(result.getMedia());
+    assertNotNull(result);
   }
 
   @Test

@@ -69,7 +69,7 @@ class SubCommentServiceImplTest {
             .username("username")
             .email("email@gmail.com")
             .password("encodedPassword")
-            .media(media)
+            .mediaId(1L)
             .gender(Gender.OTHER)
             .build();
 

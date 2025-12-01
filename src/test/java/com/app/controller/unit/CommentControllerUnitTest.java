@@ -101,7 +101,7 @@ class CommentControllerUnitTest {
                         .email("email@gmail.com")
                         .password("HashedPassword")
                         .gender(Gender.MALE)
-                        .media(Media.builder().id(1L).mediaType(MediaType.IMAGE).url("url").build())
+                        .mediaId(1L)
                         .bio("bio")
                         .enable(false)
                         .build())

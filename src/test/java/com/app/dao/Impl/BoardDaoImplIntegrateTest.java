@@ -6,7 +6,6 @@ import com.app.dao.AbstractMySQLTest;
 import com.app.module.board.domain.Board;
 import com.app.module.board.infrastructure.BoardDao;
 import com.app.module.board.infrastructure.BoardDaoImpl;
-import com.app.module.media.domain.entity.Media;
 import com.app.module.pin.domain.Pin;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
@@ -45,7 +44,7 @@ class BoardDaoImplIntegrateTest extends AbstractMySQLTest {
                         .gender(Gender.MALE)
                         .bio("bio")
                         .enable(false)
-                        .media(Media.builder().id(1L).build())
+                        .mediaId(1L)
                         .build())
                 .build());
 

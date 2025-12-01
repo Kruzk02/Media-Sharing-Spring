@@ -7,8 +7,6 @@ import static org.mockito.Mockito.when;
 
 import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.domain.Comment;
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.service.CachedSubCommentService;
 import com.app.module.subcomment.application.service.SubCommentService;
@@ -59,7 +57,7 @@ class CachedSubCommentServiceTest extends AbstractRedisTest<SubComment> {
                     .email("email3@gmail.com")
                     .password("HashedPassword")
                     .gender(Gender.MALE)
-                    .media(Media.builder().id(1L).mediaType(MediaType.IMAGE).url("url").build())
+                    .mediaId(1L)
                     .bio("bio")
                     .enable(false)
                     .build())
@@ -117,7 +115,7 @@ class CachedSubCommentServiceTest extends AbstractRedisTest<SubComment> {
                         .email("email3@gmail.com")
                         .password("HashedPassword")
                         .gender(Gender.MALE)
-                        .media(Media.builder().id(1L).mediaType(MediaType.IMAGE).url("url").build())
+                        .mediaId(1L)
                         .bio("bio")
                         .enable(false)
                         .build())

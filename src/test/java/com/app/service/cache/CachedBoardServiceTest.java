@@ -7,8 +7,6 @@ import static org.mockito.Mockito.when;
 import com.app.module.board.application.service.BoardService;
 import com.app.module.board.application.service.CachedBoardService;
 import com.app.module.board.domain.Board;
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import java.util.List;
@@ -44,7 +42,7 @@ class CachedBoardServiceTest extends AbstractRedisTest<Board> {
                     .email("email@gmail.com")
                     .password("HashedPassword")
                     .gender(Gender.MALE)
-                    .media(Media.builder().id(1L).mediaType(MediaType.IMAGE).url("NO").build())
+                    .mediaId(1L)
                     .bio("bio")
                     .enable(false)
                     .build())
