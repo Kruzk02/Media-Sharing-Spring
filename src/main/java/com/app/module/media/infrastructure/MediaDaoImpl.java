@@ -23,29 +23,25 @@ public class MediaDaoImpl implements MediaDao {
 
   @Override
   public Media save(Media media) {
-    try {
-      String sql = "INSERT INTO media(url, media_type, status) VALUES(?,?,?)";
-      KeyHolder keyHolder = new GeneratedKeyHolder();
+    String sql = "INSERT INTO media(url, media_type, status) VALUES(?,?,?)";
+    KeyHolder keyHolder = new GeneratedKeyHolder();
 
-      int row =
-          template.update(
-              conn -> {
-                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, media.getUrl());
-                ps.setString(2, media.getMediaType().toString());
-                ps.setString(3, media.getStatus().toString());
-                return ps;
-              },
-              keyHolder);
+    int row =
+        template.update(
+            conn -> {
+              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+              ps.setString(1, media.getUrl());
+              ps.setString(2, media.getMediaType().toString());
+              ps.setString(3, media.getStatus().toString());
+              return ps;
+            },
+            keyHolder);
 
-      if (row > 0) {
-        media.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-        return media;
-      } else {
-        throw new RuntimeException("Row is less than 0");
-      }
-    } catch (Exception e) {
-      return null;
+    if (row > 0) {
+      media.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+      return media;
+    } else {
+      throw new RuntimeException("Row is less than 0");
     }
   }
 

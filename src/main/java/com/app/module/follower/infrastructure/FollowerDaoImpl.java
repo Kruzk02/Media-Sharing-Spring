@@ -1,7 +1,6 @@
 package com.app.module.follower.infrastructure;
 
 import com.app.module.follower.domain.Follower;
-import com.app.module.media.domain.entity.Media;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import java.util.List;
@@ -34,7 +33,7 @@ public class FollowerDaoImpl implements FollowerDao {
                   .email(rs.getString("email"))
                   .bio(rs.getString("bio"))
                   .gender(Gender.valueOf(rs.getString("gender").toUpperCase()))
-                  .media(Media.builder().id(rs.getLong("media_id")).build())
+                  .mediaId(rs.getLong("media_id"))
                   .build(),
           userId,
           limit);

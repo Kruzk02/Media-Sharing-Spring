@@ -82,7 +82,7 @@ public class DatabaseInitializationService implements ApplicationListener<Contex
             .email("phucnguyen@gmail.com")
             .username("phucnguyen")
             .password(passwordEncoder.encode("123123"))
-            .media(media)
+            .mediaId(media.getId())
             .roles(List.of(roleAdmin))
             .gender(Gender.MALE)
             .build();
