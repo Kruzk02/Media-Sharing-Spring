@@ -1,8 +1,5 @@
 package com.app.module.user.application.service;
 
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
-import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.user.application.dto.request.LoginUserRequest;
 import com.app.module.user.application.dto.request.RegisterUserRequest;
 import com.app.module.user.application.dto.request.UpdateUserRequest;
@@ -15,19 +12,13 @@ import com.app.module.user.infrastructure.role.RoleDao;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.module.user.internal.UserValidator;
 import com.app.shared.annotations.NoLogging;
+import com.app.shared.event.UserUpdatedMediaEvent;
 import com.app.shared.event.VerificationEmailEvent;
-import com.app.shared.exception.sub.FileNotFoundException;
-import com.app.shared.storage.FileManager;
-import com.app.shared.storage.MediaManager;
-import com.app.shared.type.Status;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.concurrent.CompletionException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * User service class responsible for user related operations such as registration, login, and
@@ -51,7 +42,6 @@ public class UserServiceImpl implements UserService {
 
   private final UserDao userDao;
   private final RoleDao roleDao;
-  private final MediaDao mediaDao;
   private final VerificationTokenService verificationTokenService;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
@@ -91,7 +81,7 @@ public class UserServiceImpl implements UserService {
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .gender(Gender.OTHER)
-                .media(getDefaultProfilePicturePath())
+                .mediaId(1L)
                 .roles(Arrays.asList(roleDao.findByName("ROLE_USER")))
                 .enable(false)
                 .build());
@@ -144,6 +134,7 @@ public class UserServiceImpl implements UserService {
    * @return The User entity
    */
   @Override
+  @Transactional
   public User update(UpdateUserRequest request) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String username = authentication.getName();
@@ -175,53 +166,18 @@ public class UserServiceImpl implements UserService {
     user.setBio(request.bio() != null ? request.bio() : user.getBio());
     user.setGender(request.gender() != null ? request.gender() : user.getGender());
 
+    User updated = userDao.update(user);
+
     if (request.profilePicture() != null && !request.profilePicture().isEmpty()) {
-      saveProfilePicture(user, request.profilePicture());
-    } else {
-      user.setMedia(user.getMedia());
+      events.publishEvent(
+          new UserUpdatedMediaEvent(
+              updated.getId(),
+              updated.getMediaId(),
+              request.profilePicture(),
+              LocalDateTime.now()));
     }
 
-    return userDao.update(user);
-  }
-
-  private void saveProfilePicture(User user, MultipartFile profilePicture) {
-    Media existingMedia = mediaDao.findById(user.getMedia().getId());
-
-    String filename = MediaManager.generateUniqueFilename(profilePicture.getOriginalFilename());
-    String extension = MediaManager.getFileExtension(profilePicture.getOriginalFilename());
-
-    Media media;
-    if (Objects.equals(existingMedia.getUrl(), getDefaultProfilePicturePath().getUrl())) {
-      media =
-          mediaDao.save(
-              Media.builder()
-                  .url(filename)
-                  .mediaType(MediaType.fromExtension(extension))
-                  .status(Status.PENDING)
-                  .build());
-    } else {
-      String oldExtension = MediaManager.getFileExtension(existingMedia.getUrl());
-
-      media =
-          mediaDao.update(
-              existingMedia.getId(),
-              Media.builder()
-                  .id(existingMedia.getId())
-                  .url(filename)
-                  .mediaType(MediaType.fromExtension(extension))
-                  .status(Status.PENDING)
-                  .build());
-      FileManager.delete(existingMedia.getUrl(), oldExtension);
-    }
-
-    FileManager.save(profilePicture, filename, extension)
-        .thenRunAsync(() -> mediaDao.updateStatus(media.getId(), Status.READY))
-        .exceptionally(
-            err -> {
-              mediaDao.updateStatus(media.getId(), Status.FAILED);
-              throw new CompletionException(err);
-            });
-    user.setMedia(media);
+    return updated;
   }
 
   /**
@@ -243,14 +199,5 @@ public class UserServiceImpl implements UserService {
     VerificationToken verificationToken = verificationTokenService.generateVerificationToken(user);
     events.publishEvent(
         new VerificationEmailEvent(user.getEmail(), verificationToken.getToken(), Instant.now()));
-  }
-
-  private Media getDefaultProfilePicturePath() {
-    Resource defaultProfilePic = new FileSystemResource("image/default_profile_picture.png");
-    if (defaultProfilePic.exists()) {
-      return Media.builder().id(1L).url(defaultProfilePic.getFilename()).build();
-    } else {
-      throw new FileNotFoundException("File not found");
-    }
   }
 }

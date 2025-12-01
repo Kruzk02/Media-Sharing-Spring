@@ -1,6 +1,5 @@
 package com.app.module.user.infrastructure.user;
 
-import com.app.module.media.domain.entity.Media;
 import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.module.user.domain.entity.Role;
 import com.app.module.user.domain.entity.User;
@@ -46,7 +45,7 @@ public class UserDaoImpl implements UserDao {
               ps.setString(1, user.getUsername());
               ps.setString(2, user.getEmail());
               ps.setString(3, user.getPassword());
-              ps.setLong(4, user.getMedia().getId());
+              ps.setLong(4, user.getMediaId());
               ps.setString(5, user.getGender().toString().toUpperCase());
               ps.setBoolean(6, user.getEnable());
               return ps;
@@ -213,9 +212,9 @@ public class UserDaoImpl implements UserDao {
       params.add(user.getBio());
     }
 
-    if (user.getMedia() != null) {
+    if (user.getMediaId() != 0) {
       sqlBuilder.append("media_id = ?, ");
-      params.add(user.getMedia().getId());
+      params.add(user.getMediaId());
     }
 
     if (user.getGender() != null) {
@@ -273,22 +272,24 @@ public class UserDaoImpl implements UserDao {
       user.setEnable(rs.getBoolean("enable"));
 
       if (includeProfilePicture) {
-        Media media = new Media();
-        media.setId(rs.getLong("media_id"));
-        user.setMedia(media);
+        user.setMediaId(rs.getLong("media_id"));
       }
+
       if (includeBio) {
         user.setBio(rs.getString("bio"));
       }
+
       if (includePassword) {
         user.setPassword(rs.getString("password"));
       }
+
       if (includeGender) {
         String genderString = rs.getString("gender");
         if (genderString != null) {
           user.setGender(Gender.valueOf(genderString.toUpperCase()));
         }
       }
+
       return user;
     }
   }

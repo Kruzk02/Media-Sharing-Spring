@@ -1,6 +1,5 @@
 package com.app.module.user.domain.entity;
 
-import com.app.module.media.domain.entity.Media;
 import com.app.module.user.domain.status.Gender;
 import java.io.Serializable;
 import java.util.List;
@@ -18,7 +17,7 @@ public class User implements Serializable {
   private String email;
   private String password;
   private List<Role> roles;
-  private Media media;
+  private Long mediaId;
   private String bio;
   private Gender gender;
   private Boolean enable;

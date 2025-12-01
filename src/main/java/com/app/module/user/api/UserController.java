@@ -223,7 +223,7 @@ public class UserController {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getMedia().getId(),
+                user.getMediaId(),
                 user.getBio(),
                 user.getGender()));
   }
@@ -240,7 +240,7 @@ public class UserController {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getMedia().getId(),
+                user.getMediaId(),
                 user.getBio(),
                 user.getGender()));
   }
