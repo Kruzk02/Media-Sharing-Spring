@@ -39,8 +39,7 @@ public class MediaEventListener {
     String filename = MediaManager.generateUniqueFilename(event.file().getOriginalFilename());
     String extension = MediaManager.getFileExtension(event.file().getOriginalFilename());
 
-    if (existingMedia == null
-        || "default_profile_picture.png".equals(existingMedia.getUrl())) {
+    if (existingMedia == null || "default_profile_picture.png".equals(existingMedia.getUrl())) {
       media =
           mediaDao.save(
               Media.builder()
@@ -63,14 +62,17 @@ public class MediaEventListener {
     }
 
     FileManager.save(event.file(), filename, extension)
-        .thenRunAsync(() -> mediaDao.updateStatus(media.getId(), Status.READY))
+        .thenRunAsync(
+            () -> {
+              mediaDao.updateStatus(media.getId(), Status.READY);
+              eventPublisher.publishEvent(
+                  new UserMediaCreatedEvent(event.userId(), media.getId(), LocalDateTime.now()));
+            })
         .exceptionally(
             err -> {
               log.error("File save failed for media {}", media.getId(), err);
               mediaDao.updateStatus(media.getId(), Status.FAILED);
               return null;
             });
-    eventPublisher.publishEvent(
-        new UserMediaCreatedEvent(event.userId(), media.getId(), LocalDateTime.now()));
   }
 }

@@ -5,7 +5,7 @@ import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.event.UserMediaCreatedEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.modulith.events.ApplicationModuleListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class UserEventListener {
   private final UserDao userDao;
 
-  @ApplicationModuleListener
+  @EventListener
   public void on(UserMediaCreatedEvent event) {
     log.info(
         "Receive UserMediaCreatedEvent [userId={}, mediaId={}, createAt={}]",
@@ -29,5 +29,6 @@ public class UserEventListener {
     }
 
     user.setMediaId(event.mediaId());
+    userDao.update(user);
   }
 }
