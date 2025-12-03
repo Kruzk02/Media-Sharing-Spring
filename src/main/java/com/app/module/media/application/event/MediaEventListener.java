@@ -171,7 +171,8 @@ public class MediaEventListener {
         event.createdAt());
 
     Media existingMedia = mediaDao.findById(event.mediaId());
-    FileManager.delete(existingMedia.getUrl(), MediaManager.getFileExtension(existingMedia.getUrl()));
+    FileManager.delete(
+        existingMedia.getUrl(), MediaManager.getFileExtension(existingMedia.getUrl()));
     mediaDao.deleteById(existingMedia.getId());
   }
 }
