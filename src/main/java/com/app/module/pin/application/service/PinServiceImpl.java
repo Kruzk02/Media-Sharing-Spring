@@ -2,28 +2,26 @@ package com.app.module.pin.application.service;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.hashtag.infrastructure.HashtagDao;
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
-import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.exception.PinIsEmptyException;
 import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.event.pin.delete.DeletePinMediaCommand;
+import com.app.shared.event.pin.save.SavePinMediaCommand;
+import com.app.shared.event.pin.update.UpdatePinMediaCommand;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
-import com.app.shared.storage.FileManager;
-import com.app.shared.storage.MediaManager;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import com.app.shared.type.Status;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -43,8 +41,8 @@ public class PinServiceImpl implements PinService {
 
   private final PinDao pinDao;
   private final UserDao userDao;
-  private final MediaDao mediaDao;
   private final HashtagDao hashtagDao;
+  private final ApplicationEventPublisher eventPublisher;
 
   private User getAuthenticatedUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -70,40 +68,14 @@ public class PinServiceImpl implements PinService {
     if (pinRequest.file().isEmpty()) {
       throw new PinIsEmptyException("A pin must have file");
     }
-
-    String filename = MediaManager.generateUniqueFilename(pinRequest.file().getOriginalFilename());
-    String extension = MediaManager.getFileExtension(pinRequest.file().getOriginalFilename());
-
-    Media media =
-        mediaDao.save(
-            Media.builder()
-                .url(filename)
-                .mediaType(MediaType.fromExtension(extension))
-                .status(Status.PENDING)
-                .build());
-
-    Pin pin = savePinAndHashTags(pinRequest, media.getId());
-
-    FileManager.save(pinRequest.file(), filename, extension)
-        .thenRunAsync(
-            () -> {
-              // TODO: add notify to the user
-              mediaDao.updateStatus(media.getId(), Status.READY);
-            })
-        .exceptionally(
-            (_) -> {
-              mediaDao.updateStatus(media.getId(), Status.FAILED);
-
-              pinDao.deleteById(pin.getId());
-
-              FileManager.delete(filename, extension);
-              return null;
-            });
+    Pin pin = savePinAndHashTags(pinRequest);
+    eventPublisher.publishEvent(
+        new SavePinMediaCommand(pin.getId(), pinRequest.file(), LocalDateTime.now()));
     return pin;
   }
 
   @Transactional
-  private Pin savePinAndHashTags(PinRequest pinRequest, Long mediaId) {
+  private Pin savePinAndHashTags(PinRequest pinRequest) {
     Set<String> tagsToFind = pinRequest.hashtags();
     Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
 
@@ -120,7 +92,6 @@ public class PinServiceImpl implements PinService {
         Pin.builder()
             .description(pinRequest.description())
             .userId(getAuthenticatedUser().getId())
-            .mediaId(mediaId)
             .hashtags(hashtags)
             .build();
     return pinDao.save(pin);
@@ -141,28 +112,12 @@ public class PinServiceImpl implements PinService {
     }
 
     if (pinRequest.file() != null && !pinRequest.file().isEmpty()) {
-      Media existingMedia = mediaDao.findById(existingPin.getMediaId());
-      String oldFilename = existingMedia.getUrl();
-      String oldExtension = MediaManager.getFileExtension(oldFilename);
-
-      String newFilename =
-          MediaManager.generateUniqueFilename(pinRequest.file().getOriginalFilename());
-      String newExtension = MediaManager.getFileExtension(pinRequest.file().getOriginalFilename());
-
-      CompletableFuture.runAsync(() -> FileManager.delete(oldFilename, oldExtension))
-          .thenRunAsync(() -> FileManager.save(pinRequest.file(), newFilename, newExtension))
-          .thenRunAsync(
-              () -> {
-                existingMedia.setUrl(newFilename);
-                existingMedia.setMediaType(MediaType.fromExtension(newExtension));
-                existingMedia.setStatus(Status.READY);
-                mediaDao.update(existingPin.getId(), existingMedia);
-              })
-          .exceptionally(
-              err -> {
-                mediaDao.updateStatus(existingMedia.getId(), Status.FAILED);
-                return null;
-              });
+      eventPublisher.publishEvent(
+          new UpdatePinMediaCommand(
+              existingPin.getId(),
+              existingPin.getMediaId(),
+              pinRequest.file(),
+              LocalDateTime.now()));
     }
 
     return updatePinAndHashTags(pinRequest, existingPin);
@@ -229,9 +184,7 @@ public class PinServiceImpl implements PinService {
       throw new UserNotMatchException("Authenticated user does not own the pin");
     }
 
-    Media media = mediaDao.findById(pin.getMediaId());
-    FileManager.delete(media.getUrl(), media.getMediaType().toString());
-    mediaDao.deleteById(media.getId());
+    eventPublisher.publishEvent(new DeletePinMediaCommand(pin.getMediaId(), LocalDateTime.now()));
 
     pinDao.deleteById(id);
   }

@@ -57,7 +57,7 @@ public class PinDaoImpl implements PinDao {
   @Override
   public Pin save(Pin pin) {
     try {
-      String sql = "INSERT INTO pins(user_id, description, media_id) VALUES (?, ?, ?)";
+      String sql = "INSERT INTO pins(user_id, description) VALUES (?, ?)";
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
       int row =
@@ -66,7 +66,6 @@ public class PinDaoImpl implements PinDao {
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 ps.setLong(1, pin.getUserId());
                 ps.setString(2, pin.getDescription());
-                ps.setLong(3, pin.getMediaId());
                 return ps;
               },
               keyHolder);
