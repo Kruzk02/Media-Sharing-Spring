@@ -64,18 +64,12 @@ public class PinServiceImpl implements PinService {
   }
 
   @Override
+  @Transactional
   public Pin save(PinRequest pinRequest) {
     if (pinRequest.file().isEmpty()) {
       throw new PinIsEmptyException("A pin must have file");
     }
-    Pin pin = savePinAndHashTags(pinRequest);
-    eventPublisher.publishEvent(
-        new SavePinMediaCommand(pin.getId(), pinRequest.file(), LocalDateTime.now()));
-    return pin;
-  }
 
-  @Transactional
-  private Pin savePinAndHashTags(PinRequest pinRequest) {
     Set<String> tagsToFind = pinRequest.hashtags();
     Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
 
@@ -94,10 +88,15 @@ public class PinServiceImpl implements PinService {
             .userId(getAuthenticatedUser().getId())
             .hashtags(hashtags)
             .build();
-    return pinDao.save(pin);
+    Pin savedPin = pinDao.save(pin);
+
+    eventPublisher.publishEvent(
+        new SavePinMediaCommand(savedPin.getId(), pinRequest.file(), LocalDateTime.now()));
+    return pin;
   }
 
   @Override
+  @Transactional
   public Pin update(Long id, PinRequest pinRequest) {
 
     Pin existingPin = pinDao.findById(id, DetailsType.BASIC);
@@ -171,7 +170,9 @@ public class PinServiceImpl implements PinService {
   }
 
   @Override
+  @Transactional
   public void delete(Long id) throws IOException {
+
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     User user = userDao.findUserByUsername(authentication.getName());
 
@@ -183,9 +184,8 @@ public class PinServiceImpl implements PinService {
     if (!Objects.equals(user.getId(), pin.getUserId())) {
       throw new UserNotMatchException("Authenticated user does not own the pin");
     }
+    pinDao.deleteById(id);
 
     eventPublisher.publishEvent(new DeletePinMediaCommand(pin.getMediaId(), LocalDateTime.now()));
-
-    pinDao.deleteById(id);
   }
 }
