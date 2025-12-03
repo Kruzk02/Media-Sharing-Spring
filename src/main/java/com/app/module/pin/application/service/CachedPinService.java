@@ -10,11 +10,14 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @Primary
 public class CachedPinService extends CachedServiceHelper<Pin> implements PinService {
@@ -99,5 +102,6 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
     var pin = delegate.findById(id, DetailsType.BASIC);
     super.delete("pin:*");
     super.delete("user:" + pin.getUserId() + ":pins");
+    delegate.delete(id);
   }
 }

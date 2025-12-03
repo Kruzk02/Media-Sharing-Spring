@@ -171,12 +171,7 @@ public class MediaEventListener {
         event.createdAt());
 
     Media existingMedia = mediaDao.findById(event.mediaId());
-    if (existingMedia == null) {
-      log.warn("Media not found with a id: {}", event.mediaId());
-      return;
-    }
-
-    FileManager.delete(existingMedia.getUrl(), existingMedia.getMediaType().toString());
+    FileManager.delete(existingMedia.getUrl(), MediaManager.getFileExtension(existingMedia.getUrl()));
     mediaDao.deleteById(existingMedia.getId());
   }
 }
