@@ -1,4 +1,4 @@
-package com.app.shared.event;
+package com.app.shared.event.pin.save;
 
 import java.time.LocalDateTime;
 
