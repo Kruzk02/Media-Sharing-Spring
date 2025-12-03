@@ -259,7 +259,7 @@ public class PinController {
             description = "Internal server error",
             content = @Content(mediaType = "application/json"))
       })
-  @DeleteMapping("/delete/{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> deletePinById(@PathVariable Long id) throws IOException {
     pinService.delete(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)

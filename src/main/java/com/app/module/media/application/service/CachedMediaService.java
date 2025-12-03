@@ -25,7 +25,7 @@ public class CachedMediaService extends CachedServiceHelper<Media> implements Me
   @Override
   public Media findById(Long id) {
     var cached =
-        super.getOrLoad("media:" + id, () -> mediaService.findById(id), Duration.ofHours(2));
+        super.getOrLoad("media:" + id, () -> mediaService.findById(id), Duration.ofMinutes(30));
     return cached.orElseThrow(() -> new MediaNotFoundException("Media not found with a id: " + id));
   }
 }
