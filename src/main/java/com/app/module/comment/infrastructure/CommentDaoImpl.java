@@ -32,12 +32,7 @@ public class CommentDaoImpl implements CommentDao {
   @Override
   public Comment save(Comment comment) {
     try {
-      String sql;
-      if (comment.getMediaId() == 0) {
-        sql = "INSERT INTO comments (content,user_id,pin_id) VALUES (?,?,?)";
-      } else {
-        sql = "INSERT INTO comments (content,user_id,pin_id, media_id) VALUES (?,?,?,?)";
-      }
+      String sql = "INSERT INTO comments (content,user_id,pin_id) VALUES (?,?,?)";
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
       int row =
@@ -47,9 +42,6 @@ public class CommentDaoImpl implements CommentDao {
                 ps.setString(1, comment.getContent());
                 ps.setLong(2, comment.getUserId());
                 ps.setLong(3, comment.getPinId());
-                if (comment.getMediaId() != 0) {
-                  ps.setLong(4, comment.getMediaId());
-                }
                 return ps;
               },
               keyHolder);

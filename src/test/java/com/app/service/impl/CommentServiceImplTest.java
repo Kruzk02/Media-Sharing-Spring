@@ -10,8 +10,6 @@ import com.app.module.comment.infrastructure.CommentDao;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
-import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.notification.domain.Notification;
 import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
@@ -19,23 +17,20 @@ import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.message.producer.NotificationEventProducer;
-import com.app.shared.storage.FileManager;
-import com.app.shared.storage.MediaManager;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,11 +43,11 @@ class CommentServiceImplTest {
   @Mock private CommentDao commentDao;
   @Mock private UserDao userDao;
   @Mock private PinDao pinDao;
-  @Mock private MediaDao mediaDao;
   @Mock private HashtagDao hashtagDao;
   @Mock private Map<Long, SseEmitter> emitters;
   @Mock private NotificationEventProducer notificationEventProducer;
   @Mock private MultipartFile mockFile;
+  @Mock private ApplicationEventPublisher eventPublisher;
 
   @InjectMocks private CommentServiceImpl commentService;
 
@@ -82,7 +77,6 @@ class CommentServiceImplTest {
             .content("content")
             .hashtags(List.of(hashtag))
             .build();
-    media = Media.builder().id(1L).url("filename").mediaType(MediaType.IMAGE).build();
 
     pin =
         Pin.builder()
@@ -103,16 +97,10 @@ class CommentServiceImplTest {
     SecurityContextHolder.setContext(securityContext);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
-    Mockito.when(mockFile.getOriginalFilename()).thenReturn("test.jpg");
-
     var request = new CreateCommentRequest("content", 1L, mockFile, Set.of("tag1", "tag2"));
     Mockito.when(hashtagDao.findByTag(Set.of("tag1", "tag2"))).thenReturn(new HashMap<>());
     Mockito.when(hashtagDao.save(Mockito.argThat(ht -> ht.getTag() != null)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-
-    Mockito.when(
-            mediaDao.save(Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
-        .thenReturn(media);
 
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
@@ -138,8 +126,6 @@ class CommentServiceImplTest {
                         && !c.getHashtags().isEmpty()
                         && c.getUserId() != 0
                         && c.getPinId() != 0));
-    Mockito.verify(mediaDao)
-        .save(Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null));
 
     Mockito.verify(notificationEventProducer).send(Mockito.any(Notification.class));
   }
@@ -150,61 +136,37 @@ class CommentServiceImplTest {
     Mockito.when(commentDao.findById(1L, DetailsType.DETAIL)).thenReturn(comment);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
-    Mockito.when(mockFile.getOriginalFilename()).thenReturn("new-file.jpg");
-
     var request = new UpdatedCommentRequest("content", mockFile, Set.of("tag1", "tag2"));
-
-    Mockito.when(mediaDao.findByCommentId(1L)).thenReturn(media);
 
     Mockito.when(hashtagDao.save(Mockito.argThat(ht -> ht.getTag() != null)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
-    try (MockedStatic<FileManager> fileManagerMocked = Mockito.mockStatic(FileManager.class);
-        MockedStatic<MediaManager> mediaManagerMocked = Mockito.mockStatic(MediaManager.class)) {
-      mediaManagerMocked
-          .when(() -> MediaManager.generateUniqueFilename("new-file.jpg"))
-          .thenReturn("new-file.jpg");
-      mediaManagerMocked
-          .when(() -> MediaManager.getFileExtension("new-file.jpg"))
-          .thenReturn("jpg");
-      mediaManagerMocked
-          .when(() -> MediaManager.getFileExtension("old-file.jpg"))
-          .thenReturn("jpg");
+    Mockito.when(
+            commentDao.update(
+                Mockito.eq(1L),
+                Mockito.argThat(
+                    c ->
+                        c.getContent() != null
+                            && !c.getHashtags().isEmpty()
+                            && c.getUserId() != 0
+                            && c.getPinId() != 0)))
+        .thenAnswer(invocation -> invocation.getArgument(1));
 
-      fileManagerMocked
-          .when(() -> FileManager.delete("old-file.jpg", "jpg"))
-          .thenReturn(CompletableFuture.completedFuture(null));
-      fileManagerMocked
-          .when(() -> FileManager.save(mockFile, "new-file.jpg", "jpg"))
-          .thenReturn(CompletableFuture.completedFuture(null));
+    var result = commentService.update(1L, request);
+    assertNotNull(result);
+    assertEquals(comment.getId(), result.getId());
 
-      Mockito.when(
-              commentDao.update(
-                  Mockito.eq(1L),
-                  Mockito.argThat(
-                      c ->
-                          c.getContent() != null
-                              && !c.getHashtags().isEmpty()
-                              && c.getUserId() != 0
-                              && c.getPinId() != 0)))
-          .thenAnswer(invocation -> invocation.getArgument(1));
+    Mockito.verify(commentDao)
+        .update(
+            Mockito.eq(1L),
+            Mockito.argThat(
+                c ->
+                    c.getContent() != null
+                        && !c.getHashtags().isEmpty()
+                        && c.getUserId() != 0
+                        && c.getPinId() != 0));
 
-      var result = commentService.update(1L, request);
-      assertNotNull(result);
-      assertEquals(comment.getId(), result.getId());
-
-      Mockito.verify(commentDao)
-          .update(
-              Mockito.eq(1L),
-              Mockito.argThat(
-                  c ->
-                      c.getContent() != null
-                          && !c.getHashtags().isEmpty()
-                          && c.getUserId() != 0
-                          && c.getPinId() != 0));
-
-      Mockito.verify(emitters).get(result.getId());
-    }
+    Mockito.verify(emitters).get(result.getId());
   }
 
   @Test

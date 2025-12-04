@@ -93,5 +93,6 @@ public class CachedCommentService extends CachedServiceHelper<Comment> implement
   public void deleteById(Long id) {
     super.delete("comment:" + id + ":details");
     super.delete("comment:" + id);
+    commentService.deleteById(id);
   }
 }
