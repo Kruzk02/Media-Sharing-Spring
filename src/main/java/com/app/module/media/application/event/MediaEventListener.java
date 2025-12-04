@@ -5,6 +5,11 @@ import com.app.module.media.domain.status.MediaType;
 import com.app.module.media.infrastructure.MediaDao;
 import com.app.shared.event.UserMediaCreatedEvent;
 import com.app.shared.event.UserUpdatedMediaEvent;
+import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
+import com.app.shared.event.comment.save.CommentMediaSaveEvent;
+import com.app.shared.event.comment.save.CommentMediaSaveFailedEvent;
+import com.app.shared.event.comment.save.SaveCommentMediaEvent;
+import com.app.shared.event.comment.update.UpdateCommentMediaEvent;
 import com.app.shared.event.pin.delete.DeletePinMediaCommand;
 import com.app.shared.event.pin.save.PinMediaSaveFailedEvent;
 import com.app.shared.event.pin.save.PinMediaSavedEvent;
@@ -170,6 +175,92 @@ public class MediaEventListener {
         event.mediaId(),
         event.createdAt());
 
+    Media existingMedia = mediaDao.findById(event.mediaId());
+    FileManager.delete(
+        existingMedia.getUrl(), MediaManager.getFileExtension(existingMedia.getUrl()));
+    mediaDao.deleteById(existingMedia.getId());
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleSaveCommentMediaEvent(SaveCommentMediaEvent event) {
+    log.info(
+        "Receive SaveCommentMediaEvent [commentId={}, filename={}, createdAt={}]",
+        event.commentId(),
+        event.file().getOriginalFilename(),
+        event.createdAt());
+
+    String filename = MediaManager.generateUniqueFilename(event.file().getOriginalFilename());
+    String extension = MediaManager.getFileExtension(event.file().getOriginalFilename());
+
+    Media media =
+        mediaDao.save(
+            Media.builder()
+                .url(filename)
+                .mediaType(MediaType.fromExtension(extension))
+                .status(Status.PENDING)
+                .build());
+
+    FileManager.save(event.file(), filename, extension)
+        .thenRunAsync(
+            () -> {
+              mediaDao.updateStatus(media.getId(), Status.READY);
+              eventPublisher.publishEvent(
+                  new CommentMediaSaveEvent(event.commentId(), media.getId(), LocalDateTime.now()));
+            })
+        .exceptionally(
+            (_) -> {
+              mediaDao.updateStatus(media.getId(), Status.FAILED);
+              eventPublisher.publishEvent(
+                  new CommentMediaSaveFailedEvent(event.commentId(), LocalDateTime.now()));
+              return null;
+            });
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleUpdateCommentMediaEvent(UpdateCommentMediaEvent event) {
+    log.info(
+        "Receive UpdateCommentMediaEvent [commentId={}, mediaId={}, filename={}, createdAt={}]",
+        event.commentId(),
+        event.mediaId(),
+        event.file().getOriginalFilename(),
+        event.createdAt());
+
+    Media existingMedia = mediaDao.findById(event.mediaId());
+    if (existingMedia == null) {
+      log.warn("Media not found with id: {}", event.mediaId());
+      return;
+    }
+
+    String oldFilename = existingMedia.getUrl();
+    String oldExtension = MediaManager.getFileExtension(oldFilename);
+
+    String newFilename = MediaManager.generateUniqueFilename(event.file().getOriginalFilename());
+    String newExtension = MediaManager.getFileExtension(event.file().getOriginalFilename());
+
+    CompletableFuture.runAsync(() -> FileManager.save(event.file(), newFilename, newExtension))
+        .thenRunAsync(
+            () -> {
+              existingMedia.setUrl(newFilename);
+              existingMedia.setMediaType(MediaType.fromExtension(newExtension));
+              existingMedia.setStatus(Status.READY);
+              mediaDao.update(existingMedia.getId(), existingMedia);
+
+              scheduler.schedule(
+                  () -> FileManager.delete(oldFilename, oldExtension), 30, TimeUnit.MINUTES);
+            })
+        .exceptionally(
+            _ -> {
+              mediaDao.updateStatus(existingMedia.getId(), Status.FAILED);
+              return null;
+            });
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleDeleteCommentMediaEvent(DeleteCommentMediaEvent event) {
+    log.info(
+        "Receive DeleteCommentMediaEvent [mediaId={}, createdAt={}]",
+        event.mediaId(),
+        event.createdAt());
     Media existingMedia = mediaDao.findById(event.mediaId());
     FileManager.delete(
         existingMedia.getUrl(), MediaManager.getFileExtension(existingMedia.getUrl()));
