@@ -19,7 +19,7 @@ public abstract class AbstractMySQLTest {
   void setUpBase() {
     DataSource dataSource =
         DataSourceBuilder.create()
-            .url(mysql.getJdbcUrl())
+            .url(mysql.getJdbcUrl() + "?useSSL=false&allowPublicKeyRetrieval=true")
             .username(mysql.getUsername())
             .password(mysql.getPassword())
             .driverClassName(mysql.getDriverClassName())
@@ -95,7 +95,7 @@ public abstract class AbstractMySQLTest {
             + "id int auto_increment primary key,"
             + "user_id int NOT NULL,"
             + "description text,"
-            + "media_id int NOT NULL,"
+            + "media_id int NULL DEFAULT NULL,"
             + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
             + "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,"
             + "FOREIGN kEY (media_id) REFERENCES media(id) ON DELETE CASCADE"
