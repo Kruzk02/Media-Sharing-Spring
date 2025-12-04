@@ -122,7 +122,7 @@ public class CommentDaoImpl implements CommentDao {
     try {
       if (detailsType.getType().equals("DETAIL")) {
         String sql =
-            "SELECT c.id AS comment_id, c.user_id, c.pin_id, c.created_at, "
+            "SELECT c.id AS comment_id, c.user_id, c.pin_id, c.media_id, c.created_at, "
                 + "h.id AS hashtag_id, h.tag "
                 + "FROM comments c "
                 + "JOIN hashtags_comments hc ON hc.comment_id = c.id "
@@ -140,6 +140,7 @@ public class CommentDaoImpl implements CommentDao {
                           .id(rs.getLong("comment_id"))
                           .userId(rs.getLong("user_id"))
                           .pinId(rs.getLong("pin_id"))
+                          .mediaId(rs.getLong("media_id"))
                           .created_at(rs.getTimestamp("created_at").toLocalDateTime())
                           .hashtags(new ArrayList<>())
                           .build();
