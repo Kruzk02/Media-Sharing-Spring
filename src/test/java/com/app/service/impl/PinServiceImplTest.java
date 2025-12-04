@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.hashtag.infrastructure.HashtagDao;
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
-import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.service.PinServiceImpl;
 import com.app.module.pin.domain.Pin;
@@ -15,18 +12,16 @@ import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.exception.sub.PinNotFoundException;
-import com.app.shared.storage.FileManager;
-import com.app.shared.storage.MediaManager;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,15 +32,14 @@ class PinServiceImplTest {
 
   @Mock private PinDao pinDao;
   @Mock private UserDao userDao;
-  @Mock private MediaDao mediaDao;
   @Mock private HashtagDao hashtagDao;
   @Mock private MultipartFile mockFile;
+  @Mock private ApplicationEventPublisher eventPublisher;
 
   @InjectMocks private PinServiceImpl pinService;
 
   private Pin pin;
   private User user;
-  private Media media;
 
   @BeforeEach
   void setUp() {
@@ -67,8 +61,6 @@ class PinServiceImplTest {
             .mediaId(1L)
             .hashtags(List.of(hashtag))
             .build();
-
-    media = Media.builder().id(1L).url("filename").mediaType(MediaType.IMAGE).build();
   }
 
   @Test
@@ -99,17 +91,10 @@ class PinServiceImplTest {
     SecurityContextHolder.setContext(securityContext);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
-    Mockito.when(mockFile.isEmpty()).thenReturn(false);
-    Mockito.when(mockFile.getOriginalFilename()).thenReturn("test.jpg");
-
     PinRequest request = new PinRequest("Description", mockFile, Set.of("tag1", "tag2"));
     Mockito.when(hashtagDao.findByTag(Set.of("tag1", "tag2"))).thenReturn(new HashMap<>());
     Mockito.when(hashtagDao.save(Mockito.argThat(ht -> ht.getTag() != null)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-
-    Mockito.when(
-            mediaDao.save(Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
-        .thenReturn(media);
 
     Mockito.when(
             pinDao.save(
@@ -117,96 +102,57 @@ class PinServiceImplTest {
                     p ->
                         !p.getHashtags().isEmpty()
                             && p.getDescription() != null
-                            && p.getUserId() != 0
-                            && p.getMediaId() != 0)))
+                            && p.getUserId() != 0)))
         .thenReturn(pin);
 
     Pin result = pinService.save(request);
 
     assertNotNull(result);
-    assertEquals(pin.getId(), result.getId());
     Mockito.verify(pinDao)
         .save(
             Mockito.argThat(
                 p ->
                     !p.getHashtags().isEmpty()
                         && p.getDescription() != null
-                        && p.getUserId() != 0
-                        && p.getMediaId() != 0));
-    Mockito.verify(mediaDao)
-        .save(Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null));
+                        && p.getUserId() != 0));
   }
 
   @Test
   void update_ShouldUpdatePin_WhenValidRequestAndMatchingUser() {
-    String newFilename = "new-file.jpg";
-    String newExtension = "jpg";
-
-    Media existingMedia =
-        Media.builder().id(1L).url("old-file.png").mediaType(MediaType.IMAGE).build();
-
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
-    Mockito.when(mockFile.isEmpty()).thenReturn(false);
-    Mockito.when(mockFile.getOriginalFilename()).thenReturn("new-file.jpg");
-
     PinRequest pinRequest = new PinRequest("New description", mockFile, Set.of("tag1"));
-
-    Mockito.when(mediaDao.findById(pin.getMediaId())).thenReturn(existingMedia);
 
     Mockito.when(hashtagDao.findByTag(Set.of("tag1"))).thenReturn(Map.of());
     Mockito.when(hashtagDao.save(Mockito.argThat(ht -> ht.getTag() != null)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
-    try (MockedStatic<FileManager> fileManagerMock = Mockito.mockStatic(FileManager.class);
-        MockedStatic<MediaManager> mediaManagerMock = Mockito.mockStatic(MediaManager.class)) {
-      mediaManagerMock
-          .when(() -> MediaManager.generateUniqueFilename("new-file.jpg"))
-          .thenReturn(newFilename);
-      mediaManagerMock
-          .when(() -> MediaManager.getFileExtension("new-file.jpg"))
-          .thenReturn(newExtension);
-      mediaManagerMock.when(() -> MediaManager.getFileExtension("old-file.png")).thenReturn("png");
+    Mockito.when(
+            pinDao.update(
+                Mockito.eq(1L),
+                Mockito.argThat(
+                    p ->
+                        !p.getHashtags().isEmpty()
+                            && p.getDescription() != null
+                            && p.getUserId() != 0)))
+        .thenAnswer(invocation -> invocation.getArgument(1));
 
-      fileManagerMock
-          .when(() -> FileManager.delete(Mockito.anyString(), Mockito.anyString()))
-          .thenReturn(CompletableFuture.completedFuture(null));
-      fileManagerMock
-          .when(() -> FileManager.save(Mockito.any(), Mockito.anyString(), Mockito.anyString()))
-          .thenReturn(CompletableFuture.completedFuture(null));
+    Pin updatedPin = pinService.update(1L, pinRequest);
 
-      Media updatedMedia =
-          Media.builder().id(1L).url(newFilename).mediaType(MediaType.IMAGE).build();
+    assertEquals("New description", updatedPin.getDescription());
+    assertEquals(user.getId(), updatedPin.getUserId());
 
-      Mockito.when(
-              pinDao.update(
-                  Mockito.eq(1L),
-                  Mockito.argThat(
-                      p ->
-                          !p.getHashtags().isEmpty()
-                              && p.getDescription() != null
-                              && p.getUserId() != 0
-                              && p.getMediaId() != 0)))
-          .thenAnswer(invocation -> invocation.getArgument(1));
-
-      Pin updatedPin = pinService.update(1L, pinRequest);
-
-      assertEquals("New description", updatedPin.getDescription());
-      assertEquals(user.getId(), updatedPin.getUserId());
-
-      Mockito.verify(pinDao)
-          .update(
-              Mockito.eq(1L),
-              Mockito.argThat(
-                  p ->
-                      p.getId() != null
-                          && !p.getHashtags().isEmpty()
-                          && p.getDescription() != null
-                          && p.getUserId() != 0
-                          && p.getMediaId() != 0));
-      Mockito.verify(hashtagDao).save(Mockito.argThat(ht -> ht.getTag() != null));
-    }
+    Mockito.verify(pinDao)
+        .update(
+            Mockito.eq(1L),
+            Mockito.argThat(
+                p ->
+                    p.getId() != null
+                        && !p.getHashtags().isEmpty()
+                        && p.getDescription() != null
+                        && p.getUserId() != 0));
+    Mockito.verify(hashtagDao).save(Mockito.argThat(ht -> ht.getTag() != null));
   }
 
   @Test
@@ -231,11 +177,9 @@ class PinServiceImplTest {
   void deleteById_shouldDeleteExistingPin() throws IOException {
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
-    Mockito.when(mediaDao.findById(1L)).thenReturn(media);
 
     pinService.delete(1L);
 
-    Mockito.verify(mediaDao).findById(1L);
     Mockito.verify(pinDao).deleteById(1L);
   }
 
