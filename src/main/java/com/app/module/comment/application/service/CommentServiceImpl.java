@@ -104,12 +104,6 @@ public class CommentServiceImpl implements CommentService {
           "A comment must have either content or a media attachment.");
     }
 
-    if (request.media() != null && !request.media().isEmpty()) {
-      eventPublisher.publishEvent(
-          new UpdateCommentMediaEvent(
-              comment.getId(), comment.getMediaId(), request.media(), LocalDateTime.now()));
-    }
-
     if (request.content() != null && !request.content().trim().isEmpty()) {
       comment.setContent(request.content());
     }
@@ -120,6 +114,12 @@ public class CommentServiceImpl implements CommentService {
 
     Comment updatedComment = commentDao.update(id, comment);
 
+    if (request.media() != null && !request.media().isEmpty()) {
+      log.info("media={}, mediaId={}", request.media(), comment.getMediaId());
+      eventPublisher.publishEvent(
+          new UpdateCommentMediaEvent(
+              comment.getId(), comment.getMediaId(), request.media(), LocalDateTime.now()));
+    }
     sendEvent("updated-comment", updatedComment);
 
     return updatedComment;

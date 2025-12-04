@@ -6,8 +6,8 @@ import com.app.module.media.infrastructure.MediaDao;
 import com.app.shared.event.UserMediaCreatedEvent;
 import com.app.shared.event.UserUpdatedMediaEvent;
 import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
-import com.app.shared.event.comment.save.CommentMediaSaveEvent;
 import com.app.shared.event.comment.save.CommentMediaSaveFailedEvent;
+import com.app.shared.event.comment.save.CommentMediaSavedEvent;
 import com.app.shared.event.comment.save.SaveCommentMediaEvent;
 import com.app.shared.event.comment.update.UpdateCommentMediaEvent;
 import com.app.shared.event.pin.delete.DeletePinMediaCommand;
@@ -205,7 +205,8 @@ public class MediaEventListener {
             () -> {
               mediaDao.updateStatus(media.getId(), Status.READY);
               eventPublisher.publishEvent(
-                  new CommentMediaSaveEvent(event.commentId(), media.getId(), LocalDateTime.now()));
+                  new CommentMediaSavedEvent(
+                      event.commentId(), media.getId(), LocalDateTime.now()));
             })
         .exceptionally(
             (_) -> {
