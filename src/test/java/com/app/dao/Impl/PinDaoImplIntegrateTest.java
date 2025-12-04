@@ -35,7 +35,6 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
         pinDao.save(
             Pin.builder()
                 .userId(1L)
-                .mediaId(1L)
                 .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
                 .description("description")
                 .build());
@@ -43,7 +42,6 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
     assertNotNull(result);
     assertEquals(1L, result.getId());
     assertEquals(1L, result.getUserId());
-    assertEquals(1L, result.getMediaId());
   }
 
   @Test
@@ -51,13 +49,12 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   void getAllPins() {
     List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, 0);
 
-    Pin expected = Pin.builder().id(1L).userId(1L).mediaId(1L).description(null).build();
+    Pin expected = Pin.builder().id(1L).userId(1L).description(null).build();
 
     Pin actual = pins.getFirst();
 
     assertEquals(expected.getId(), actual.getId());
     assertEquals(expected.getUserId(), actual.getUserId());
-    assertEquals(expected.getMediaId(), actual.getMediaId());
     assertEquals(expected.getDescription(), actual.getDescription());
     assertNotNull(actual.getCreatedAt());
   }
@@ -70,7 +67,6 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
         Pin.builder()
             .id(1L)
             .userId(1L)
-            .mediaId(1L)
             .description(null)
             .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
             .build();
@@ -79,7 +75,6 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
 
     assertEquals(expected.getId(), actual.getId());
     assertEquals(expected.getUserId(), actual.getUserId());
-    assertEquals(expected.getMediaId(), actual.getMediaId());
     assertEquals(expected.getDescription(), actual.getDescription());
     assertNotNull(actual.getCreatedAt());
   }
@@ -92,7 +87,6 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
     assertNotNull(result);
     assertEquals(1L, result.getId());
     assertEquals(1L, result.getUserId());
-    assertEquals(1L, result.getMediaId());
   }
 
   @Test
@@ -103,7 +97,6 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
         Pin.builder()
             .id(1L)
             .userId(1L)
-            .mediaId(1L)
             .description(null)
             .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
             .build();
@@ -112,7 +105,6 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
 
     assertEquals(expected.getId(), actual.getId());
     assertEquals(expected.getUserId(), actual.getUserId());
-    assertEquals(expected.getMediaId(), actual.getMediaId());
     assertEquals(expected.getDescription(), actual.getDescription());
     assertNotNull(actual.getCreatedAt());
   }
