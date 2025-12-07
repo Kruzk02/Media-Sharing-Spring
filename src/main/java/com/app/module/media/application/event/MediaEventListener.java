@@ -15,6 +15,11 @@ import com.app.shared.event.pin.save.PinMediaSaveFailedEvent;
 import com.app.shared.event.pin.save.PinMediaSavedEvent;
 import com.app.shared.event.pin.save.SavePinMediaCommand;
 import com.app.shared.event.pin.update.UpdatePinMediaCommand;
+import com.app.shared.event.subcomment.delete.DeleteSubCommentMediaEvent;
+import com.app.shared.event.subcomment.save.SaveSubCommentMediaEvent;
+import com.app.shared.event.subcomment.save.SubCommentSavedEvent;
+import com.app.shared.event.subcomment.save.SubCommentSavedFailedEvent;
+import com.app.shared.event.subcomment.update.UpdateSubCommentMediaEvent;
 import com.app.shared.storage.FileManager;
 import com.app.shared.storage.MediaManager;
 import com.app.shared.type.Status;
@@ -183,6 +188,48 @@ public class MediaEventListener {
     if (existingMedia != null) {
       deleteMedia(existingMedia);
     }
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleSaveSubCommentMediaEvent(SaveSubCommentMediaEvent event) {
+      log.info("Receive SaveSubCommentMediaEvent [commentId={}, file={}, createdAt={}]", event.subCommentId(), event.file(), event.createdAt());
+
+      String filename = generateFilename(event.file());
+      String extension = extractExtension(event.file());
+
+      Media media = savePendingMedia(filename, extension);
+
+      saveFileAsync(event.file(), filename, extension)
+              .thenRunAsync(() -> markReadyAndPublish(media, new SubCommentSavedEvent(event.subCommentId(), media.getId(), LocalDateTime.now())))
+              .exceptionally(_ -> {
+                  markFailed(media);
+                  eventPublisher.publishEvent(new SubCommentSavedFailedEvent(event.subCommentId(), LocalDateTime.now()));
+                  return null;
+              });
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleUpdateSubCommentMediaEvent(UpdateSubCommentMediaEvent event) {
+      log.info("Receive UpdateSubCommentMediaEvent [commentId={}, mediaId={}, file={}, createdAt={}]", event.subCommentId(), event.mediaId(), event.file(), event.createdAt());
+      Media existingMedia = mediaDao.findById(event.mediaId());
+      if (existingMedia == null) {
+          log.warn("Media not found with id: {}", event.mediaId());
+          return;
+      }
+
+      updateMediaFile(existingMedia, event.file());
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleDeleteSubCommentMediaEvent(DeleteSubCommentMediaEvent event) {
+      log.info(
+              "Receive DeleteSubCommentMediaEvent [mediaId={}, createdAt={}]",
+              event.mediaId(),
+              event.createdAt());
+      Media existingMedia = mediaDao.findById(event.mediaId());
+      if (existingMedia != null) {
+          deleteMedia(existingMedia);
+      }
   }
 
   private String generateFilename(MultipartFile file) {
