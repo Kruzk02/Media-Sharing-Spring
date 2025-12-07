@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.app.dao.AbstractMySQLTest;
 import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDaoImpl;
@@ -65,7 +63,7 @@ class SubCommentDaoImplIntegrateTest extends AbstractMySQLTest {
                         .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
                         .mediaId(1L)
                         .build())
-                .media(Media.builder().id(1L).url("url").mediaType(MediaType.IMAGE).build())
+                .mediaId(1L)
                 .build());
 
     assertNotNull(result);
@@ -122,7 +120,7 @@ class SubCommentDaoImplIntegrateTest extends AbstractMySQLTest {
                         .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
                         .mediaId(1L)
                         .build())
-                .media(Media.builder().id(1L).url("url").mediaType(MediaType.IMAGE).build())
+                .mediaId(1L)
                 .build());
 
     assertNotNull(result);

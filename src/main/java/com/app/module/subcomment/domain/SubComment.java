@@ -1,7 +1,6 @@
 package com.app.module.subcomment.domain;
 
 import com.app.module.comment.domain.Comment;
-import com.app.module.media.domain.entity.Media;
 import com.app.module.user.domain.entity.User;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -22,6 +21,6 @@ public class SubComment implements Serializable {
   private String content;
   private Comment comment;
   private User user;
-  private Media media;
+  private Long mediaId;
   private LocalDateTime createAt;
 }

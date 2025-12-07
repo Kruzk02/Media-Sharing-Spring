@@ -1,7 +1,6 @@
 package com.app.module.subcomment.infrastructure.subcomment;
 
 import com.app.module.comment.domain.Comment;
-import com.app.module.media.domain.entity.Media;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.domain.SubCommentNotFoundException;
 import com.app.module.user.domain.entity.User;
@@ -30,12 +29,7 @@ public class SubCommentDaoImpl implements SubCommentDao {
   @Override
   public SubComment save(SubComment subComment) {
     try {
-      String sql;
-      if (subComment.getMedia() != null) {
-        sql = "INSERT INTO sub_comments (content, user_id, comment_id, media_id) VALUES(?,?,?,?)";
-      } else {
-        sql = "INSERT INTO sub_comments(content, user_id, comment_id) VALUES(?,?,?)";
-      }
+      String sql = "INSERT INTO sub_comments(content, user_id, comment_id) VALUES(?,?,?)";
 
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -47,9 +41,6 @@ public class SubCommentDaoImpl implements SubCommentDao {
                 ps.setString(1, subComment.getContent());
                 ps.setLong(2, subComment.getUser().getId());
                 ps.setLong(3, subComment.getComment().getId());
-                if (subComment.getMedia() != null) {
-                  ps.setLong(4, subComment.getMedia().getId());
-                }
                 return ps;
               },
               keyHolder);
@@ -77,9 +68,9 @@ public class SubCommentDaoImpl implements SubCommentDao {
       params.add(subComment.getContent());
     }
 
-    if (subComment.getMedia().getId() != 0) {
+    if (subComment.getMediaId() != 0) {
       sb.append("media_id = ?, ");
-      params.add(subComment.getMedia().getId());
+      params.add(subComment.getMediaId());
     }
 
     if (params.isEmpty()) {
@@ -156,10 +147,7 @@ public class SubCommentDaoImpl implements SubCommentDao {
       subComment.setId(rs.getLong("sc_id"));
 
       subComment.setContent(rs.getString("sc_content"));
-
-      Media media = new Media();
-      media.setId(rs.getLong("sc_media_id"));
-      subComment.setMedia(media);
+      subComment.setMediaId(rs.getLong("sc_media_id"));
 
       User user = new User();
       user.setId(rs.getLong("user_id"));

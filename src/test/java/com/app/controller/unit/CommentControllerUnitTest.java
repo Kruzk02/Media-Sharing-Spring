@@ -8,8 +8,6 @@ import com.app.module.comment.api.CommentController;
 import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
 import com.app.module.subcomment.application.service.SubCommentService;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.user.domain.entity.User;
@@ -114,7 +112,7 @@ class CommentControllerUnitTest {
                         .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
                         .mediaId(1L)
                         .build())
-                .media(Media.builder().id(1L).url("url").mediaType(MediaType.IMAGE).build())
+                .mediaId(1L)
                 .build());
 
     when(subCommentService.findAllByCommentId(eq(1L), eq(SortType.NEWEST), eq(10), eq(0)))

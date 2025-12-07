@@ -52,7 +52,7 @@ public class SubCommentController {
             new SubCommentResponse(
                 subComment.getId(),
                 subComment.getContent(),
-                subComment.getMedia().getId(),
+                subComment.getMediaId(),
                 new CommentDTO(
                     subComment.getComment().getId(), subComment.getComment().getContent()),
                 new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),
@@ -83,7 +83,7 @@ public class SubCommentController {
             new SubCommentResponse(
                 subComment.getId(),
                 subComment.getContent(),
-                subComment.getMedia().getId(),
+                subComment.getMediaId(),
                 new CommentDTO(
                     subComment.getComment().getId(), subComment.getComment().getContent()),
                 new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),
@@ -119,7 +119,7 @@ public class SubCommentController {
             new SubCommentResponse(
                 subComment.getId(),
                 subComment.getContent(),
-                subComment.getMedia() == null ? 0 : subComment.getMedia().getId(),
+                subComment.getMediaId(),
                 new CommentDTO(
                     subComment.getComment().getId(), subComment.getComment().getContent()),
                 new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),

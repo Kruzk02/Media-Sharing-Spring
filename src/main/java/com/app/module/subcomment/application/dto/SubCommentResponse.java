@@ -17,7 +17,7 @@ public record SubCommentResponse(
     return new SubCommentResponse(
         subComment.getId(),
         subComment.getContent(),
-        subComment.getMedia().getId(),
+        subComment.getMediaId(),
         new CommentDTO(subComment.getComment().getId(), subComment.getComment().getContent()),
         new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),
         subComment.getCreateAt());

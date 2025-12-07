@@ -6,8 +6,6 @@ import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.domain.Comment;
 import com.app.module.comment.infrastructure.CommentDao;
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.media.domain.entity.Media;
-import com.app.module.media.domain.status.MediaType;
 import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.notification.domain.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
@@ -18,21 +16,18 @@ import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.message.producer.NotificationEventProducer;
-import com.app.shared.storage.FileManager;
-import com.app.shared.storage.MediaManager;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,23 +42,16 @@ class SubCommentServiceImplTest {
   @Mock private MediaDao mediaDao;
   @Mock private NotificationEventProducer notificationEventProducer;
   @Mock private MultipartFile mockFile;
+  @Mock private ApplicationEventPublisher eventPublisher;
 
   @InjectMocks private SubCommentServiceImpl subCommentService;
 
-  private Media media;
   private User user;
   private Comment comment;
   private SubComment subComment;
 
   @BeforeEach
   void setUp() {
-    media =
-        Media.builder()
-            .id(1L)
-            .mediaType(MediaType.IMAGE)
-            .url("default_profile_picture.png")
-            .build();
-
     user =
         User.builder()
             .username("username")
@@ -90,7 +78,7 @@ class SubCommentServiceImplTest {
             .id(1L)
             .comment(comment)
             .user(user)
-            .media(media)
+            .mediaId(1L)
             .content("WEWEWE")
             .build();
   }
@@ -104,13 +92,7 @@ class SubCommentServiceImplTest {
     SecurityContextHolder.setContext(securityContext);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
-    Mockito.when(mockFile.getOriginalFilename()).thenReturn("test.jpg");
-
     var request = new CreateSubCommentRequest("content", mockFile, 1L);
-
-    Mockito.when(
-            mediaDao.save(Mockito.argThat(m -> m.getMediaType() != null && m.getUrl() != null)))
-        .thenReturn(media);
 
     Mockito.when(commentDao.findById(1L, DetailsType.BASIC)).thenReturn(comment);
 
@@ -142,43 +124,20 @@ class SubCommentServiceImplTest {
 
     Mockito.when(subCommentDao.findById(1L)).thenReturn(subComment);
 
-    Mockito.when(mockFile.getOriginalFilename()).thenReturn("new-file.jpg");
-
     var request = new UpdatedCommentRequest("content", mockFile, Set.of());
+    Mockito.when(
+            subCommentDao.update(
+                Mockito.eq(1L),
+                Mockito.argThat(
+                    sc ->
+                        sc.getContent() != null
+                            && sc.getUser() != null
+                            && sc.getComment() != null)))
+        .thenAnswer(invocation -> invocation.getArgument(1));
 
-    try (MockedStatic<FileManager> fileManagerMocked = Mockito.mockStatic(FileManager.class);
-        MockedStatic<MediaManager> mediaManagerMocked = Mockito.mockStatic(MediaManager.class); ) {
-      mediaManagerMocked
-          .when(() -> MediaManager.generateUniqueFilename("new-file.jpg"))
-          .thenReturn("new-file.jpg");
-      mediaManagerMocked
-          .when(() -> MediaManager.getFileExtension("new-file.jpg"))
-          .thenReturn("jpg");
-      mediaManagerMocked
-          .when(() -> MediaManager.getFileExtension("old-file.jpg"))
-          .thenReturn("jpg");
-
-      fileManagerMocked
-          .when(() -> FileManager.delete("old-file.jpg", "jpg"))
-          .thenReturn(CompletableFuture.completedFuture(null));
-      fileManagerMocked
-          .when(() -> FileManager.save(mockFile, "new-file.jpg", "jpg"))
-          .thenReturn(CompletableFuture.completedFuture(null));
-
-      Mockito.when(
-              subCommentDao.update(
-                  Mockito.eq(1L),
-                  Mockito.argThat(
-                      sc ->
-                          sc.getContent() != null
-                              && sc.getUser() != null
-                              && sc.getComment() != null)))
-          .thenAnswer(invocation -> invocation.getArgument(1));
-
-      var result = subCommentService.update(1L, request);
-      assertNotNull(result);
-      assertEquals(comment.getId(), result.getId());
-    }
+    var result = subCommentService.update(1L, request);
+    assertNotNull(result);
+    assertEquals(comment.getId(), result.getId());
   }
 
   @Test
