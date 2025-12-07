@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @AllArgsConstructor
@@ -49,45 +50,20 @@ public class MediaEventListener {
         event.file().getOriginalFilename(),
         event.createAt());
 
-    Media existingMedia = mediaDao.findById(event.mediaId());
+    String filename = generateFilename(event.file());
+    String extension = extractExtension(event.file());
 
-    Media media;
-    String filename = MediaManager.generateUniqueFilename(event.file().getOriginalFilename());
-    String extension = MediaManager.getFileExtension(event.file().getOriginalFilename());
+    Media media = savePendingMedia(filename, extension);
 
-    if (existingMedia == null || "default_profile_picture.png".equals(existingMedia.getUrl())) {
-      media =
-          mediaDao.save(
-              Media.builder()
-                  .url(filename)
-                  .mediaType(MediaType.fromExtension(extension))
-                  .status(Status.PENDING)
-                  .build());
-    } else {
-      String oldExtension = MediaManager.getFileExtension(existingMedia.getUrl());
-      media =
-          mediaDao.update(
-              existingMedia.getId(),
-              Media.builder()
-                  .id(existingMedia.getId())
-                  .url(filename)
-                  .mediaType(MediaType.fromExtension(extension))
-                  .status(Status.PENDING)
-                  .build());
-      FileManager.delete(existingMedia.getUrl(), oldExtension);
-    }
-
-    FileManager.save(event.file(), filename, extension)
+    saveFileAsync(event.file(), filename, extension)
         .thenRunAsync(
-            () -> {
-              mediaDao.updateStatus(media.getId(), Status.READY);
-              eventPublisher.publishEvent(
-                  new UserMediaCreatedEvent(event.userId(), media.getId(), LocalDateTime.now()));
-            })
+            () ->
+                markReadyAndPublish(
+                    media,
+                    new UserMediaCreatedEvent(event.userId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            err -> {
-              log.error("File save failed for media {}", media.getId(), err);
-              mediaDao.updateStatus(media.getId(), Status.FAILED);
+            _ -> {
+              markFailed(media);
               return null;
             });
   }
@@ -100,32 +76,22 @@ public class MediaEventListener {
         event.file().getOriginalFilename(),
         event.createdAt());
 
-    String filename = MediaManager.generateUniqueFilename(event.file().getOriginalFilename());
-    String extension = MediaManager.getFileExtension(event.file().getOriginalFilename());
+    String filename = generateFilename(event.file());
+    String extension = extractExtension(event.file());
 
-    Media media =
-        mediaDao.save(
-            Media.builder()
-                .url(filename)
-                .mediaType(MediaType.fromExtension(extension))
-                .status(Status.PENDING)
-                .build());
+    Media media = savePendingMedia(filename, extension);
 
-    FileManager.save(event.file(), filename, extension)
+    saveFileAsync(event.file(), filename, extension)
         .thenRunAsync(
-            () -> {
-              mediaDao.updateStatus(media.getId(), Status.READY);
-              eventPublisher.publishEvent(
-                  new PinMediaSavedEvent(event.pinId(), media.getId(), LocalDateTime.now()));
-            })
+            () ->
+                markReadyAndPublish(
+                    media,
+                    new PinMediaSavedEvent(event.pinId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            (_) -> {
-              mediaDao.updateStatus(media.getId(), Status.FAILED);
-
+            _ -> {
+              markFailed(media);
               eventPublisher.publishEvent(
                   new PinMediaSaveFailedEvent(event.pinId(), LocalDateTime.now()));
-
-              FileManager.delete(filename, extension);
               return null;
             });
   }
@@ -144,28 +110,7 @@ public class MediaEventListener {
       return;
     }
 
-    String oldFilename = existingMedia.getUrl();
-    String oldExtension = MediaManager.getFileExtension(oldFilename);
-
-    String newFileName = MediaManager.generateUniqueFilename(event.file().getOriginalFilename());
-    String newExtension = MediaManager.getFileExtension(event.file().getOriginalFilename());
-
-    CompletableFuture.runAsync(() -> FileManager.save(event.file(), newFileName, newExtension))
-        .thenRunAsync(
-            () -> {
-              existingMedia.setUrl(newFileName);
-              existingMedia.setMediaType(MediaType.fromExtension(newExtension));
-              existingMedia.setStatus(Status.READY);
-              mediaDao.update(existingMedia.getId(), existingMedia);
-
-              scheduler.schedule(
-                  () -> FileManager.delete(oldFilename, oldExtension), 30, TimeUnit.MINUTES);
-            })
-        .exceptionally(
-            _ -> {
-              mediaDao.updateStatus(existingMedia.getId(), Status.FAILED);
-              return null;
-            });
+    updateMediaFile(existingMedia, event.file());
   }
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -176,9 +121,9 @@ public class MediaEventListener {
         event.createdAt());
 
     Media existingMedia = mediaDao.findById(event.mediaId());
-    FileManager.delete(
-        existingMedia.getUrl(), MediaManager.getFileExtension(existingMedia.getUrl()));
-    mediaDao.deleteById(existingMedia.getId());
+    if (existingMedia != null) {
+      deleteMedia(existingMedia);
+    }
   }
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -189,28 +134,21 @@ public class MediaEventListener {
         event.file().getOriginalFilename(),
         event.createdAt());
 
-    String filename = MediaManager.generateUniqueFilename(event.file().getOriginalFilename());
-    String extension = MediaManager.getFileExtension(event.file().getOriginalFilename());
+    String filename = generateFilename(event.file());
+    String extension = extractExtension(event.file());
 
-    Media media =
-        mediaDao.save(
-            Media.builder()
-                .url(filename)
-                .mediaType(MediaType.fromExtension(extension))
-                .status(Status.PENDING)
-                .build());
+    Media media = savePendingMedia(filename, extension);
 
-    FileManager.save(event.file(), filename, extension)
+    saveFileAsync(event.file(), filename, extension)
         .thenRunAsync(
-            () -> {
-              mediaDao.updateStatus(media.getId(), Status.READY);
-              eventPublisher.publishEvent(
-                  new CommentMediaSavedEvent(
-                      event.commentId(), media.getId(), LocalDateTime.now()));
-            })
+            () ->
+                markReadyAndPublish(
+                    media,
+                    new CommentMediaSavedEvent(
+                        event.commentId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            (_) -> {
-              mediaDao.updateStatus(media.getId(), Status.FAILED);
+            _ -> {
+              markFailed(media);
               eventPublisher.publishEvent(
                   new CommentMediaSaveFailedEvent(event.commentId(), LocalDateTime.now()));
               return null;
@@ -232,28 +170,7 @@ public class MediaEventListener {
       return;
     }
 
-    String oldFilename = existingMedia.getUrl();
-    String oldExtension = MediaManager.getFileExtension(oldFilename);
-
-    String newFilename = MediaManager.generateUniqueFilename(event.file().getOriginalFilename());
-    String newExtension = MediaManager.getFileExtension(event.file().getOriginalFilename());
-
-    CompletableFuture.runAsync(() -> FileManager.save(event.file(), newFilename, newExtension))
-        .thenRunAsync(
-            () -> {
-              existingMedia.setUrl(newFilename);
-              existingMedia.setMediaType(MediaType.fromExtension(newExtension));
-              existingMedia.setStatus(Status.READY);
-              mediaDao.update(existingMedia.getId(), existingMedia);
-
-              scheduler.schedule(
-                  () -> FileManager.delete(oldFilename, oldExtension), 30, TimeUnit.MINUTES);
-            })
-        .exceptionally(
-            _ -> {
-              mediaDao.updateStatus(existingMedia.getId(), Status.FAILED);
-              return null;
-            });
+    updateMediaFile(existingMedia, event.file());
   }
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -263,8 +180,80 @@ public class MediaEventListener {
         event.mediaId(),
         event.createdAt());
     Media existingMedia = mediaDao.findById(event.mediaId());
-    FileManager.delete(
-        existingMedia.getUrl(), MediaManager.getFileExtension(existingMedia.getUrl()));
-    mediaDao.deleteById(existingMedia.getId());
+    if (existingMedia != null) {
+      deleteMedia(existingMedia);
+    }
+  }
+
+  private String generateFilename(MultipartFile file) {
+    return MediaManager.generateUniqueFilename(file.getOriginalFilename());
+  }
+
+  private String extractExtension(MultipartFile file) {
+    return MediaManager.getFileExtension(file.getOriginalFilename());
+  }
+
+  private Media savePendingMedia(String filename, String extension) {
+    return mediaDao.save(
+        Media.builder()
+            .url(filename)
+            .mediaType(MediaType.fromExtension(extension))
+            .status(Status.PENDING)
+            .build());
+  }
+
+  private Media updatePendingMedia(Media existing, String filename, String extension) {
+    return mediaDao.update(
+        existing.getId(),
+        Media.builder()
+            .id(existing.getId())
+            .url(filename)
+            .mediaType(MediaType.fromExtension(extension))
+            .status(Status.PENDING)
+            .build());
+  }
+
+  private CompletableFuture<Void> saveFileAsync(
+      MultipartFile file, String filename, String extension) {
+    return CompletableFuture.runAsync(() -> FileManager.save(file, filename, extension));
+  }
+
+  private void updateMediaFile(Media existingMedia, MultipartFile newFile) {
+    String oldFilename = existingMedia.getUrl();
+    String oldExt = MediaManager.getFileExtension(oldFilename);
+
+    String newFilename = generateFilename(newFile);
+    String newExt = extractExtension(newFile);
+
+    saveFileAsync(newFile, newFilename, newExt)
+        .thenRunAsync(
+            () -> {
+              existingMedia.setUrl(newFilename);
+              existingMedia.setMediaType(MediaType.fromExtension(newExt));
+              existingMedia.setStatus(Status.READY);
+              mediaDao.update(existingMedia.getId(), existingMedia);
+
+              scheduler.schedule(
+                  () -> FileManager.delete(oldFilename, oldExt), 30, TimeUnit.MINUTES);
+            })
+        .exceptionally(
+            _ -> {
+              markFailed(existingMedia);
+              return null;
+            });
+  }
+
+  private void deleteMedia(Media media) {
+    FileManager.delete(media.getUrl(), MediaManager.getFileExtension(media.getUrl()));
+    mediaDao.deleteById(media.getId());
+  }
+
+  private void markReadyAndPublish(Media media, Object event) {
+    mediaDao.updateStatus(media.getId(), Status.READY);
+    eventPublisher.publishEvent(event);
+  }
+
+  private void markFailed(Media media) {
+    mediaDao.updateStatus(media.getId(), Status.FAILED);
   }
 }
