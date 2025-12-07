@@ -68,5 +68,6 @@ public class CachedSubCommentService extends CachedServiceHelper<SubComment>
   @Override
   public void deleteById(long id) {
     super.delete("subComment:" + id);
+    subCommentService.deleteById(id);
   }
 }

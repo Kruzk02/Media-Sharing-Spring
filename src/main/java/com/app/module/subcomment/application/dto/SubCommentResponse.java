@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record SubCommentResponse(
     Long id,
     String content,
-    long mediaId,
+    Long mediaId,
     CommentDTO commentDTO,
     UserDTO userDTO,
     LocalDateTime createAt) {

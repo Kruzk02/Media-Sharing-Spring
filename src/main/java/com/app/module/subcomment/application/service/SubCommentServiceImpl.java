@@ -21,6 +21,7 @@ import com.app.shared.type.SortType;
 import java.time.LocalDateTime;
 import java.util.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 @Qualifier("subCommentServiceImpl")
+@Log4j2
 public class SubCommentServiceImpl implements SubCommentService {
 
   private final SubCommentDao subCommentDao;
@@ -47,7 +49,6 @@ public class SubCommentServiceImpl implements SubCommentService {
   @Override
   @Transactional
   public SubComment save(CreateSubCommentRequest request) {
-
     SubCommentValidator.validateContent(request.content(), request.media());
 
     Comment comment = commentDao.findById(request.commentId(), DetailsType.BASIC);
@@ -62,6 +63,7 @@ public class SubCommentServiceImpl implements SubCommentService {
           new SaveSubCommentMediaEvent(
               savedSubComment.getId(), request.media(), LocalDateTime.now()));
     }
+
     notificationEventProducer.send(
         Notification.builder()
             .userId(comment.getUserId())
