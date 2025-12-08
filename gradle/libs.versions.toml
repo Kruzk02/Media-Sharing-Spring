@@ -29,7 +29,7 @@ org-springframework-kafka-spring-kafka = "4.0.0"
 org-springframework-security-spring-security-test = "6.5.5"
 org-testcontainers-junit-jupiter = "1.21.3"
 org-testcontainers-mysql = "1.21.3"
-org-testcontainers-testcontainers = "1.21.3"
+org-testcontainers-testcontainers = "2.0.2"
 
 [libraries]
 com-fasterxml-jackson-core-jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "com-fasterxml-jackson-core-jackson-core" }
