@@ -3,7 +3,7 @@
 
 [versions]
 com-fasterxml-jackson-core-jackson-core = "2.20.0"
-com-fasterxml-jackson-core-jackson-databind = "2.20.0"
+com-fasterxml-jackson-core-jackson-databind = "2.20.1"
 com-mysql-mysql-connector-j = "9.5.0"
 com-redis-testcontainers-redis = "2.2.4"
 io-jsonwebtoken-jjwt-api = "0.13.0"
