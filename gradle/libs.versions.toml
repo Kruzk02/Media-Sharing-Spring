@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-com-fasterxml-jackson-core-jackson-core = "2.20.0"
+com-fasterxml-jackson-core-jackson-core = "2.20.1"
 com-fasterxml-jackson-core-jackson-databind = "2.20.1"
 com-mysql-mysql-connector-j = "9.5.0"
 com-redis-testcontainers-redis = "2.2.4"
