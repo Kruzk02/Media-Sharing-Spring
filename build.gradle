@@ -34,7 +34,7 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.modulith:spring-modulith-starter-core'
-    implementation 'org.springframework.modulith:spring-modulith-events-api:2.0.0'
+    implementation 'org.springframework.modulith:spring-modulith-events-api:2.0.1'
 
     // --- Jackson ---
     implementation 'com.fasterxml.jackson.core:jackson-core:2.20.1'
@@ -74,7 +74,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.testcontainers:testcontainers-bom:2.0.2"
-        mavenBom 'org.springframework.modulith:spring-modulith-bom:2.0.0'
+        mavenBom 'org.springframework.modulith:spring-modulith-bom:2.0.1'
     }
 }
 
