@@ -11,6 +11,9 @@ import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.event.pin.delete.DeletePinMediaCommand;
+import com.app.shared.event.pin.save.SavePinMediaCommand;
+import com.app.shared.event.pin.update.UpdatePinMediaCommand;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -115,6 +118,7 @@ class PinServiceImplTest {
                     !p.getHashtags().isEmpty()
                         && p.getDescription() != null
                         && p.getUserId() != 0));
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(SavePinMediaCommand.class));
   }
 
   @Test
@@ -153,6 +157,7 @@ class PinServiceImplTest {
                         && p.getDescription() != null
                         && p.getUserId() != 0));
     Mockito.verify(hashtagDao).save(Mockito.argThat(ht -> ht.getTag() != null));
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdatePinMediaCommand.class));
   }
 
   @Test
@@ -181,6 +186,7 @@ class PinServiceImplTest {
     pinService.delete(1L);
 
     Mockito.verify(pinDao).deleteById(1L);
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(DeletePinMediaCommand.class));
   }
 
   @Test
