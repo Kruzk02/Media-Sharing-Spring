@@ -1,9 +1,9 @@
 package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 
-import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.user.application.dto.request.LoginUserRequest;
 import com.app.module.user.application.dto.request.RegisterUserRequest;
 import com.app.module.user.application.dto.request.UpdateUserRequest;
@@ -17,6 +17,8 @@ import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.role.RoleDao;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.event.VerificationEmailEvent;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,17 +36,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.event.ApplicationEvents;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
   @Mock private UserDao userDao;
   @Mock private RoleDao roleDao;
-  @Mock private MediaDao mediaDao;
   @Mock private VerificationTokenService verificationTokenService;
   @Mock private PasswordEncoder passwordEncoder;
   @Mock private AuthenticationManager authenticationManager;
-  @Mock private ApplicationEventPublisher events;
+  @Mock private ApplicationEventPublisher applicationEventPublisher;
 
   @InjectMocks UserServiceImpl userService;
 
@@ -123,7 +125,7 @@ class UserServiceImplTest {
     assertEquals("username", result.getUsername());
     assertEquals("email@gmail.com", result.getEmail());
 
-    Mockito.verify(events).publishEvent(Mockito.any(VerificationEmailEvent.class));
+    Mockito.verify(applicationEventPublisher).publishEvent(Mockito.any(VerificationEmailEvent.class));
   }
 
   @Test
