@@ -6,7 +6,6 @@ import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.domain.Comment;
 import com.app.module.comment.infrastructure.CommentDao;
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.media.infrastructure.MediaDao;
 import com.app.module.notification.domain.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.service.SubCommentServiceImpl;
@@ -15,6 +14,9 @@ import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.event.subcomment.delete.DeleteSubCommentMediaEvent;
+import com.app.shared.event.subcomment.save.SaveSubCommentMediaEvent;
+import com.app.shared.event.subcomment.update.UpdateSubCommentMediaEvent;
 import com.app.shared.message.producer.NotificationEventProducer;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -39,7 +41,6 @@ class SubCommentServiceImplTest {
   @Mock private SubCommentDao subCommentDao;
   @Mock private CommentDao commentDao;
   @Mock private UserDao userDao;
-  @Mock private MediaDao mediaDao;
   @Mock private NotificationEventProducer notificationEventProducer;
   @Mock private MultipartFile mockFile;
   @Mock private ApplicationEventPublisher eventPublisher;
@@ -111,6 +112,7 @@ class SubCommentServiceImplTest {
     assertEquals(subComment, result);
 
     Mockito.verify(notificationEventProducer).send(Mockito.any(Notification.class));
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(SaveSubCommentMediaEvent.class));
   }
 
   @Test
@@ -138,6 +140,7 @@ class SubCommentServiceImplTest {
     var result = subCommentService.update(1L, request);
     assertNotNull(result);
     assertEquals(comment.getId(), result.getId());
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdateSubCommentMediaEvent.class));
   }
 
   @Test
@@ -173,5 +176,6 @@ class SubCommentServiceImplTest {
     subCommentService.deleteById(1L);
 
     Mockito.verify(subCommentDao).deleteById(1L);
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(DeleteSubCommentMediaEvent.class));
   }
 }
