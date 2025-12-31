@@ -16,6 +16,9 @@ import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
+import com.app.shared.event.comment.save.SaveCommentMediaEvent;
+import com.app.shared.event.comment.update.UpdateCommentMediaEvent;
 import com.app.shared.message.producer.NotificationEventProducer;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -128,6 +131,7 @@ class CommentServiceImplTest {
                         && c.getPinId() != 0));
 
     Mockito.verify(notificationEventProducer).send(Mockito.any(Notification.class));
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(SaveCommentMediaEvent.class));
   }
 
   @Test
@@ -167,6 +171,7 @@ class CommentServiceImplTest {
                         && c.getPinId() != 0));
 
     Mockito.verify(emitters).get(result.getId());
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdateCommentMediaEvent.class));
   }
 
   @Test
@@ -210,5 +215,6 @@ class CommentServiceImplTest {
     commentService.deleteById(1L);
 
     Mockito.verify(commentDao).deleteById(1L);
+    Mockito.verify(eventPublisher).publishEvent(Mockito.any(DeleteCommentMediaEvent.class));
   }
 }
