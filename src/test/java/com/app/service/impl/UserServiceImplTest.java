@@ -1,7 +1,6 @@
 package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 
 import com.app.module.user.application.dto.request.LoginUserRequest;
@@ -16,9 +15,8 @@ import com.app.module.user.domain.entity.VerificationToken;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.role.RoleDao;
 import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.event.UserUpdatedMediaEvent;
 import com.app.shared.event.VerificationEmailEvent;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,7 +35,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.event.ApplicationEvents;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -64,7 +62,12 @@ class UserServiceImplTest {
     loginUserRequest = new LoginUserRequest("username", "password");
     updateUserRequest =
         new UpdateUserRequest(
-            "newUsername", "new@example.com", "newPassword", "Updated bio", Gender.FEMALE, null);
+            "newUsername",
+            "new@example.com",
+            "newPassword",
+            "Updated bio",
+            Gender.FEMALE,
+            new MockMultipartFile("hello", "hello".getBytes()));
 
     role = Role.builder().id(1L).name("ROLE_USER").build();
 
@@ -125,7 +128,8 @@ class UserServiceImplTest {
     assertEquals("username", result.getUsername());
     assertEquals("email@gmail.com", result.getEmail());
 
-    Mockito.verify(applicationEventPublisher).publishEvent(Mockito.any(VerificationEmailEvent.class));
+    Mockito.verify(applicationEventPublisher)
+        .publishEvent(Mockito.any(VerificationEmailEvent.class));
   }
 
   @Test
@@ -194,6 +198,9 @@ class UserServiceImplTest {
                         && user.getPassword().equals("encodedNewPassword")
                         && user.getBio().equals("Updated bio")
                         && user.getGender() == Gender.FEMALE));
+
+    Mockito.verify(applicationEventPublisher)
+        .publishEvent(Mockito.any(UserUpdatedMediaEvent.class));
   }
 
   @Test
