@@ -1,18 +1,16 @@
 package com.app.module.pin.application.event;
 
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
 import com.app.shared.event.hashtag.PinHashTagCreatedEvent;
 import com.app.shared.event.hashtag.PinHashTagUpdatedEvent;
 import com.app.shared.event.pin.save.PinMediaSavedEvent;
 import com.app.shared.type.DetailsType;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -41,20 +39,20 @@ public class PinEventListener {
   @EventListener
   public void handlePinHashTagCreatedEvent(PinHashTagCreatedEvent event) {
     log.info(
-            "Receive PinHashTagCreatedEvent [pinId={}, hashtags={}, createdAt={}]",
-            event.pinId(),
-            event.hashtags(),
-            event.createdAt());
+        "Receive PinHashTagCreatedEvent [pinId={}, hashtags={}, createdAt={}]",
+        event.pinId(),
+        event.hashtags(),
+        event.createdAt());
     addHashTagToPin(event.pinId(), event.hashtags());
   }
 
   @EventListener
   public void handlePinHashTagUpdatedEvent(PinHashTagUpdatedEvent event) {
     log.info(
-            "Receive PinHashTagUpdatedEvent [pinId={}, hashtags={}, createdAt={}]",
-            event.pinId(),
-            event.hashtags(),
-            event.createdAt());
+        "Receive PinHashTagUpdatedEvent [pinId={}, hashtags={}, createdAt={}]",
+        event.pinId(),
+        event.hashtags(),
+        event.createdAt());
 
     addHashTagToPin(event.pinId(), event.hashtags());
   }

@@ -1,6 +1,5 @@
 package com.app.module.pin.application.service;
 
-import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.exception.PinIsEmptyException;
@@ -79,7 +78,8 @@ public class PinServiceImpl implements PinService {
             .build();
     Pin savedPin = pinDao.save(pin);
 
-    eventPublisher.publishEvent(new SavePinHashTagCommand(savedPin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
+    eventPublisher.publishEvent(
+        new SavePinHashTagCommand(savedPin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
     eventPublisher.publishEvent(
         new SavePinMediaCommand(savedPin.getId(), pinRequest.file(), LocalDateTime.now()));
     return pin;
@@ -109,9 +109,10 @@ public class PinServiceImpl implements PinService {
               LocalDateTime.now()));
     }
     existingPin.setDescription(
-            pinRequest.description() != null ? pinRequest.description() : existingPin.getDescription());
+        pinRequest.description() != null ? pinRequest.description() : existingPin.getDescription());
     var pin = pinDao.update(existingPin.getId(), existingPin);
-    eventPublisher.publishEvent(new UpdatePinHashTagCommand(pin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
+    eventPublisher.publishEvent(
+        new UpdatePinHashTagCommand(pin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
     return pin;
   }
 
