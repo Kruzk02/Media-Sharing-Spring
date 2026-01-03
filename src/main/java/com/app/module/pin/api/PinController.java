@@ -144,7 +144,7 @@ public class PinController {
                 pin.getUserId(),
                 pin.getDescription(),
                 pin.getMediaId(),
-                new ArrayList<>(pin.getHashtags()),
+                new ArrayList<>(),
                 pin.getCreatedAt()));
   }
 

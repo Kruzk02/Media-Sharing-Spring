@@ -9,6 +9,7 @@ import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.event.hashtag.SavePinHashTagCommand;
+import com.app.shared.event.hashtag.UpdatePinHashTagCommand;
 import com.app.shared.event.pin.delete.DeletePinMediaCommand;
 import com.app.shared.event.pin.save.SavePinMediaCommand;
 import com.app.shared.event.pin.update.UpdatePinMediaCommand;
@@ -107,28 +108,11 @@ public class PinServiceImpl implements PinService {
               pinRequest.file(),
               LocalDateTime.now()));
     }
-
-    return updatePinAndHashTags(pinRequest, existingPin);
-  }
-
-  @Transactional
-  private Pin updatePinAndHashTags(PinRequest pinRequest, Pin existingPin) {
-    Set<String> tagsToFind = pinRequest.hashtags();
-    Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
-
-    List<Hashtag> hashtags = new ArrayList<>();
-    for (String tag : tagsToFind) {
-      Hashtag hashtag = tags.get(tag);
-      if (hashtag == null) {
-        hashtag = hashtagDao.save(Hashtag.builder().tag(tag).build());
-      }
-      hashtags.add(hashtag);
-    }
-
     existingPin.setDescription(
-        pinRequest.description() != null ? pinRequest.description() : existingPin.getDescription());
-    existingPin.setHashtags(hashtags);
-    return pinDao.update(existingPin.getId(), existingPin);
+            pinRequest.description() != null ? pinRequest.description() : existingPin.getDescription());
+    var pin = pinDao.update(existingPin.getId(), existingPin);
+    eventPublisher.publishEvent(new UpdatePinHashTagCommand(pin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
+    return pin;
   }
 
   /**
