@@ -1,6 +1,7 @@
 package com.app.module.pin.application.event;
 
 import com.app.module.pin.infrastructure.PinDao;
+import com.app.shared.event.hashtag.PinHashTagCreatedEvent;
 import com.app.shared.event.pin.save.PinMediaSavedEvent;
 import com.app.shared.type.DetailsType;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,24 @@ public class PinEventListener {
     }
 
     pin.setMediaId(event.mediaId());
+    pinDao.update(pin.getId(), pin);
+  }
+
+  @EventListener
+  public void handlePinHashTagCreatedEvent(PinHashTagCreatedEvent event) {
+    log.info(
+            "Receive PinHashTagCreatedEvent [pinId={}, hashtags={}, createdAt={}]",
+            event.pinId(),
+            event.hashtags(),
+            event.createdAt());
+
+    var pin = pinDao.findById(event.pinId(), DetailsType.BASIC);
+    if (pin == null) {
+      log.warn("Pin {} not found for hashtags {}", event.pinId(), event.hashtags());
+      return;
+    }
+
+    pin.setHashtags(event.hashtags());
     pinDao.update(pin.getId(), pin);
   }
 }

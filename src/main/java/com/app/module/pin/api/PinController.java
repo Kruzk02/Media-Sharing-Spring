@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -112,7 +113,7 @@ public class PinController {
                 pin.getUserId(),
                 pin.getDescription(),
                 pin.getMediaId(),
-                new ArrayList<>(pin.getHashtags()),
+                Collections.emptyList(),
                 pin.getCreatedAt()));
   }
 
@@ -194,7 +195,7 @@ public class PinController {
                 pin.getUserId(),
                 pin.getDescription(),
                 pin.getMediaId(),
-                view.equalsIgnoreCase("detail")
+                view.equalsIgnoreCase("detail") && pin.getHashtags() != null
                     ? new ArrayList<>(pin.getHashtags())
                     : new ArrayList<>(),
                 pin.getCreatedAt()));

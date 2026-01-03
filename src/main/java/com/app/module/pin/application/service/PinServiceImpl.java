@@ -8,6 +8,7 @@ import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.event.hashtag.SavePinHashTagCommand;
 import com.app.shared.event.pin.delete.DeletePinMediaCommand;
 import com.app.shared.event.pin.save.SavePinMediaCommand;
 import com.app.shared.event.pin.update.UpdatePinMediaCommand;
@@ -46,7 +47,7 @@ public class PinServiceImpl implements PinService {
 
   private User getAuthenticatedUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(authentication.getName());
+    return userDao.findUserByUsername(Objects.requireNonNull(authentication).getName());
   }
 
   /**
@@ -70,26 +71,14 @@ public class PinServiceImpl implements PinService {
       throw new PinIsEmptyException("A pin must have file");
     }
 
-    Set<String> tagsToFind = pinRequest.hashtags();
-    Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
-
-    List<Hashtag> hashtags = new ArrayList<>();
-    for (String tag : tagsToFind) {
-      Hashtag hashtag = tags.get(tag);
-      if (hashtag == null) {
-        hashtag = hashtagDao.save(Hashtag.builder().tag(tag).build());
-      }
-      hashtags.add(hashtag);
-    }
-
     Pin pin =
         Pin.builder()
             .description(pinRequest.description())
             .userId(getAuthenticatedUser().getId())
-            .hashtags(hashtags)
             .build();
     Pin savedPin = pinDao.save(pin);
 
+    eventPublisher.publishEvent(new SavePinHashTagCommand(savedPin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
     eventPublisher.publishEvent(
         new SavePinMediaCommand(savedPin.getId(), pinRequest.file(), LocalDateTime.now()));
     return pin;
@@ -172,9 +161,7 @@ public class PinServiceImpl implements PinService {
   @Override
   @Transactional
   public void delete(Long id) throws IOException {
-
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    User user = userDao.findUserByUsername(authentication.getName());
+    var user = getAuthenticatedUser();
 
     Pin pin = pinDao.findById(id, DetailsType.BASIC);
     if (pin == null) {

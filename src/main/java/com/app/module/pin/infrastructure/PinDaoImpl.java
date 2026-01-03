@@ -71,7 +71,6 @@ public class PinDaoImpl implements PinDao {
               keyHolder);
       if (row > 0) {
         pin.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-        assignHashtagToPin(pin.getId(), pin.getHashtags());
         return pin;
       } else {
         return null;
@@ -82,6 +81,10 @@ public class PinDaoImpl implements PinDao {
   }
 
   private void assignHashtagToPin(Long pinId, Collection<Hashtag> hashtags) {
+    jdbcTemplate.update("DELETE FROM hashtags_pins WHERE pin_id = ?", pinId);
+
+    if (hashtags.isEmpty()) return;
+
     String sql = "INSERT INTO hashtags_pins(hashtag_id, pin_id) VALUES(?, ?)";
     List<Hashtag> tags = hashtags.stream().toList();
 
@@ -104,6 +107,22 @@ public class PinDaoImpl implements PinDao {
 
   @Override
   public Pin update(Long id, Pin pin) {
+    boolean updated = false;
+    updated |= updatePinFields(id, pin);
+
+    if (pin.getHashtags() != null) {
+      assignHashtagToPin(id, pin.getHashtags());
+      updated = true;
+    }
+
+    if (!updated) {
+      throw new IllegalArgumentException("Nothing to update");
+    }
+
+    return pin;
+  }
+
+  private boolean updatePinFields(Long id, Pin pin) {
     StringBuilder sb = new StringBuilder("UPDATE pins SET ");
     List<Object> params = new ArrayList<>();
 
@@ -117,27 +136,16 @@ public class PinDaoImpl implements PinDao {
       params.add(pin.getMediaId());
     }
 
-    if (pin.getHashtags() != null && !pin.getHashtags().isEmpty()) {
-      String sql = "DELETE FROM hashtags_pins WHERE pin_id = ?";
-      jdbcTemplate.update(sql, pin.getId());
-
-      assignHashtagToPin(pin.getId(), pin.getHashtags());
-    }
-
     if (params.isEmpty()) {
-      throw new IllegalArgumentException("No fields to update");
+      return false;
     }
 
-    if (!sb.isEmpty()) {
-      sb.setLength(sb.length() - 2);
-    }
-
+    sb.setLength(sb.length() - 2);
     sb.append(" WHERE id = ?");
     params.add(id);
 
-    String sql = sb.toString();
-    int rowAffected = jdbcTemplate.update(sql, params.toArray());
-    return rowAffected > 0 ? pin : null;
+    jdbcTemplate.update(sb.toString(), params.toArray());
+    return true;
   }
 
   @Override
