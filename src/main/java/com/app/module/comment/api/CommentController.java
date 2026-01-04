@@ -157,7 +157,7 @@ public class CommentController {
                 comment.getUserId(),
                 comment.getMediaId(),
                 comment.getCreated_at(),
-                comment.getHashtags().stream().toList()));
+                new ArrayList<>()));
   }
 
   @Operation(description = "Update an comment")
@@ -188,7 +188,7 @@ public class CommentController {
                 comment.getUserId(),
                 comment.getMediaId(),
                 comment.getCreated_at(),
-                comment.getHashtags().stream().toList()));
+                new ArrayList<>()));
   }
 
   @Operation(summary = "Delete a comment by its ID")

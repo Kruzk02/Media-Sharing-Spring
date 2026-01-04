@@ -34,17 +34,18 @@ public class CachedCommentService extends CachedServiceHelper<Comment> implement
     var comment = commentService.save(request);
     var cached =
         super.getOrLoad(
-            "comment:" + comment.getId() + ":details", () -> comment, Duration.ofHours(2));
+            "comment:" + comment.getId() + ":basic", () -> comment, Duration.ofHours(2));
     return cached.orElse(comment);
   }
 
   @Override
   public Comment update(Long id, UpdatedCommentRequest request) {
     var comment = commentService.update(id, request);
+    super.delete("comment:" + id + ":basic");
     super.delete("comment:" + id + ":details");
     var cached =
         super.getOrLoad(
-            "comment:" + comment.getId() + ":details", () -> comment, Duration.ofHours(2));
+            "comment:" + comment.getId() + ":basic", () -> comment, Duration.ofHours(2));
     return cached.orElse(comment);
   }
 

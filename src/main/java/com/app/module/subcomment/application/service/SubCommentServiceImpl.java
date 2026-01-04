@@ -43,7 +43,7 @@ public class SubCommentServiceImpl implements SubCommentService {
 
   private User getAuthenticationUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(authentication.getName());
+    return userDao.findUserByUsername(Objects.requireNonNull(authentication).getName());
   }
 
   @Override

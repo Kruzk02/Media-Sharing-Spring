@@ -61,15 +61,16 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
   @Override
   public Pin save(PinRequest pinRequest) {
     var pin = delegate.save(pinRequest);
-    var cached = super.getOrLoad("pin:" + pin.getId() + ":details", () -> pin, Duration.ofHours(2));
+    var cached = super.getOrLoad("pin:" + pin.getId() + ":basic", () -> pin, Duration.ofHours(2));
     return cached.orElse(pin);
   }
 
   @Override
   public Pin update(Long id, PinRequest pinRequest) {
     var pin = delegate.update(id, pinRequest);
+    super.delete("pin:" + id + ":basic");
     super.delete("pin:" + id + ":details");
-    var cached = super.getOrLoad("pin:" + pin.getId() + ":details", () -> pin, Duration.ofHours(2));
+    var cached = super.getOrLoad("pin:" + pin.getId() + ":basic", () -> pin, Duration.ofHours(2));
     return cached.orElse(pin);
   }
 
