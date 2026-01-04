@@ -58,6 +58,12 @@ public class HashTagEventListener {
             event.commentId(), findAndSaveHashtag(event.hashtags()), LocalDateTime.now()));
   }
 
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleUpdateCommentHashtagCommand(UpdateCommentHashtagCommand event) {
+    log.info("Received UpdateCommentHashtagCommand [commentId={}, hashtags={}, createdAt={}]", event.commentId(), event.hashtags(), event.createdAt());
+    eventPublisher.publishEvent(new CommentHashtagUpdatedEvent(event.commentId(), findAndSaveHashtag(event.hashtags()), LocalDateTime.now()));
+  }
+
   private List<Hashtag> findAndSaveHashtag(Set<String> hashtagSet) {
     Map<String, Hashtag> tags = hashtagDao.findByTag(hashtagSet);
 

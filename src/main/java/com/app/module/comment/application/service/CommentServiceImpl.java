@@ -17,6 +17,7 @@ import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
 import com.app.shared.event.comment.save.SaveCommentMediaEvent;
 import com.app.shared.event.comment.update.UpdateCommentMediaEvent;
 import com.app.shared.event.hashtag.SaveCommentHashTagCommand;
+import com.app.shared.event.hashtag.UpdateCommentHashtagCommand;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
 import com.app.shared.message.producer.NotificationEventProducer;
@@ -49,7 +50,7 @@ public class CommentServiceImpl implements CommentService {
 
   private User getAuthenticatedUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(authentication.getName());
+    return userDao.findUserByUsername(Objects.requireNonNull(authentication).getName());
   }
 
   @Override
@@ -96,7 +97,7 @@ public class CommentServiceImpl implements CommentService {
   @Override
   @Transactional
   public Comment update(Long id, UpdatedCommentRequest request) {
-    Comment comment = commentDao.findById(id, DetailsType.DETAIL);
+    Comment comment = commentDao.findById(id, DetailsType.BASIC);
     if (comment == null) {
       throw new CommentNotFoundException("Comment not found with a id: " + id);
     }
@@ -115,16 +116,18 @@ public class CommentServiceImpl implements CommentService {
       comment.setContent(request.content());
     }
 
-    if (request.tags() != null && !request.tags().isEmpty()) {
-      comment.setHashtags(saveHashTag(request.tags()));
-    }
-
     Comment updatedComment = commentDao.update(id, comment);
 
     if (request.media() != null && !request.media().isEmpty()) {
       eventPublisher.publishEvent(
           new UpdateCommentMediaEvent(
               comment.getId(), comment.getMediaId(), request.media(), LocalDateTime.now()));
+    }
+
+    if (request.tags() != null && !request.tags().isEmpty()) {
+        eventPublisher.publishEvent(
+                new UpdateCommentHashtagCommand(updatedComment.getId(), request.tags(), LocalDateTime.now())
+        );
     }
 
     sendEvent("updated-comment", updatedComment);
@@ -142,21 +145,6 @@ public class CommentServiceImpl implements CommentService {
         emitters.remove(comment.getPinId());
       }
     }
-  }
-
-  @Transactional
-  private List<Hashtag> saveHashTag(Set<String> tagsToFind) {
-    Map<String, Hashtag> tags = hashtagDao.findByTag(tagsToFind);
-
-    List<Hashtag> hashtags = new ArrayList<>();
-    for (String tag : tagsToFind) {
-      Hashtag hashtag = tags.get(tag);
-      if (hashtag == null) {
-        hashtag = hashtagDao.save(Hashtag.builder().tag(tag).build());
-      }
-      hashtags.add(hashtag);
-    }
-    return hashtags;
   }
 
   @Override

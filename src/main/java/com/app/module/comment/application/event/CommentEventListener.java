@@ -1,13 +1,17 @@
 package com.app.module.comment.application.event;
 
 import com.app.module.comment.infrastructure.CommentDao;
+import com.app.module.hashtag.domain.Hashtag;
 import com.app.shared.event.comment.save.CommentMediaSavedEvent;
 import com.app.shared.event.hashtag.CommentHashtagCreatedEvent;
+import com.app.shared.event.hashtag.CommentHashtagUpdatedEvent;
 import com.app.shared.type.DetailsType;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -36,18 +40,31 @@ public class CommentEventListener {
   @EventListener
   public void handleCommentHashtagSavedEvent(CommentHashtagCreatedEvent event) {
     log.info(
-        "Receive CommentHashtagCreatedEvent [commentId={}, mediaId={}, createdAt={}]",
+        "Receive CommentHashtagCreatedEvent [commentId={}, hashtags={}, createdAt={}]",
         event.commentId(),
         event.hashtags(),
         event.createdAt());
+    addHashtagToComment(event.commentId(), event.hashtags());
+  }
 
-    var comment = commentDao.findById(event.commentId(), DetailsType.BASIC);
+  @EventListener
+  public void handleCommentHashtagUpdatedEvent(CommentHashtagUpdatedEvent event) {
+    log.info(
+            "Receive CommentHashtagUpdatedEvent [commentId={}, hashtags={}, createdAt={}]",
+            event.commentId(),
+            event.hashtags(),
+            event.createdAt());
+    addHashtagToComment(event.commentId(), event.hashtags());
+  }
+
+  private void addHashtagToComment(Long id, List<Hashtag> hashtags) {
+    var comment = commentDao.findById(id, DetailsType.BASIC);
     if (comment == null) {
-      log.warn("Comment {} not found for hashtags {}", event.commentId(), event.hashtags());
+      log.warn("Comment {} not found for hashtags {}", id, hashtags);
       return;
     }
 
-    comment.setHashtags(event.hashtags());
+    comment.setHashtags(hashtags);
     commentDao.update(comment.getId(), comment);
   }
 }
