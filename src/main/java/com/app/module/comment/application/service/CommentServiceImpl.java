@@ -16,6 +16,7 @@ import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
 import com.app.shared.event.comment.save.SaveCommentMediaEvent;
 import com.app.shared.event.comment.update.UpdateCommentMediaEvent;
+import com.app.shared.event.hashtag.SaveCommentHashTagCommand;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
 import com.app.shared.message.producer.NotificationEventProducer;
@@ -25,7 +26,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-@Log4j2
 @Service
 @Qualifier("commentServiceImpl")
 @AllArgsConstructor
@@ -69,13 +68,21 @@ public class CommentServiceImpl implements CommentService {
       throw new PinNotFoundException("Pin not found with a id: " + request.pinId());
     }
 
-    Comment savedComment = saveComment(request, pin.getId(), user.getId());
+    Comment savedComment =
+        commentDao.save(
+            Comment.builder()
+                .content(request.content())
+                .pinId(request.pinId())
+                .userId(user.getId())
+                .build());
 
     if (request.media() != null && !request.media().isEmpty()) {
       eventPublisher.publishEvent(
           new SaveCommentMediaEvent(savedComment.getId(), request.media(), LocalDateTime.now()));
     }
 
+    eventPublisher.publishEvent(
+        new SaveCommentHashTagCommand(savedComment.getId(), request.tags(), LocalDateTime.now()));
     sendEvent("new-comment", savedComment);
 
     notificationEventProducer.send(
@@ -115,11 +122,11 @@ public class CommentServiceImpl implements CommentService {
     Comment updatedComment = commentDao.update(id, comment);
 
     if (request.media() != null && !request.media().isEmpty()) {
-      log.info("media={}, mediaId={}", request.media(), comment.getMediaId());
       eventPublisher.publishEvent(
           new UpdateCommentMediaEvent(
               comment.getId(), comment.getMediaId(), request.media(), LocalDateTime.now()));
     }
+
     sendEvent("updated-comment", updatedComment);
 
     return updatedComment;
@@ -150,19 +157,6 @@ public class CommentServiceImpl implements CommentService {
       hashtags.add(hashtag);
     }
     return hashtags;
-  }
-
-  @Transactional
-  private Comment saveComment(CreateCommentRequest request, Long pinId, Long userId) {
-    List<Hashtag> hashtags = saveHashTag(request.tags());
-
-    return commentDao.save(
-        Comment.builder()
-            .content(request.content())
-            .pinId(pinId)
-            .userId(userId)
-            .hashtags(hashtags)
-            .build());
   }
 
   @Override

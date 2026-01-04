@@ -157,7 +157,7 @@ public class CommentController {
                 comment.getUserId(),
                 comment.getMediaId(),
                 comment.getCreated_at(),
-                comment.getHashtags().stream().toList()));
+                new ArrayList<>()));
   }
 
   @Operation(description = "Update an comment")

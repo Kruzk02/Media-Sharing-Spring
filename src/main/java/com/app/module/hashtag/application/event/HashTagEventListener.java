@@ -2,14 +2,12 @@ package com.app.module.hashtag.application.event;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.hashtag.infrastructure.HashtagDao;
-import com.app.shared.event.hashtag.PinHashTagCreatedEvent;
-import com.app.shared.event.hashtag.PinHashTagUpdatedEvent;
-import com.app.shared.event.hashtag.SavePinHashTagCommand;
-import com.app.shared.event.hashtag.UpdatePinHashTagCommand;
+import com.app.shared.event.hashtag.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,20 +29,9 @@ public class HashTagEventListener {
         event.pinId(),
         event.hashtags(),
         event.createdAt());
-
-    Map<String, Hashtag> tags = hashtagDao.findByTag(event.hashtags());
-
-    List<Hashtag> hashtags = new ArrayList<>();
-    for (String tag : event.hashtags()) {
-      Hashtag hashtag = tags.get(tag);
-      if (hashtag == null) {
-        hashtag = hashtagDao.save(Hashtag.builder().tag(tag).build());
-      }
-      hashtags.add(hashtag);
-    }
-
     eventPublisher.publishEvent(
-        new PinHashTagCreatedEvent(event.pinId(), hashtags, LocalDateTime.now()));
+        new PinHashTagCreatedEvent(
+            event.pinId(), findAndSaveHashtag(event.hashtags()), LocalDateTime.now()));
   }
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -54,18 +41,34 @@ public class HashTagEventListener {
         event.pinId(),
         event.hashtags(),
         event.createdAt());
-    Map<String, Hashtag> tags = hashtagDao.findByTag(event.hashtags());
+    eventPublisher.publishEvent(
+        new PinHashTagUpdatedEvent(
+            event.pinId(), findAndSaveHashtag(event.hashtags()), LocalDateTime.now()));
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleSaveCommentHashtagCommand(SaveCommentHashTagCommand event) {
+    log.info(
+        "Received SaveCommentHashtagCommand [commentId={}, hashtags={}, createdAt={}]",
+        event.commentId(),
+        event.hashtags(),
+        event.createdAt());
+    eventPublisher.publishEvent(
+        new CommentHashtagCreatedEvent(
+            event.commentId(), findAndSaveHashtag(event.hashtags()), LocalDateTime.now()));
+  }
+
+  private List<Hashtag> findAndSaveHashtag(Set<String> hashtagSet) {
+    Map<String, Hashtag> tags = hashtagDao.findByTag(hashtagSet);
 
     List<Hashtag> hashtags = new ArrayList<>();
-    for (String tag : event.hashtags()) {
+    for (String tag : hashtagSet) {
       var hashtag = tags.get(tag);
       if (hashtag == null) {
         hashtag = hashtagDao.save(Hashtag.builder().tag(tag).build());
       }
       hashtags.add(hashtag);
     }
-
-    eventPublisher.publishEvent(
-        new PinHashTagUpdatedEvent(event.pinId(), hashtags, LocalDateTime.now()));
+    return hashtags;
   }
 }

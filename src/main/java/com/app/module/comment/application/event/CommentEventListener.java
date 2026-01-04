@@ -2,6 +2,7 @@ package com.app.module.comment.application.event;
 
 import com.app.module.comment.infrastructure.CommentDao;
 import com.app.shared.event.comment.save.CommentMediaSavedEvent;
+import com.app.shared.event.hashtag.CommentHashtagCreatedEvent;
 import com.app.shared.type.DetailsType;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +30,24 @@ public class CommentEventListener {
     }
 
     comment.setMediaId(event.mediaId());
+    commentDao.update(comment.getId(), comment);
+  }
+
+  @EventListener
+  public void handleCommentHashtagSavedEvent(CommentHashtagCreatedEvent event) {
+    log.info(
+        "Receive CommentHashtagCreatedEvent [commentId={}, mediaId={}, createdAt={}]",
+        event.commentId(),
+        event.hashtags(),
+        event.createdAt());
+
+    var comment = commentDao.findById(event.commentId(), DetailsType.BASIC);
+    if (comment == null) {
+      log.warn("Comment {} not found for hashtags {}", event.commentId(), event.hashtags());
+      return;
+    }
+
+    comment.setHashtags(event.hashtags());
     commentDao.update(comment.getId(), comment);
   }
 }

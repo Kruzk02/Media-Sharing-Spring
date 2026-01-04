@@ -48,7 +48,6 @@ public class CommentDaoImpl implements CommentDao {
 
       if (row > 0) {
         comment.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
-        assignHashtagToComment(comment.getId(), comment.getHashtags());
         return comment;
       } else {
         return null;
@@ -59,6 +58,10 @@ public class CommentDaoImpl implements CommentDao {
   }
 
   private void assignHashtagToComment(Long commentId, Collection<Hashtag> hashtags) {
+    jdbcTemplate.update("DELETE FROM hashtags_comments WHERE comment_id = ?", commentId);
+
+    if (hashtags.isEmpty()) return;
+
     String sql = "INSERT INTO hashtags_comments(hashtag_id, comment_id) VALUES(?, ?)";
     List<Hashtag> tags = hashtags.stream().toList();
 
@@ -81,6 +84,22 @@ public class CommentDaoImpl implements CommentDao {
 
   @Override
   public Comment update(Long id, Comment comment) {
+    boolean updated = false;
+    updated |= updateCommentField(id, comment);
+
+    if (comment.getHashtags() != null) {
+      assignHashtagToComment(comment.getId(), comment.getHashtags());
+      updated = true;
+    }
+
+    if (!updated) {
+      throw new IllegalArgumentException("Nothing to update");
+    }
+
+    return comment;
+  }
+
+  private boolean updateCommentField(Long id, Comment comment) {
     StringBuilder sb = new StringBuilder("UPDATE comments SET ");
     List<Object> params = new ArrayList<>();
 
@@ -94,27 +113,16 @@ public class CommentDaoImpl implements CommentDao {
       params.add(comment.getMediaId());
     }
 
-    if (comment.getHashtags() != null && !comment.getHashtags().isEmpty()) {
-      String sql = "DELETE FROM hashtags_comments WHERe comment_id = ?";
-      jdbcTemplate.update(sql, comment.getId());
-
-      assignHashtagToComment(comment.getId(), comment.getHashtags());
-    }
-
     if (params.isEmpty()) {
-      throw new IllegalArgumentException("No fields to update");
+      return false;
     }
 
-    if (!sb.isEmpty()) {
-      sb.setLength(sb.length() - 2);
-    }
-
+    sb.setLength(sb.length() - 2);
     sb.append(" WHERE id = ?");
     params.add(id);
 
-    String sql = sb.toString();
-    int rowAffected = jdbcTemplate.update(sql, params.toArray());
-    return rowAffected > 0 ? comment : null;
+    jdbcTemplate.update(sb.toString(), params.toArray());
+    return true;
   }
 
   @Override

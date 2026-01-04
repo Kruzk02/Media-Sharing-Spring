@@ -34,7 +34,7 @@ public class CachedCommentService extends CachedServiceHelper<Comment> implement
     var comment = commentService.save(request);
     var cached =
         super.getOrLoad(
-            "comment:" + comment.getId() + ":details", () -> comment, Duration.ofHours(2));
+            "comment:" + comment.getId() + ":basic", () -> comment, Duration.ofHours(2));
     return cached.orElse(comment);
   }
 
