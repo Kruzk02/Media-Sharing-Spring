@@ -6,12 +6,11 @@ import com.app.shared.event.comment.save.CommentMediaSavedEvent;
 import com.app.shared.event.hashtag.CommentHashtagCreatedEvent;
 import com.app.shared.event.hashtag.CommentHashtagUpdatedEvent;
 import com.app.shared.type.DetailsType;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -50,10 +49,10 @@ public class CommentEventListener {
   @EventListener
   public void handleCommentHashtagUpdatedEvent(CommentHashtagUpdatedEvent event) {
     log.info(
-            "Receive CommentHashtagUpdatedEvent [commentId={}, hashtags={}, createdAt={}]",
-            event.commentId(),
-            event.hashtags(),
-            event.createdAt());
+        "Receive CommentHashtagUpdatedEvent [commentId={}, hashtags={}, createdAt={}]",
+        event.commentId(),
+        event.hashtags(),
+        event.createdAt());
     addHashtagToComment(event.commentId(), event.hashtags());
   }
 

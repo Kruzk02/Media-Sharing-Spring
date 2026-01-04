@@ -113,7 +113,7 @@ public class PinServiceImpl implements PinService {
     var pin = pinDao.update(existingPin.getId(), existingPin);
     if (pinRequest.hashtags() != null && !pinRequest.hashtags().isEmpty()) {
       eventPublisher.publishEvent(
-              new UpdatePinHashTagCommand(pin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
+          new UpdatePinHashTagCommand(pin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
     }
     return pin;
   }

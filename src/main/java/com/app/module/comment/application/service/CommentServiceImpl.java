@@ -6,7 +6,6 @@ import com.app.module.comment.application.exception.CommentIsEmptyException;
 import com.app.module.comment.domain.Comment;
 import com.app.module.comment.domain.CommentNotFoundException;
 import com.app.module.comment.infrastructure.CommentDao;
-import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.notification.domain.Notification;
 import com.app.module.pin.domain.Pin;
@@ -125,9 +124,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     if (request.tags() != null && !request.tags().isEmpty()) {
-        eventPublisher.publishEvent(
-                new UpdateCommentHashtagCommand(updatedComment.getId(), request.tags(), LocalDateTime.now())
-        );
+      eventPublisher.publishEvent(
+          new UpdateCommentHashtagCommand(
+              updatedComment.getId(), request.tags(), LocalDateTime.now()));
     }
 
     sendEvent("updated-comment", updatedComment);
