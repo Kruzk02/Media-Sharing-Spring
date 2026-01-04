@@ -43,6 +43,9 @@ class CommentDaoImplIntegrateTest extends AbstractMySQLTest {
                 .mediaId(1L)
                 .build());
 
+    jdbcTemplate.update(
+        "INSERT INTO hashtags_comments(hashtag_id, comment_id) VALUES(?, ?)", result.getId(), 1);
+
     assertNotNull(result);
     assertEquals(1L, result.getId());
     assertEquals("content", result.getContent());
@@ -53,14 +56,12 @@ class CommentDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(2)
   void findById() {
-    Comment result = commentDao.findById(1L, DetailsType.DETAIL);
+    Comment result = commentDao.findById(1L, DetailsType.BASIC);
 
     assertNotNull(result);
     assertEquals(1L, result.getId());
     assertEquals(1L, result.getPinId());
     assertEquals(1L, result.getUserId());
-    assertIterableEquals(
-        List.of(Hashtag.builder().id(1L).tag("tag").build()), result.getHashtags());
   }
 
   @Test

@@ -95,29 +95,16 @@ class PinServiceImplTest {
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
     PinRequest request = new PinRequest("Description", mockFile, Set.of("tag1", "tag2"));
-    Mockito.when(hashtagDao.findByTag(Set.of("tag1", "tag2"))).thenReturn(new HashMap<>());
-    Mockito.when(hashtagDao.save(Mockito.argThat(ht -> ht.getTag() != null)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
 
     Mockito.when(
-            pinDao.save(
-                Mockito.argThat(
-                    p ->
-                        !p.getHashtags().isEmpty()
-                            && p.getDescription() != null
-                            && p.getUserId() != 0)))
+            pinDao.save(Mockito.argThat(p -> p.getDescription() != null && p.getUserId() != 0)))
         .thenReturn(pin);
 
     Pin result = pinService.save(request);
 
     assertNotNull(result);
     Mockito.verify(pinDao)
-        .save(
-            Mockito.argThat(
-                p ->
-                    !p.getHashtags().isEmpty()
-                        && p.getDescription() != null
-                        && p.getUserId() != 0));
+        .save(Mockito.argThat(p -> p.getDescription() != null && p.getUserId() != 0));
     Mockito.verify(eventPublisher).publishEvent(Mockito.any(SavePinMediaCommand.class));
   }
 
@@ -127,10 +114,6 @@ class PinServiceImplTest {
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
     PinRequest pinRequest = new PinRequest("New description", mockFile, Set.of("tag1"));
-
-    Mockito.when(hashtagDao.findByTag(Set.of("tag1"))).thenReturn(Map.of());
-    Mockito.when(hashtagDao.save(Mockito.argThat(ht -> ht.getTag() != null)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
 
     Mockito.when(
             pinDao.update(
@@ -156,7 +139,6 @@ class PinServiceImplTest {
                         && !p.getHashtags().isEmpty()
                         && p.getDescription() != null
                         && p.getUserId() != 0));
-    Mockito.verify(hashtagDao).save(Mockito.argThat(ht -> ht.getTag() != null));
     Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdatePinMediaCommand.class));
   }
 

@@ -38,7 +38,8 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
                 .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
                 .description("description")
                 .build());
-
+    jdbcTemplate.update(
+        "INSERT INTO hashtags_pins(hashtag_id, pin_id) VALUES(?, ?)", result.getId(), 1);
     assertNotNull(result);
     assertEquals(1L, result.getId());
     assertEquals(1L, result.getUserId());

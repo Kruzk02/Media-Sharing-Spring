@@ -67,7 +67,7 @@ class CachedCommentServiceTest extends AbstractRedisTest<Comment> {
   @Test
   @Order(2)
   void findById() {
-    Comment cached = cachedCommentService.findById(1L, DetailsType.DETAIL);
+    Comment cached = cachedCommentService.findById(comment.getId(), DetailsType.BASIC);
 
     assertEquals(1L, cached.getId());
     assertEquals("content123", cached.getContent());

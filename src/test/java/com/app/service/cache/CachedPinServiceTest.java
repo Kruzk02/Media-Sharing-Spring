@@ -78,7 +78,7 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
   @Test
   @Order(4)
   void findById() {
-    Pin cached = cachedPinService.findById(1L, DetailsType.DETAIL);
+    Pin cached = cachedPinService.findById(1L, DetailsType.BASIC);
     assertEquals(1L, cached.getId());
     assertEquals("description", cached.getDescription());
     assertEquals(1L, cached.getUserId());

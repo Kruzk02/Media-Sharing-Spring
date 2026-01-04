@@ -57,7 +57,9 @@ public class CachedCommentService extends CachedServiceHelper<Comment> implement
   @Override
   public Comment findById(Long id, DetailsType detailsType) {
     var cacheKey =
-        detailsType.getType().equals("DETAIL") ? "comment:" + id + ":details" : "comment:" + id;
+        detailsType.getType().equals("DETAIL")
+            ? "comment:" + id + ":details"
+            : "comment:" + id + ":basic";
     var cached =
         super.getOrLoad(
             cacheKey, () -> commentService.findById(id, detailsType), Duration.ofHours(2));

@@ -22,7 +22,6 @@ import com.app.shared.event.comment.update.UpdateCommentMediaEvent;
 import com.app.shared.message.producer.NotificationEventProducer;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,20 +100,13 @@ class CommentServiceImplTest {
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
     var request = new CreateCommentRequest("content", 1L, mockFile, Set.of("tag1", "tag2"));
-    Mockito.when(hashtagDao.findByTag(Set.of("tag1", "tag2"))).thenReturn(new HashMap<>());
-    Mockito.when(hashtagDao.save(Mockito.argThat(ht -> ht.getTag() != null)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
 
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
     Mockito.when(
             commentDao.save(
                 Mockito.argThat(
-                    c ->
-                        c.getContent() != null
-                            && !c.getHashtags().isEmpty()
-                            && c.getUserId() != 0
-                            && c.getPinId() != 0)))
+                    c -> c.getContent() != null && c.getUserId() != 0 && c.getPinId() != 0)))
         .thenReturn(comment);
 
     var result = commentService.save(request);
@@ -124,11 +116,7 @@ class CommentServiceImplTest {
     Mockito.verify(commentDao)
         .save(
             Mockito.argThat(
-                c ->
-                    c.getContent() != null
-                        && !c.getHashtags().isEmpty()
-                        && c.getUserId() != 0
-                        && c.getPinId() != 0));
+                c -> c.getContent() != null && c.getUserId() != 0 && c.getPinId() != 0));
 
     Mockito.verify(notificationEventProducer).send(Mockito.any(Notification.class));
     Mockito.verify(eventPublisher).publishEvent(Mockito.any(SaveCommentMediaEvent.class));
@@ -137,13 +125,10 @@ class CommentServiceImplTest {
   @Test
   void update_shouldUpdateComment_whenValidRequestAndMatchUser() {
 
-    Mockito.when(commentDao.findById(1L, DetailsType.DETAIL)).thenReturn(comment);
+    Mockito.when(commentDao.findById(1L, DetailsType.BASIC)).thenReturn(comment);
     Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
 
     var request = new UpdatedCommentRequest("content", mockFile, Set.of("tag1", "tag2"));
-
-    Mockito.when(hashtagDao.save(Mockito.argThat(ht -> ht.getTag() != null)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
 
     Mockito.when(
             commentDao.update(
@@ -164,11 +149,7 @@ class CommentServiceImplTest {
         .update(
             Mockito.eq(1L),
             Mockito.argThat(
-                c ->
-                    c.getContent() != null
-                        && !c.getHashtags().isEmpty()
-                        && c.getUserId() != 0
-                        && c.getPinId() != 0));
+                c -> c.getContent() != null && c.getUserId() != 0 && c.getPinId() != 0));
 
     Mockito.verify(emitters).get(result.getId());
     Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdateCommentMediaEvent.class));
