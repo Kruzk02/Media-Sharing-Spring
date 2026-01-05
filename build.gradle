@@ -44,7 +44,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
 
     // --- Utilities ---
-    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+    implementation 'me.paulschwarz:spring-dotenv:5.0.1'
     implementation 'org.modelmapper:modelmapper:3.2.6'
     implementation 'org.apache.commons:commons-lang3'
 
