@@ -73,7 +73,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom "org.testcontainers:testcontainers-bom:2.0.2"
+        mavenBom "org.testcontainers:testcontainers-bom:2.0.3"
         mavenBom 'org.springframework.modulith:spring-modulith-bom:2.0.1'
     }
 }
