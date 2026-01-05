@@ -41,7 +41,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.20.1'
 
     // --- OpenAPI ---
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
 
     // --- Utilities ---
     implementation 'me.paulschwarz:spring-dotenv:5.0.1'
