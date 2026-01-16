@@ -12,21 +12,21 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @Log4j2
-public class DAOLoggingAspect {
+public class ModuleLoggingAspect {
 
-  @Pointcut("execution(* com.app.DAO..*.*(..))")
-  public void daoLayer() {}
+  @Pointcut("execution(* com.app.module..*.*(..))")
+  public void module() {}
 
-  @Before("daoLayer()")
-  public void logBeforeDAo(JoinPoint joinPoint) {
+  @Before("module()")
+  public void logBeforeModule(JoinPoint joinPoint) {
     log.info(
         "Entering Method: {} in {}",
         joinPoint.getSignature().getName(),
         joinPoint.getTarget().getClass().getSimpleName());
   }
 
-  @Around("daoLayer()")
-  public Object logOperations(ProceedingJoinPoint joinPoint) throws Throwable {
+  @Around("module()")
+  public Object logAroundModule(ProceedingJoinPoint joinPoint) throws Throwable {
     var signature = (MethodSignature) joinPoint.getSignature();
     var method = signature.getMethod();
     Object[] args = joinPoint.getArgs();
@@ -44,8 +44,8 @@ public class DAOLoggingAspect {
     return result;
   }
 
-  @After("daoLayer()")
-  public void logAfterDAO(JoinPoint joinPoint) {
+  @After("module()")
+  public void logAfterModule(JoinPoint joinPoint) {
     log.info(
         "Exiting Method: {} in {}",
         joinPoint.getSignature().getName(),
