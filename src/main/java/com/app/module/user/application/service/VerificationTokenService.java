@@ -64,7 +64,7 @@ public class VerificationTokenService {
   }
 
   @Scheduled(fixedRate = 10 * 60 * 1000)
-  private void deleteExpireToken() {
+  public void deleteExpireToken() {
     verificationTokenDao.deleteExpiredTokens();
   }
 }

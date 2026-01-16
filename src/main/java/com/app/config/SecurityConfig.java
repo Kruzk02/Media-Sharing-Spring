@@ -4,6 +4,7 @@ import com.app.module.user.security.CustomUserDetailsService;
 import com.app.module.user.security.JwtAuthenticationFilter;
 import com.app.shared.exception.CustomAccessDeniedHandler;
 import java.util.List;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -60,6 +61,16 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
+  }
+
+  @Bean
+  public FilterRegistrationBean<JwtAuthenticationFilter> jwtAuthFilterRegistration(
+      JwtAuthenticationFilter filter) {
+
+    FilterRegistrationBean<JwtAuthenticationFilter> registration =
+        new FilterRegistrationBean<>(filter);
+    registration.setEnabled(false);
+    return registration;
   }
 
   @Bean
