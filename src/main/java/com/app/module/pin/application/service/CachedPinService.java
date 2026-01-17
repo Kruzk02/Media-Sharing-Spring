@@ -16,6 +16,14 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * Caching decorator for {@link PinService}.
+ *
+ * <p>Delegates business logic to the primary {@link PinService} implementation while caching read
+ * operations in Redis.
+ *
+ * <p>Cache entries are invalidated on write operations to maintain consistency.
+ */
 @Slf4j
 @Component
 @Primary
