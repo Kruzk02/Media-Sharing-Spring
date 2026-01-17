@@ -1,6 +1,5 @@
 package com.app.module.pin.application.service;
 
-import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.exception.PinIsEmptyException;
 import com.app.module.pin.domain.Pin;
@@ -16,7 +15,6 @@ import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import lombok.AllArgsConstructor;
@@ -29,10 +27,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Pin Service class responsible for handling operations relates to Pins.
+ * Default implementation of {@link PinService}.
  *
- * <p>This class interacts with the PinDaoImpl for data access, and utilizes ModelMapper for mapping
- * between DTOs and entity objects.
+ * <p>This implementation retrieves and persists pin data using DAOs and publishes domain events for
+ * media and hashtag processing.
+ *
+ * <p>Authentication is resolved from Spring Security context. All write operations are
+ * transactional.
  */
 @Slf4j
 @Service
@@ -42,7 +43,6 @@ public class PinServiceImpl implements PinService {
 
   private final PinDao pinDao;
   private final UserDao userDao;
-  private final HashtagDao hashtagDao;
   private final ApplicationEventPublisher eventPublisher;
 
   private User getAuthenticatedUser() {
@@ -50,20 +50,28 @@ public class PinServiceImpl implements PinService {
     return userDao.findUserByUsername(Objects.requireNonNull(authentication).getName());
   }
 
-  /**
-   * Retrieves all pins.
-   *
-   * @return A List of all pins.
-   */
+  /** {@inheritDoc} */
+  @Transactional(readOnly = true)
+  @Override
   public List<Pin> getAllPins(SortType sortType, int limit, int offset) {
     return pinDao.getAllPins(sortType, limit, offset);
   }
 
+  /** {@inheritDoc} */
+  @Transactional(readOnly = true)
   @Override
   public List<Pin> getAllPinsByHashtag(String tag, int limit, int offset) {
     return pinDao.getAllPinsByHashtag(tag, limit, offset);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation requires a non-empty media file and publishes events for hashtag and
+   * media
+   *
+   * @throws PinIsEmptyException if media file is not provided
+   */
   @Override
   @Transactional
   public Pin save(PinRequest pinRequest) {
@@ -82,9 +90,10 @@ public class PinServiceImpl implements PinService {
         new SavePinHashTagCommand(savedPin.getId(), pinRequest.hashtags(), LocalDateTime.now()));
     eventPublisher.publishEvent(
         new SavePinMediaCommand(savedPin.getId(), pinRequest.file(), LocalDateTime.now()));
-    return pin;
+    return savedPin;
   }
 
+  /** {@inheritDoc} */
   @Override
   @Transactional
   public Pin update(Long id, PinRequest pinRequest) {
@@ -118,36 +127,24 @@ public class PinServiceImpl implements PinService {
     return pin;
   }
 
-  /**
-   * Retrieves a pin with little or full details, using database or cache
-   *
-   * @param id The id of the pin to be found.
-   * @param detailsType The details of little or full details of the pin
-   * @return A pin with specified id, either fetch from database or cache. If no pin are found, an
-   *     exception is thrown
-   */
+  /** {@inheritDoc} */
+  @Transactional(readOnly = true)
   @Override
   public Pin findById(Long id, DetailsType detailsType) {
     return pinDao.findById(id, detailsType);
   }
 
-  /**
-   * Retrieves a list of pin associated with specific user, using both database and cache.
-   *
-   * @param userId The id of the user whose pin are to be retrieved.
-   * @param limit The maximum number of pin to be return.
-   * @param offset The offset to paginate the pin result.
-   * @return A list of pin associated with specified user ID, either from fetch database or cache.
-   *     If no pin are found, an empty list is returned
-   */
+  /** {@inheritDoc} */
+  @Transactional(readOnly = true)
   @Override
   public List<Pin> findPinByUserId(Long userId, int limit, int offset) {
     return pinDao.findPinByUserId(userId, limit, offset);
   }
 
+  /** {@inheritDoc} */
   @Override
   @Transactional
-  public void delete(Long id) throws IOException {
+  public void delete(Long id) {
     var user = getAuthenticatedUser();
 
     Pin pin = pinDao.findById(id, DetailsType.BASIC);
