@@ -8,7 +8,6 @@ import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Comparator;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,10 +42,7 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
     var redisKey = "pins:" + sortType + ":limit:" + limit + ":offset:" + offset;
     return super.getListOrLoad(
         redisKey,
-        () ->
-            delegate.getAllPins(sortType, limit, offset).stream()
-                .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
-                .toList(),
+        () -> delegate.getAllPins(sortType, limit, offset),
         limit,
         offset,
         Duration.ofHours(2));
@@ -57,10 +53,7 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
     var redisKey = "pins_hashtag:" + tag + ":limit:" + limit + ":offset:" + offset;
     return super.getListOrLoad(
         redisKey,
-        () ->
-            delegate.getAllPinsByHashtag(tag, limit, offset).stream()
-                .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
-                .toList(),
+        () -> delegate.getAllPinsByHashtag(tag, limit, offset),
         limit,
         offset,
         Duration.ofHours(2));
@@ -96,10 +89,7 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
     var redisKey = "user:" + userId + ":pins";
     return super.getListOrLoad(
         redisKey,
-        () ->
-            delegate.findPinByUserId(userId, limit, offset).stream()
-                .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
-                .toList(),
+        () -> delegate.findPinByUserId(userId, limit, offset),
         limit,
         offset,
         Duration.ofHours(2));
