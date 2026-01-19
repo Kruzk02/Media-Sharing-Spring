@@ -37,8 +37,8 @@ dependencies {
     implementation 'org.springframework.modulith:spring-modulith-events-api:2.0.1'
 
     // --- Jackson ---
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.20.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.20.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.0'
 
     // --- OpenAPI ---
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
