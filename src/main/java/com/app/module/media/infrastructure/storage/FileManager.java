@@ -1,4 +1,4 @@
-package com.app.shared.storage;
+package com.app.module.media.infrastructure.storage;
 
 import com.app.module.media.domain.status.MediaType;
 import com.app.shared.exception.sub.FileDeleteException;
