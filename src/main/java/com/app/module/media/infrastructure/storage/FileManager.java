@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 @Log4j2
@@ -57,7 +56,6 @@ public class FileManager {
    * @return A CompletableFuture that runs the save operation asynchronously.
    * @throws IllegalArgumentException If any of the input parameters are null.
    */
-  @Async
   public static CompletableFuture<Void> save(
       MultipartFile file, String filename, String extension) {
     if (file == null || filename == null || extension == null) {
@@ -88,7 +86,6 @@ public class FileManager {
    * @return A CompletableFuture that runs the delete operation asynchronously.
    * @throws IllegalArgumentException If any of the input parameters are null.
    */
-  @Async
   public static CompletableFuture<Void> delete(String filename, String extension) {
     if (filename == null || extension == null) {
       throw new IllegalArgumentException("File, filename, and extension must not be null.");
