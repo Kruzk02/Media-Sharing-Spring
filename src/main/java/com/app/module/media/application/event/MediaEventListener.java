@@ -1,5 +1,6 @@
 package com.app.module.media.application.event;
 
+import com.app.module.media.application.dto.MediaInfo;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
 import com.app.module.media.infrastructure.dao.MediaDao;
@@ -278,7 +279,8 @@ public class MediaEventListener {
 
   private CompletableFuture<Void> saveFileAsync(
       MultipartFile file, String filename, String extension) {
-    return CompletableFuture.runAsync(() -> FileManager.save(file, filename, extension));
+    return CompletableFuture.runAsync(
+        () -> FileManager.save(file, new MediaInfo(filename, extension)));
   }
 
   private void updateMediaFile(Media existingMedia, MultipartFile newFile) {
@@ -297,7 +299,9 @@ public class MediaEventListener {
               mediaDao.update(existingMedia.getId(), existingMedia);
 
               scheduler.schedule(
-                  () -> FileManager.delete(oldFilename, oldExt), 30, TimeUnit.MINUTES);
+                  () -> FileManager.delete(new MediaInfo(oldFilename, oldExt)),
+                  30,
+                  TimeUnit.MINUTES);
             })
         .exceptionally(
             _ -> {
@@ -307,7 +311,8 @@ public class MediaEventListener {
   }
 
   private void deleteMedia(Media media) {
-    FileManager.delete(media.getUrl(), MediaManager.getFileExtension(media.getUrl()));
+    FileManager.delete(
+        new MediaInfo(media.getUrl(), MediaManager.getFileExtension(media.getUrl())));
     mediaDao.deleteById(media.getId());
   }
 
