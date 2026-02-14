@@ -1,10 +1,10 @@
 package com.app.module.media.application.event;
 
 import com.app.module.media.application.dto.MediaInfo;
+import com.app.module.media.application.port.MediaStorage;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
 import com.app.module.media.infrastructure.dao.MediaDao;
-import com.app.module.media.infrastructure.storage.FileManager;
 import com.app.shared.event.UserMediaCreatedEvent;
 import com.app.shared.event.UserUpdatedMediaEvent;
 import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
@@ -44,6 +44,7 @@ public class MediaEventListener {
 
   private final MediaDao mediaDao;
   private final ApplicationEventPublisher eventPublisher;
+  private final MediaStorage mediaStorage;
   private static final ScheduledExecutorService scheduler =
       Executors.newSingleThreadScheduledExecutor();
 
@@ -280,7 +281,7 @@ public class MediaEventListener {
   private CompletableFuture<Void> saveFileAsync(
       MultipartFile file, String filename, String extension) {
     return CompletableFuture.runAsync(
-        () -> FileManager.save(file, new MediaInfo(filename, extension)));
+        () -> mediaStorage.save(file, new MediaInfo(filename, extension)));
   }
 
   private void updateMediaFile(Media existingMedia, MultipartFile newFile) {
@@ -299,7 +300,7 @@ public class MediaEventListener {
               mediaDao.update(existingMedia.getId(), existingMedia);
 
               scheduler.schedule(
-                  () -> FileManager.delete(new MediaInfo(oldFilename, oldExt)),
+                  () -> mediaStorage.delete(new MediaInfo(oldFilename, oldExt)),
                   30,
                   TimeUnit.MINUTES);
             })
@@ -311,7 +312,7 @@ public class MediaEventListener {
   }
 
   private void deleteMedia(Media media) {
-    FileManager.delete(
+    mediaStorage.delete(
         new MediaInfo(media.getUrl(), MediaManager.getFileExtension(media.getUrl())));
     mediaDao.deleteById(media.getId());
   }
