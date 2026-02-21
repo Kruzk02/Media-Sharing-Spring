@@ -14,6 +14,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,6 +54,7 @@ public class FileSystemMediaStorage implements MediaStorage {
    * @throws IllegalArgumentException If any of the input parameters are null.
    */
   @Override
+  @Async
   public CompletableFuture<Void> save(MultipartFile file, MediaInfo mediaInfo) {
     if (file == null || mediaInfo.filename() == null || mediaInfo.extension() == null) {
       throw new IllegalArgumentException("File, filename, and extension must not be null.");
@@ -85,6 +87,7 @@ public class FileSystemMediaStorage implements MediaStorage {
    * @throws IllegalArgumentException If any of the input parameters are null.
    */
   @Override
+  @Async
   public CompletableFuture<Void> delete(MediaInfo mediaInfo) {
     if (mediaInfo.filename() == null || mediaInfo.extension() == null) {
       throw new IllegalArgumentException("File, filename, and extension must not be null.");
