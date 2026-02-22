@@ -3,6 +3,7 @@ package com.app.module.pin.api;
 import com.app.module.comment.application.dto.response.CommentResponse;
 import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
+import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
@@ -35,6 +36,47 @@ public class PinController {
   private final PinService pinService;
   private final CommentService commentService;
 
+  //  @Operation(summary = "Get all Pins")
+  //  @ApiResponses(
+  //      value = {
+  //        @ApiResponse(
+  //            responseCode = "200",
+  //            description = "Successfully get all pins",
+  //            content = {
+  //              @Content(mediaType = "application/json", schema = @Schema(implementation =
+  // Pin.class))
+  //            }),
+  //        @ApiResponse(
+  //            responseCode = "500",
+  //            description = "Internal server error",
+  //            content = @Content(mediaType = "application/json"))
+  //      })
+  //  @GetMapping
+  //  public ResponseEntity<List<PinResponse>> getAllPins(
+  //      @Parameter(description = "Sorting type for pins: NEWEST, OLDEST or DEFAULT")
+  //          @RequestParam(defaultValue = "NEWEST")
+  //          SortType sortType,
+  //      @Parameter(description = "Maximum number of pins to be retrieved")
+  //          @RequestParam(defaultValue = "10")
+  //          int limit,
+  //      @Parameter(description = "Offset for pagination, indicating the starting point")
+  //          @RequestParam(defaultValue = "0")
+  //          int offset) {
+  //    if (limit <= 0 || offset < 0) {
+  //      throw new IllegalArgumentException(
+  //          "Limit must be greater than 0 and offset must be non-negative.");
+  //    }
+  //
+  //    List<PinResponse> pinResponses =
+  //        pinService.getAllPins(sortType, limit, offset).stream()
+  //            .map(PinResponse::fromEntity)
+  //            .toList();
+  //
+  //    return ResponseEntity.status(HttpStatus.OK)
+  //        .contentType(MediaType.APPLICATION_JSON)
+  //        .body(pinResponses);
+  //  }
+
   @Operation(summary = "Get all Pins")
   @ApiResponses(
       value = {
@@ -50,30 +92,21 @@ public class PinController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping
-  public ResponseEntity<List<PinResponse>> getAllPins(
+  public ResponseEntity<PinKeysetResponse> getAllPins(
       @Parameter(description = "Sorting type for pins: NEWEST, OLDEST or DEFAULT")
           @RequestParam(defaultValue = "NEWEST")
           SortType sortType,
       @Parameter(description = "Maximum number of pins to be retrieved")
           @RequestParam(defaultValue = "10")
           int limit,
-      @Parameter(description = "Offset for pagination, indicating the starting point")
-          @RequestParam(defaultValue = "0")
-          int offset) {
-    if (limit <= 0 || offset < 0) {
-      throw new IllegalArgumentException(
-          "Limit must be greater than 0 and offset must be non-negative.");
+      @Parameter(description = "") String cursor) {
+    if (limit <= 0) {
+      throw new IllegalArgumentException("Limit must be greater than 0.");
     }
-
-    List<PinResponse> pinResponses =
-        pinService.getAllPins(sortType, limit, offset).stream()
-            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
-            .map(PinResponse::fromEntity)
-            .toList();
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(pinResponses);
+        .body(pinService.getAllPins(sortType, limit, cursor));
   }
 
   @Operation(summary = "Upload a pin")
