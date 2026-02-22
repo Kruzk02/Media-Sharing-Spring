@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -32,15 +33,30 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public List<Pin> getAllPins(SortType sortType, int limit, int offset) {
-    String orderBy = (sortType == SortType.NEWEST) ? "DESC" : "ASC";
+  public List<Pin> getAllPins(SortType sortType, int limit, LocalDateTime dateTime, Long id) {
+    boolean isNewest = sortType == SortType.NEWEST;
 
-    String sql =
-        "SELECT id, user_id, media_id, created_at FROM pins ORDER BY created_at "
-            + orderBy
-            + " LIMIT ? OFFSET ?";
+    String operator = isNewest ? "<" : ">";
+    String direction = isNewest ? "DESC" : "ASC";
 
-    return jdbcTemplate.query(sql, new PinRowMapper(false, true), limit, offset);
+    String sql;
+
+    if (dateTime == null || id == null) {
+      sql =
+          """
+        SELECT id, user_id, media_id, created_at
+        FROM pins
+        ORDER BY created_at %s, id %s
+        LIMIT ?
+        """
+              .formatted(direction, direction);
+      return jdbcTemplate.query(sql, new PinRowMapper(false, true), limit);
+    }
+
+    sql =
+        "SELECT id, user_id, media_id, created_at FROM pins WHERE (created_at, id) %s (?, ?) ORDER BY created_at %s, id %s LIMIT ?"
+            .formatted(operator, direction, direction);
+    return jdbcTemplate.query(sql, new PinRowMapper(false, true), dateTime, id, limit);
   }
 
   @Override

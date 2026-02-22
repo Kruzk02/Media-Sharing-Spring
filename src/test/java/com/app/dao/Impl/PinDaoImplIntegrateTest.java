@@ -9,6 +9,7 @@ import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.pin.infrastructure.PinDaoImpl;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -48,7 +49,22 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(2)
   void getAllPins() {
-    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, 0);
+    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, LocalDateTime.now(), 1L);
+
+    Pin expected = Pin.builder().id(1L).userId(1L).description(null).build();
+
+    Pin actual = pins.getFirst();
+
+    assertEquals(expected.getId(), actual.getId());
+    assertEquals(expected.getUserId(), actual.getUserId());
+    assertEquals(expected.getDescription(), actual.getDescription());
+    assertNotNull(actual.getCreatedAt());
+  }
+
+  @Test
+  @Order(2)
+  void getAllPinsByKeySet() {
+    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, LocalDateTime.now(), 1L);
 
     Pin expected = Pin.builder().id(1L).userId(1L).description(null).build();
 

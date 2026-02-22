@@ -6,6 +6,7 @@ import com.app.shared.dao.Deletable;
 import com.app.shared.dao.Updatable;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /** Interface for managing Pin data access operations. */
@@ -16,8 +17,13 @@ public interface PinDao extends Creatable<Pin>, Updatable<Pin>, Deletable {
    *
    * @return A list of all pins stored in the database.
    */
-  List<Pin> getAllPins(SortType sortType, int limit, int offset);
+  List<Pin> getAllPins(SortType sortType, int limit, LocalDateTime dateTime, Long id);
 
+  /**
+   * Retrieves all pins by hash tag stored in the database.
+   *
+   * @return A list of all pins stored in the database.
+   */
   List<Pin> getAllPinsByHashtag(String tag, int limit, int offset);
 
   /**
