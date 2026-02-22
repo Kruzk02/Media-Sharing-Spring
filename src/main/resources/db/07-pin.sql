@@ -7,3 +7,5 @@ CREATE TABLE IF NOT EXISTS pins (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN kEY (media_id) REFERENCES media(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_pins_created_id ON pins (created_at, id);
