@@ -6,11 +6,13 @@ import static org.mockito.Mockito.when;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.api.PinController;
-import com.app.module.pin.application.dto.PinResponse;
+import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,21 +32,23 @@ class PinControllerUnitTest {
   @Test
   void getAllPins_ShouldThrow_WhenLimitIsInvalid() {
     assertThrows(
-        IllegalArgumentException.class, () -> pinController.getAllPins(SortType.NEWEST, 0, 0));
+        IllegalArgumentException.class, () -> pinController.getAllPins(SortType.NEWEST, 0, ""));
   }
 
   @Test
   void getAllPins_ShouldPassCorrectArguments() {
     List<Pin> pins =
         List.of(Pin.builder().id(1L).userId(1L).mediaId(1L).description("Hello World").build());
+    var cursor = KeysetCursorCodec.encode(LocalDateTime.now(), 1L);
+    when(pinService.getAllPins(eq(SortType.NEWEST), eq(10), eq(cursor)))
+        .thenReturn(new PinKeysetResponse(pins, cursor));
 
-    when(pinService.getAllPins(eq(SortType.NEWEST), eq(10), eq(0))).thenReturn(pins);
-
-    ResponseEntity<List<PinResponse>> response = pinController.getAllPins(SortType.NEWEST, 10, 0);
+    ResponseEntity<PinKeysetResponse> response =
+        pinController.getAllPins(SortType.NEWEST, 10, cursor);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
-    assertEquals(1, response.getBody().size());
+    assertEquals(1, response.getBody().pins().size());
   }
 
   @Test
