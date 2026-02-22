@@ -1,5 +1,6 @@
 package com.app.module.pin.application.service;
 
+import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.domain.Pin;
 import com.app.shared.type.DetailsType;
@@ -16,14 +17,14 @@ import java.util.List;
 public interface PinService {
 
   /**
-   * Retrieves all pins with optional sorting and pagination.
+   * Retrieves all pins with keyset pagination.
    *
    * @param sortType the sorting strategy to apply
    * @param limit the maximum number of pins to return
-   * @param offset the starting position for pagination
+   * @param cursor
    * @return a list of pins
    */
-  List<Pin> getAllPins(SortType sortType, int limit, int offset);
+  PinKeysetResponse getAllPins(SortType sortType, int limit, String cursor);
 
   /**
    * Retrieves all pins associated with a specific hashtag.
