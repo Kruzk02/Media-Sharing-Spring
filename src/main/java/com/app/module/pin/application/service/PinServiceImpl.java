@@ -1,5 +1,6 @@
 package com.app.module.pin.application.service;
 
+import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.exception.PinIsEmptyException;
 import com.app.module.pin.domain.Pin;
@@ -13,6 +14,7 @@ import com.app.shared.event.pin.save.SavePinMediaCommand;
 import com.app.shared.event.pin.update.UpdatePinMediaCommand;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
+import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.time.LocalDateTime;
@@ -51,10 +53,32 @@ public class PinServiceImpl implements PinService {
   }
 
   /** {@inheritDoc} */
-  @Transactional(readOnly = true)
   @Override
-  public List<Pin> getAllPins(SortType sortType, int limit, int offset) {
-    return pinDao.getAllPins(sortType, limit, offset);
+  public PinKeysetResponse getAllPins(SortType sortType, int limit, String cursor) {
+
+    var decodedCursor = cursor != null ? KeysetCursorCodec.decode(cursor) : null;
+
+    List<Pin> pins =
+        pinDao.getAllPins(
+            sortType,
+            limit + 1,
+            decodedCursor != null ? decodedCursor.dateTime() : null,
+            decodedCursor != null ? decodedCursor.id() : null);
+
+    boolean hasNext = pins.size() > limit;
+
+    if (hasNext) {
+      pins = pins.subList(0, limit);
+    }
+
+    String encodedCursor = null;
+
+    if (hasNext) {
+      var lastPin = pins.getLast();
+      encodedCursor = KeysetCursorCodec.encode(lastPin.getCreatedAt(), lastPin.getId());
+    }
+
+    return new PinKeysetResponse(pins, encodedCursor);
   }
 
   /** {@inheritDoc} */

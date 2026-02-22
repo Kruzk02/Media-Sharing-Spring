@@ -1,6 +1,8 @@
 package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.hashtag.infrastructure.HashtagDao;
@@ -15,9 +17,11 @@ import com.app.shared.event.pin.delete.DeletePinMediaCommand;
 import com.app.shared.event.pin.save.SavePinMediaCommand;
 import com.app.shared.event.pin.update.UpdatePinMediaCommand;
 import com.app.shared.exception.sub.PinNotFoundException;
+import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,11 +72,14 @@ class PinServiceImplTest {
 
   @Test
   void getAllPins_shouldReturnListOfPin() {
-    Mockito.when(pinDao.getAllPins(SortType.NEWEST, 10, 0)).thenReturn(List.of(pin));
-    var result = pinService.getAllPins(SortType.NEWEST, 10, 0);
+    LocalDateTime now = LocalDateTime.now();
+    String cursor = KeysetCursorCodec.encode(now, 1L);
+    Mockito.when(pinDao.getAllPins(eq(SortType.NEWEST), eq(11), any(LocalDateTime.class), eq(1L)))
+        .thenReturn(List.of(pin));
+    var result = pinService.getAllPins(SortType.NEWEST, 10, cursor);
 
     assertNotNull(result);
-    assertEquals(List.of(pin), result);
+    assertEquals(List.of(pin), result.pins());
   }
 
   @Test
@@ -105,7 +112,7 @@ class PinServiceImplTest {
     assertNotNull(result);
     Mockito.verify(pinDao)
         .save(Mockito.argThat(p -> p.getDescription() != null && p.getUserId() != 0));
-    Mockito.verify(eventPublisher).publishEvent(Mockito.any(SavePinMediaCommand.class));
+    Mockito.verify(eventPublisher).publishEvent(any(SavePinMediaCommand.class));
   }
 
   @Test
@@ -117,7 +124,7 @@ class PinServiceImplTest {
 
     Mockito.when(
             pinDao.update(
-                Mockito.eq(1L),
+                eq(1L),
                 Mockito.argThat(
                     p ->
                         !p.getHashtags().isEmpty()
@@ -132,14 +139,14 @@ class PinServiceImplTest {
 
     Mockito.verify(pinDao)
         .update(
-            Mockito.eq(1L),
+            eq(1L),
             Mockito.argThat(
                 p ->
                     p.getId() != null
                         && !p.getHashtags().isEmpty()
                         && p.getDescription() != null
                         && p.getUserId() != 0));
-    Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdatePinMediaCommand.class));
+    Mockito.verify(eventPublisher).publishEvent(any(UpdatePinMediaCommand.class));
   }
 
   @Test
@@ -168,7 +175,7 @@ class PinServiceImplTest {
     pinService.delete(1L);
 
     Mockito.verify(pinDao).deleteById(1L);
-    Mockito.verify(eventPublisher).publishEvent(Mockito.any(DeletePinMediaCommand.class));
+    Mockito.verify(eventPublisher).publishEvent(any(DeletePinMediaCommand.class));
   }
 
   @Test

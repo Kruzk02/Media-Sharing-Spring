@@ -1,5 +1,6 @@
 package com.app.module.pin.application.service;
 
+import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.domain.Pin;
 import com.app.shared.exception.sub.PinNotFoundException;
@@ -38,14 +39,8 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
   }
 
   @Override
-  public List<Pin> getAllPins(SortType sortType, int limit, int offset) {
-    var redisKey = "pins:" + sortType + ":limit:" + limit + ":offset:" + offset;
-    return super.getListOrLoad(
-        redisKey,
-        () -> delegate.getAllPins(sortType, limit, offset),
-        limit,
-        offset,
-        Duration.ofHours(2));
+  public PinKeysetResponse getAllPins(SortType sortType, int limit, String cursor) {
+    return delegate.getAllPins(sortType, limit, cursor);
   }
 
   @Override
