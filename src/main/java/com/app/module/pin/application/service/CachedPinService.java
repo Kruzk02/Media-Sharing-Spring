@@ -68,6 +68,8 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
       zSet.add(key, pin, pin.getCreatedAt().toEpochSecond(ZoneOffset.UTC));
     }
 
+    redisTemplate.expire(key, Duration.ofMinutes(5));
+
     return response;
   }
 
