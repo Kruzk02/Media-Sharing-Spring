@@ -54,6 +54,7 @@ public class PinServiceImpl implements PinService {
 
   /** {@inheritDoc} */
   @Override
+  @Transactional
   public PinKeysetResponse getAllPins(SortType sortType, int limit, String cursor) {
 
     var decodedCursor = cursor != null ? KeysetCursorCodec.decode(cursor) : null;

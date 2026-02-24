@@ -9,11 +9,15 @@ import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 /**
@@ -40,7 +44,31 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
 
   @Override
   public PinKeysetResponse getAllPins(SortType sortType, int limit, String cursor) {
-    return delegate.getAllPins(sortType, limit, cursor);
+    // Only cached the first page.
+    // The second and afterward not cached.
+    if (cursor != null) {
+      return delegate.getAllPins(sortType, limit, cursor);
+    }
+
+    String key = "Pins:zset:" + sortType;
+    ZSetOperations<String, Pin> zSet = redisTemplate.opsForZSet();
+
+    Long size = zSet.zCard(key);
+
+    if (size != null && size >= limit) {
+      Set<Pin> cached = zSet.reverseRange(key, 0, limit - 1);
+      if (cached != null && !cached.isEmpty()) {
+        return new PinKeysetResponse(new ArrayList<>(cached), null);
+      }
+    }
+
+    PinKeysetResponse response = delegate.getAllPins(sortType, limit, null);
+
+    for (Pin pin : response.pins()) {
+      zSet.add(key, pin, pin.getCreatedAt().toEpochSecond(ZoneOffset.UTC));
+    }
+
+    return response;
   }
 
   @Override
