@@ -3,3 +3,5 @@ CREATE TABLE IF NOT EXISTS hashtags(
     tag VARCHAR(69) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_hashtag ON hashtag(tag);
