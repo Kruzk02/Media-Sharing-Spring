@@ -60,14 +60,35 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public List<Pin> getAllPinsByHashtag(String tag, int limit, int offset) {
-    String sql =
-        "SELECT p.id, p.user_id, p.media_id, p.created_at "
-            + "FROM pins p "
-            + "JOIN hashtags_pins hp ON p.id = hp.pin_id "
-            + "JOIN hashtags h ON hp.hashtag_id = h.id "
-            + "WHERE h.tag = ? ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
-    return jdbcTemplate.query(sql, new PinRowMapper(false, true), tag, limit, offset);
+  public List<Pin> getAllPinsByHashtag(String tag, int limit, LocalDateTime dateTime, Long id) {
+    String sql;
+    if (dateTime == null || id == null) {
+      sql =
+          """
+    SELECT p.id, p.user_id, p.media_id, p.created_at
+    FROM pins p
+    JOIN hashtags_pins hp ON p.id = hp.pin_id
+    JOIN hashtags h ON hp.hashtag_id = h.id
+    WHERE h.tag = ?
+    ORDER BY p.created_at DESC, p.id DESC
+    LIMIT ?
+    """;
+
+      return jdbcTemplate.query(sql, new PinRowMapper(false, true), tag, limit);
+    }
+
+    sql =
+        """
+        SELECT p.id, p.user_id, p.media_id, p.created_at
+        FROM pins p
+        JOIN hashtags_pins hp ON p.id = hp.pin_id
+        JOIN hashtags h ON hp.hashtag_id = h.id
+        WHERE h.tag = ? AND (p.created_at < ? OR (p.created_at = ? AND p.id < ?))
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT ?
+        """;
+    return jdbcTemplate.query(
+        sql, new PinRowMapper(false, true), tag, dateTime, dateTime, id, limit);
   }
 
   @Override

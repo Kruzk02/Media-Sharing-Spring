@@ -24,7 +24,7 @@ public interface PinDao extends Creatable<Pin>, Updatable<Pin>, Deletable {
    *
    * @return A list of all pins stored in the database.
    */
-  List<Pin> getAllPinsByHashtag(String tag, int limit, int offset);
+  List<Pin> getAllPinsByHashtag(String tag, int limit, LocalDateTime dateTime, Long id);
 
   /**
    * Finds a basic detail pin by its id.
