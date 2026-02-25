@@ -48,8 +48,7 @@ public class HashtagController {
       @Parameter(description = "Maximum number of pins to be retrieved")
           @RequestParam(defaultValue = "10")
           int limit,
-      @Parameter
-          String cursor) {
+      @Parameter String cursor) {
     if (limit <= 0) {
       throw new IllegalArgumentException("Limit must be greater than 0 and must be non-negative.");
     }
