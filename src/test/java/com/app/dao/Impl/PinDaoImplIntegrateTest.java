@@ -16,7 +16,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.mockito.Mockito;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PinDaoImplIntegrateTest extends AbstractMySQLTest {
@@ -80,7 +79,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(3)
   void getAllPinsByHashtag() {
-    List<Pin> pins = pinDao.getAllPinsByHashtag("tag", 10, Mockito.any(LocalDateTime.class), 1L);
+    List<Pin> pins = pinDao.getAllPinsByHashtag("tag", 10, LocalDateTime.now(), 1L);
     Pin expected =
         Pin.builder()
             .id(1L)
