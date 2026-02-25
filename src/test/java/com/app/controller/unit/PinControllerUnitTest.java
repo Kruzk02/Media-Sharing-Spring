@@ -6,9 +6,9 @@ import static org.mockito.Mockito.when;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.api.PinController;
-import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -41,14 +41,14 @@ class PinControllerUnitTest {
         List.of(Pin.builder().id(1L).userId(1L).mediaId(1L).description("Hello World").build());
     var cursor = KeysetCursorCodec.encode(LocalDateTime.now(), 1L);
     when(pinService.getAllPins(eq(SortType.NEWEST), eq(10), eq(cursor)))
-        .thenReturn(new PinKeysetResponse(pins, cursor));
+        .thenReturn(new CursorPage<>(pins, cursor, false));
 
-    ResponseEntity<PinKeysetResponse> response =
+    ResponseEntity<CursorPage<Pin>> response =
         pinController.getAllPins(SortType.NEWEST, 10, cursor);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
-    assertEquals(1, response.getBody().pins().size());
+    assertEquals(1, response.getBody().data().size());
   }
 
   @Test

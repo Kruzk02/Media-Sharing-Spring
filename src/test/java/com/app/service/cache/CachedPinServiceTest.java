@@ -6,11 +6,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.service.CachedPinService;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -68,11 +68,11 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
   @Order(2)
   void getAllPins() {
     String cursor = KeysetCursorCodec.encode(LocalDateTime.now(), 1L);
-    PinKeysetResponse keyset = new PinKeysetResponse(List.of(pin), cursor);
+    CursorPage<Pin> keyset = new CursorPage<>(List.of(pin), cursor, false);
     when(mockPinService.getAllPins(SortType.NEWEST, 1, cursor)).thenReturn(keyset);
     var result = cachedPinService.getAllPins(SortType.NEWEST, 1, cursor);
     assertNotNull(result);
-    assertFalse(result.pins().isEmpty());
+    assertFalse(result.data().isEmpty());
   }
 
   @Test

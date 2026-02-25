@@ -1,8 +1,8 @@
 package com.app.module.pin.application.service;
 
-import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.helper.CachedServiceHelper;
 import com.app.shared.type.DetailsType;
@@ -43,34 +43,24 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
   }
 
   @Override
-  public PinKeysetResponse getAllPins(SortType sortType, int limit, String cursor) {
-    // Only cached the first page.
-    // The second and afterward not cached.
+  public CursorPage<Pin> getAllPins(SortType sortType, int limit, String cursor) {
     if (cursor != null) {
       return delegate.getAllPins(sortType, limit, cursor);
     }
 
-    String key = "Pins:zset:" + sortType;
-    ZSetOperations<String, Pin> zSet = redisTemplate.opsForZSet();
+    String cacheKey = String.format("pins:first:%s:%d", sortType.name(), limit);
+    List<Pin> cached = super.redisTemplate.opsForList().range(cacheKey, 0, limit - 1);
 
-    Long size = zSet.zCard(key);
-
-    if (size != null && size >= limit) {
-      Set<Pin> cached = zSet.reverseRange(key, 0, limit - 1);
-      if (cached != null && !cached.isEmpty()) {
-        return new PinKeysetResponse(new ArrayList<>(cached), null);
-      }
+    if (cached != null && !cached.isEmpty()) {
+      return new CursorPage<>(cached, null, false);
     }
 
-    PinKeysetResponse response = delegate.getAllPins(sortType, limit, null);
+    CursorPage<Pin> page = delegate.getAllPins(sortType, limit, null);
 
-    for (Pin pin : response.pins()) {
-      zSet.add(key, pin, pin.getCreatedAt().toEpochSecond(ZoneOffset.UTC));
-    }
+    super.redisTemplate.opsForList().rightPushAll(cacheKey, page.data());
+    super.redisTemplate.expire(cacheKey, Duration.ofSeconds(60));
 
-    redisTemplate.expire(key, Duration.ofMinutes(5));
-
-    return response;
+    return page;
   }
 
   @Override

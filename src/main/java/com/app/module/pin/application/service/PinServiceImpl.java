@@ -1,12 +1,12 @@
 package com.app.module.pin.application.service;
 
-import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.exception.PinIsEmptyException;
 import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.event.hashtag.SavePinHashTagCommand;
 import com.app.shared.event.hashtag.UpdatePinHashTagCommand;
 import com.app.shared.event.pin.delete.DeletePinMediaCommand;
@@ -54,8 +54,8 @@ public class PinServiceImpl implements PinService {
 
   /** {@inheritDoc} */
   @Override
-  @Transactional
-  public PinKeysetResponse getAllPins(SortType sortType, int limit, String cursor) {
+  @Transactional(readOnly = true)
+  public CursorPage<Pin> getAllPins(SortType sortType, int limit, String cursor) {
 
     var decodedCursor = cursor != null ? KeysetCursorCodec.decode(cursor) : null;
 
@@ -79,7 +79,7 @@ public class PinServiceImpl implements PinService {
       encodedCursor = KeysetCursorCodec.encode(lastPin.getCreatedAt(), lastPin.getId());
     }
 
-    return new PinKeysetResponse(pins, encodedCursor);
+    return new CursorPage<>(pins, encodedCursor, hasNext);
   }
 
   /** {@inheritDoc} */

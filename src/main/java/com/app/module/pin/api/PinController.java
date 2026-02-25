@@ -3,11 +3,11 @@ package com.app.module.pin.api;
 import com.app.module.comment.application.dto.response.CommentResponse;
 import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
-import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +51,7 @@ public class PinController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping
-  public ResponseEntity<PinKeysetResponse> getAllPins(
+  public ResponseEntity<CursorPage<Pin>> getAllPins(
       @Parameter(description = "Sorting type for pins: NEWEST, OLDEST or DEFAULT")
           @RequestParam(defaultValue = "NEWEST")
           SortType sortType,

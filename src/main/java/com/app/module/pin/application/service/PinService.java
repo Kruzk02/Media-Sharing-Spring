@@ -1,8 +1,8 @@
 package com.app.module.pin.application.service;
 
-import com.app.module.pin.application.dto.PinKeysetResponse;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public interface PinService {
    * @param cursor
    * @return a list of pins
    */
-  PinKeysetResponse getAllPins(SortType sortType, int limit, String cursor);
+  CursorPage<Pin> getAllPins(SortType sortType, int limit, String cursor);
 
   /**
    * Retrieves all pins associated with a specific hashtag.

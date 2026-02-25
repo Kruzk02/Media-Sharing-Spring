@@ -79,7 +79,8 @@ class PinServiceImplTest {
     var result = pinService.getAllPins(SortType.NEWEST, 10, cursor);
 
     assertNotNull(result);
-    assertEquals(List.of(pin), result.pins());
+    assertEquals(List.of(pin), result.data());
+    assertFalse(result.hasNext());
   }
 
   @Test
