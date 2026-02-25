@@ -78,8 +78,12 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
   @Test
   @Order(3)
   void getAllPinsByHashtag() {
-    List<Pin> pins = cachedPinService.getAllPinsByHashtag("tag", 10, 0);
-    assertTrue(pins.isEmpty());
+    String cursor = KeysetCursorCodec.encode(LocalDateTime.now(), 1L);
+    CursorPage<Pin> keyset = new CursorPage<>(List.of(pin), cursor, false);
+    when(mockPinService.getAllPinsByHashtag("tag", 1, cursor)).thenReturn(keyset);
+    var result = cachedPinService.getAllPinsByHashtag("tag", 1, cursor);
+    assertNotNull(result);
+    assertFalse(result.data().isEmpty());
   }
 
   @Test

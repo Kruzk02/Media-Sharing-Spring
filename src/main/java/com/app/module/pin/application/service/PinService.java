@@ -17,24 +17,35 @@ import java.util.List;
 public interface PinService {
 
   /**
-   * Retrieves all pins with keyset pagination.
+   * Retrieves a paginated list of {@link Pin} objects using cursor-based pagination.
    *
-   * @param sortType the sorting strategy to apply
-   * @param limit the maximum number of pins to return
-   * @param cursor
-   * @return a list of pins
+   * @param sortType the sorting strategy applied to the result set (newest, oldest)
+   * @param limit the maximum number of pins to return in a single page
+   * @param cursor the pagination cursor representing the starting point for the next page; pass
+   *     {@code null} to retrieve the first page
+   * @return a {@link CursorPage} containing:
+   *     <ul>
+   *       <li>a list of {@link Pin} items
+   *       <li>the next cursor value (if more data is available)
+   *     </ul>
    */
   CursorPage<Pin> getAllPins(SortType sortType, int limit, String cursor);
 
   /**
-   * Retrieves all pins associated with a specific hashtag.
+   * Retrieves a paginated list of {@link Pin} objects associated with a specific hashtag using
+   * cursor-based pagination.
    *
    * @param tag the hashtag to filter pins by (without '#')
-   * @param limit the maximum number of pins to return
-   * @param offset the starting position for pagination
-   * @return a list of pins containing the given hashtag
+   * @param limit the maximum number of pins to return in single page
+   * @param cursor the pagination cursor representing the starting point for the next page; pass
+   *     {@code null} to retrieve the first page
+   * @return a {@link CursorPage} containing:
+   *     <ul>
+   *       <li>a list of {@link Pin} items
+   *       <li>the next cursor value (if more data is available)
+   *     </ul>
    */
-  List<Pin> getAllPinsByHashtag(String tag, int limit, int offset);
+  CursorPage<Pin> getAllPinsByHashtag(String tag, int limit, String cursor);
 
   /**
    * Create and saves a new pin.

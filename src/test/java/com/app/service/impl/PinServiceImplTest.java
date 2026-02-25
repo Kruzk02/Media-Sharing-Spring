@@ -85,11 +85,14 @@ class PinServiceImplTest {
 
   @Test
   void getAllPinsByHashTag_shouldReturnListOfPin() {
-    Mockito.when(pinDao.getAllPinsByHashtag("tag", 10, 0)).thenReturn(List.of(pin));
-    var result = pinService.getAllPinsByHashtag("tag", 10, 0);
+    LocalDateTime now = LocalDateTime.now();
+    String cursor = KeysetCursorCodec.encode(now, 1L);
+    Mockito.when(pinDao.getAllPinsByHashtag(eq("tag"), eq(11), any(LocalDateTime.class), eq(1L)))
+        .thenReturn(List.of(pin));
+    var result = pinService.getAllPinsByHashtag("tag", 10, cursor);
 
     assertNotNull(result);
-    assertEquals(List.of(pin), result);
+    assertEquals(List.of(pin), result.data());
   }
 
   @Test

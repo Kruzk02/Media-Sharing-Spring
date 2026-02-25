@@ -3,9 +3,9 @@ package com.app.module.hashtag.api;
 import com.app.module.comment.application.dto.response.CommentResponse;
 import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
-import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,24 +43,18 @@ public class HashtagController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping("/{tag}/pins")
-  public ResponseEntity<List<PinResponse>> getAllPinsByTag(
+  public ResponseEntity<CursorPage<Pin>> getAllPinsByTag(
       @Parameter(description = "tag of the pin", required = true) @PathVariable String tag,
       @Parameter(description = "Maximum number of pins to be retrieved")
           @RequestParam(defaultValue = "10")
           int limit,
-      @Parameter(description = "Offset for pagination, indicating the starting point")
-          @RequestParam(defaultValue = "0")
-          int offset) {
-    if (limit <= 0 || offset < 0) {
-      throw new IllegalArgumentException(
-          "Limit must be greater than 0 and offset must be non-negative.");
+      @Parameter
+          String cursor) {
+    if (limit <= 0) {
+      throw new IllegalArgumentException("Limit must be greater than 0 and must be non-negative.");
     }
 
-    List<PinResponse> pins =
-        pinService.getAllPinsByHashtag(tag, limit, offset).stream()
-            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
-            .map(PinResponse::fromEntity)
-            .toList();
+    CursorPage<Pin> pins = pinService.getAllPinsByHashtag(tag, limit, cursor);
 
     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
   }

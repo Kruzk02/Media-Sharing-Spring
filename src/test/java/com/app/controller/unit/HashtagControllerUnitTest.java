@@ -8,9 +8,9 @@ import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.api.HashtagController;
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ class HashtagControllerUnitTest {
   @Test
   void getAllPinsByTag_shouldThrow_whenLimitIsInvalid() {
     assertThrows(
-        IllegalArgumentException.class, () -> hashtagController.getAllPinsByTag("tag", 0, 0));
+        IllegalArgumentException.class, () -> hashtagController.getAllPinsByTag("tag", 0, null));
   }
 
   @Test
@@ -45,13 +45,14 @@ class HashtagControllerUnitTest {
                 .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
                 .build());
 
-    when(pinService.getAllPinsByHashtag(eq("tag"), eq(10), eq(0))).thenReturn(pins);
+    CursorPage<Pin> page = new CursorPage<>(pins, null, false);
+    when(pinService.getAllPinsByHashtag(eq("tag"), eq(10), eq(null))).thenReturn(page);
 
-    ResponseEntity<List<PinResponse>> response = hashtagController.getAllPinsByTag("tag", 10, 0);
+    ResponseEntity<CursorPage<Pin>> response = hashtagController.getAllPinsByTag("tag", 10, null);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
-    assertEquals(1, response.getBody().size());
+    assertEquals(1, response.getBody().data().size());
   }
 
   @Test
