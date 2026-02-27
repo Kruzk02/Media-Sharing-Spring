@@ -5,7 +5,6 @@ import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
-import com.app.shared.dto.response.CursorPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,42 +20,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/hashtag")
+@RequestMapping("/api/hashtags")
 @AllArgsConstructor
 public class HashtagController {
 
   private final CommentService commentService;
   private final PinService pinService;
-
-  @Operation(summary = "Get all Pins")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Successfully get all pins",
-            content = {
-              @Content(mediaType = "application/json", schema = @Schema(implementation = Pin.class))
-            }),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content(mediaType = "application/json"))
-      })
-  @GetMapping("/{tag}/pins")
-  public ResponseEntity<CursorPage<Pin>> getAllPinsByTag(
-      @Parameter(description = "tag of the pin", required = true) @PathVariable String tag,
-      @Parameter(description = "Maximum number of pins to be retrieved")
-          @RequestParam(defaultValue = "10")
-          int limit,
-      @Parameter String cursor) {
-    if (limit <= 0) {
-      throw new IllegalArgumentException("Limit must be greater than 0 and must be non-negative.");
-    }
-
-    CursorPage<Pin> pins = pinService.getAllPinsByHashtag(tag, limit, cursor);
-
-    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
-  }
 
   @Operation(summary = "Get all Pins")
   @ApiResponses(

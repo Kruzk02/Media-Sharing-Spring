@@ -56,9 +56,15 @@ public class PinController {
           @RequestParam(defaultValue = "NEWEST")
           SortType sortType,
       @Parameter(description = "Maximum number of pins to be retrieved")
-          @RequestParam(defaultValue = "10")
+          @RequestParam(defaultValue = "25")
           int limit,
-      @Parameter(description = "") String cursor) {
+      @Parameter(
+              description =
+                  "Opaque pagination cursor returned by a previous request. Do not modify this value. Pass it as-is to retrieve the next page.",
+              example = "AAABnJ5uOzwAAAAAAAAAew")
+          @RequestParam(required = false)
+          String cursor) {
+
     if (limit <= 0) {
       throw new IllegalArgumentException("Limit must be greater than 0.");
     }
@@ -66,6 +72,41 @@ public class PinController {
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
         .body(pinService.getAllPins(sortType, limit, cursor));
+  }
+
+  @Operation(summary = "Get all pins by specific hashtag")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully get all pins",
+            content = {
+              @Content(mediaType = "application/json", schema = @Schema(implementation = Pin.class))
+            }),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(mediaType = "application/json"))
+      })
+  @GetMapping("/by-hashtag/{tag}")
+  public ResponseEntity<CursorPage<Pin>> getAllPinsByTag(
+      @Parameter(description = "tag of the pin", required = true) @PathVariable String tag,
+      @Parameter(description = "Maximum number of pins to be retrieved")
+          @RequestParam(defaultValue = "25")
+          int limit,
+      @Parameter(
+              description =
+                  "Opaque pagination cursor returned by a previous request. Do not modify this value. Pass it as-is to retrieve the next page.",
+              example = "AAABnJ5uOzwAAAAAAAAAew")
+          @RequestParam(required = false)
+          String cursor) {
+    if (limit <= 0) {
+      throw new IllegalArgumentException("Limit must be greater than 0 and must be non-negative.");
+    }
+
+    CursorPage<Pin> pins = pinService.getAllPinsByHashtag(tag, limit, cursor);
+
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
   }
 
   @Operation(summary = "Upload a pin")

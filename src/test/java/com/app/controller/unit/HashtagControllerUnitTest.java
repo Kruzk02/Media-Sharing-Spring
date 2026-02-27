@@ -9,8 +9,6 @@ import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.api.HashtagController;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.application.service.PinService;
-import com.app.module.pin.domain.Pin;
-import com.app.shared.dto.response.CursorPage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class HashtagControllerUnitTest {
@@ -26,34 +23,6 @@ class HashtagControllerUnitTest {
   @Mock private PinService pinService;
 
   @InjectMocks private HashtagController hashtagController;
-
-  @Test
-  void getAllPinsByTag_shouldThrow_whenLimitIsInvalid() {
-    assertThrows(
-        IllegalArgumentException.class, () -> hashtagController.getAllPinsByTag("tag", 0, null));
-  }
-
-  @Test
-  void getAllPinsByTag_shouldPassCorrectArguments() {
-    List<Pin> pins =
-        List.of(
-            Pin.builder()
-                .id(1L)
-                .userId(1L)
-                .mediaId(1L)
-                .description("Hello World")
-                .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
-                .build());
-
-    CursorPage<Pin> page = new CursorPage<>(pins, null, false);
-    when(pinService.getAllPinsByHashtag(eq("tag"), eq(10), eq(null))).thenReturn(page);
-
-    ResponseEntity<CursorPage<Pin>> response = hashtagController.getAllPinsByTag("tag", 10, null);
-
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals(1, response.getBody().data().size());
-  }
 
   @Test
   void getAllCommentByTag_shouldThrow_whenLimitIsValid() {
