@@ -5,6 +5,7 @@ import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.application.dto.response.CommentResponse;
 import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
+import com.app.module.pin.domain.Pin;
 import com.app.module.subcomment.application.dto.SubCommentResponse;
 import com.app.module.subcomment.application.service.SubCommentService;
 import com.app.module.subcomment.domain.SubComment;
@@ -77,6 +78,45 @@ public class CommentController {
                 view.equalsIgnoreCase("details")
                     ? new ArrayList<>(comment.getHashtags())
                     : new ArrayList<>()));
+  }
+
+  @Operation(summary = "Get all Comment")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully get all pins",
+            content = {
+              @Content(mediaType = "application/json", schema = @Schema(implementation = Pin.class))
+            }),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(mediaType = "application/json"))
+      })
+  @GetMapping("/by-hashtag/{tag}")
+  public ResponseEntity<List<CommentResponse>> getAllCommentByTag(
+      @Parameter(description = "tag of the comments", required = true) @PathVariable String tag,
+      @Parameter(description = "Maximum number of comments to be retrieved")
+          @RequestParam(defaultValue = "10")
+          int limit,
+      @Parameter(description = "Offset for pagination, indicating the starting point")
+          @RequestParam(defaultValue = "0")
+          int offset) {
+    if (limit <= 0 || offset < 0) {
+      throw new IllegalArgumentException(
+          "Limit must be greater than 0 and offset must be non-negative.");
+    }
+
+    List<CommentResponse> comments =
+        commentService.findByHashtag(tag, limit, offset).stream()
+            .sorted(Comparator.comparing(Comment::getCreated_at).reversed())
+            .map(CommentResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(comments);
   }
 
   @Operation(summary = "Fetch all sub comments by comment id")

@@ -31,6 +31,34 @@ class CommentControllerUnitTest {
   @InjectMocks private CommentController commentController;
 
   @Test
+  void getAllCommentByTag_shouldThrow_whenLimitIsValid() {
+    assertThrows(
+        IllegalArgumentException.class, () -> commentController.getAllCommentByTag("tag", 0, 0));
+  }
+
+  @Test
+  void getAllCommentByTag_shouldPassCorrectArguments() {
+    List<Comment> comments =
+        List.of(
+            Comment.builder()
+                .id(1L)
+                .content("content")
+                .userId(1L)
+                .mediaId(1L)
+                .pinId(1L)
+                .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
+                .build());
+
+    when(commentService.findByHashtag(eq("tag"), eq(10), eq(0))).thenReturn(comments);
+
+    var response = commentController.getAllCommentByTag("tag", 10, 0);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(1, response.getBody().size());
+  }
+
+  @Test
   void findById_shouldPassCorrectBasicComment() {
     var comment =
         Comment.builder()
