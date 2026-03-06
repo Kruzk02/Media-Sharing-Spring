@@ -9,7 +9,7 @@ import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.service.PinServiceImpl;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.PinDao;
+import com.app.module.pin.infrastructure.dao.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;

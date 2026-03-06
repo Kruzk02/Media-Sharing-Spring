@@ -3,9 +3,8 @@ package com.app.module.pin.application.service;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.exception.PinIsEmptyException;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.PinDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.module.pin.infrastructure.client.UserGateway;
+import com.app.module.pin.infrastructure.dao.PinDao;
 import com.app.shared.dto.response.CursorPage;
 import com.app.shared.event.hashtag.SavePinHashTagCommand;
 import com.app.shared.event.hashtag.UpdatePinHashTagCommand;
@@ -24,7 +23,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,13 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PinServiceImpl implements PinService {
 
   private final PinDao pinDao;
-  private final UserDao userDao;
+  private final UserGateway userGateway;
   private final ApplicationEventPublisher eventPublisher;
-
-  private User getAuthenticatedUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(Objects.requireNonNull(authentication).getName());
-  }
 
   /** {@inheritDoc} */
   @Override
@@ -130,7 +123,13 @@ public class PinServiceImpl implements PinService {
     Pin pin =
         Pin.builder()
             .description(pinRequest.description())
-            .userId(getAuthenticatedUser().getId())
+            .userId(
+                userGateway
+                    .getUserByUsername(
+                        Objects.requireNonNull(
+                                SecurityContextHolder.getContext().getAuthentication())
+                            .getName())
+                    .id())
             .build();
     Pin savedPin = pinDao.save(pin);
 
@@ -152,8 +151,14 @@ public class PinServiceImpl implements PinService {
       throw new PinNotFoundException("Pin not found with a id: " + id);
     }
 
-    if (getAuthenticatedUser() == null
-        || !Objects.equals(getAuthenticatedUser().getId(), existingPin.getUserId())) {
+    Long userId =
+        userGateway
+            .getUserByUsername(
+                Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication())
+                    .getName())
+            .id();
+
+    if (userId == null || !Objects.equals(userId, existingPin.getUserId())) {
       throw new UserNotMatchException("User does not matching with a pin owner");
     }
 
@@ -193,14 +198,19 @@ public class PinServiceImpl implements PinService {
   @Override
   @Transactional
   public void delete(Long id) {
-    var user = getAuthenticatedUser();
+    var userId =
+        userGateway
+            .getUserByUsername(
+                Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication())
+                    .getName())
+            .id();
 
     Pin pin = pinDao.findById(id, DetailsType.BASIC);
     if (pin == null) {
       throw new PinNotFoundException("Pin not found with a id: " + id);
     }
 
-    if (!Objects.equals(user.getId(), pin.getUserId())) {
+    if (!Objects.equals(userId, pin.getUserId())) {
       throw new UserNotMatchException("Authenticated user does not own the pin");
     }
     pinDao.deleteById(id);
