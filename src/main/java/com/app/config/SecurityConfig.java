@@ -47,7 +47,7 @@ public class SecurityConfig {
                 authorize
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
-                    .requestMatchers("/api/users/login", "/api/users/register", "/api/pin")
+                    .requestMatchers("/api/users/login", "/api/users/register","/api/users/*/info", "/api/pin")
                     .permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**")
                     .hasRole("ADMIN")

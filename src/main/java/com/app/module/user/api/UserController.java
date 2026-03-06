@@ -131,7 +131,22 @@ public class UserController {
         .body(new JwtResponse(accessToken));
   }
 
-  @Operation(summary = "Register user account")
+  @GetMapping("/{username}/info")
+  public ResponseEntity<?> findByUsername(@PathVariable String username) {
+      var user = userService.findFullUserByUsername(username);
+      return ResponseEntity.status(HttpStatus.OK)
+              .contentType(MediaType.APPLICATION_JSON)
+              .body(
+                      new UserResponse(
+                              user.getId(),
+                              user.getUsername(),
+                              user.getEmail(),
+                              user.getMediaId(),
+                              user.getBio(),
+                              user.getGender()));
+  }
+
+    @Operation(summary = "Register user account")
   @ApiResponses(
       value = {
         @ApiResponse(
