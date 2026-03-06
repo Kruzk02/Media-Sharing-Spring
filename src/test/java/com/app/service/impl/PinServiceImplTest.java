@@ -5,14 +5,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.service.PinServiceImpl;
 import com.app.module.pin.domain.Pin;
+import com.app.module.pin.infrastructure.client.UserGateway;
 import com.app.module.pin.infrastructure.dao.PinDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.module.pin.infrastructure.dto.UserDto;
 import com.app.shared.event.pin.delete.DeletePinMediaCommand;
 import com.app.shared.event.pin.save.SavePinMediaCommand;
 import com.app.shared.event.pin.update.UpdatePinMediaCommand;
@@ -38,28 +36,20 @@ import org.springframework.web.multipart.MultipartFile;
 class PinServiceImplTest {
 
   @Mock private PinDao pinDao;
-  @Mock private UserDao userDao;
-  @Mock private HashtagDao hashtagDao;
+  @Mock private UserGateway userGateway;
   @Mock private MultipartFile mockFile;
   @Mock private ApplicationEventPublisher eventPublisher;
 
   @InjectMocks private PinServiceImpl pinService;
 
   private Pin pin;
-  private User user;
+  private UserDto userDto;
 
   @BeforeEach
   void setUp() {
     Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
-    user =
-        User.builder()
-            .id(1L)
-            .username("username")
-            .email("email@gmail.com")
-            .password("encodedPassword")
-            .enable(false)
-            .gender(Gender.MALE)
-            .build();
+    userDto = new UserDto(1L);
+
     pin =
         Pin.builder()
             .id(1L)
@@ -103,7 +93,7 @@ class PinServiceImplTest {
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
 
     PinRequest request = new PinRequest("Description", mockFile, Set.of("tag1", "tag2"));
 
@@ -122,7 +112,7 @@ class PinServiceImplTest {
   @Test
   void update_ShouldUpdatePin_WhenValidRequestAndMatchingUser() {
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
 
     PinRequest pinRequest = new PinRequest("New description", mockFile, Set.of("tag1"));
 
@@ -139,7 +129,7 @@ class PinServiceImplTest {
     Pin updatedPin = pinService.update(1L, pinRequest);
 
     assertEquals("New description", updatedPin.getDescription());
-    assertEquals(user.getId(), updatedPin.getUserId());
+    assertEquals(userDto.id(), updatedPin.getUserId());
 
     Mockito.verify(pinDao)
         .update(
@@ -173,7 +163,7 @@ class PinServiceImplTest {
 
   @Test
   void deleteById_shouldDeleteExistingPin() throws IOException {
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
     pinService.delete(1L);
@@ -184,6 +174,7 @@ class PinServiceImplTest {
 
   @Test
   void testDeleteById_PinNotFound() {
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
     Mockito.when(pinDao.findById(2L, DetailsType.BASIC)).thenReturn(null);
 
     PinNotFoundException ex = assertThrows(PinNotFoundException.class, () -> pinService.delete(2L));
