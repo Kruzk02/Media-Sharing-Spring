@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/comment")
@@ -78,6 +79,54 @@ public class CommentController {
                 view.equalsIgnoreCase("details")
                     ? new ArrayList<>(comment.getHashtags())
                     : new ArrayList<>()));
+  }
+
+  @GetMapping(value = "/of-pin/{id}/sse-comment", produces = "text/event-stream")
+  public SseEmitter stream(@PathVariable long id) {
+    return commentService.createEmitter(id);
+  }
+
+  @Operation(summary = "Find all comment by pin id")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully get all comment",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Comment.class))),
+        @ApiResponse(responseCode = "404", description = "Pin not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @GetMapping("/of-pin/{id}/comments")
+  public ResponseEntity<List<CommentResponse>> getAllCommentByPinId(
+      @Parameter(description = "id of the pin whose comment are to be retrieved", required = true)
+          @PathVariable
+          Long id,
+      @Parameter(description = "Sorting type for comments: NEWEST, OLDEST")
+          @RequestParam(defaultValue = "NEWEST")
+          SortType sortType,
+      @Parameter(description = "Maximum number of comments to be retrieved")
+          @RequestParam(defaultValue = "10")
+          int limit,
+      @Parameter(description = "Offset for pagination, indicating the starting point")
+          @RequestParam(defaultValue = "0")
+          int offset) {
+    if (limit <= 0 || offset < 0) {
+      throw new IllegalArgumentException(
+          "Limit must be greater than 0 and offset must be non-negative.");
+    }
+
+    List<CommentResponse> comments =
+        commentService.findByPinId(id, sortType, limit, offset).stream()
+            .sorted(Comparator.comparing(Comment::getCreated_at))
+            .map(CommentResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(comments);
   }
 
   @Operation(summary = "Get all Comment")
