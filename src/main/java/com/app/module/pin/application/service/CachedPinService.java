@@ -66,16 +66,18 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
     }
 
     String cacheKey = String.format("pins:first:hashtag:%s:%d", tag, limit);
-    List<Pin> cached = super.redisTemplate.opsForList().range(cacheKey, 0, limit - 1);
 
+    List<Pin> cached = redisTemplate.opsForList().range(cacheKey, 0, limit - 1);
     if (cached != null && !cached.isEmpty()) {
       return new CursorPage<>(cached, null, false);
     }
 
     CursorPage<Pin> page = delegate.getAllPinsByHashtag(tag, limit, null);
 
-    super.redisTemplate.opsForList().rightPushAll(cacheKey, page.data());
-    super.redisTemplate.expire(cacheKey, Duration.ofSeconds(60));
+    if (!page.data().isEmpty()) {
+      redisTemplate.opsForList().rightPushAll(cacheKey, page.data());
+      redisTemplate.expire(cacheKey, Duration.ofSeconds(60));
+    }
 
     return page;
   }
