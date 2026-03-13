@@ -44,9 +44,9 @@ public class PinController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping
-  public ResponseEntity<CursorPage<Pin>> getAllPins(
+  public ResponseEntity<CursorPage<Pin>> getPins(
       @Parameter(description = "Sorting type for pins: NEWEST, OLDEST or DEFAULT")
-          @RequestParam(defaultValue = "NEWEST")
+          @RequestParam(defaultValue = "NEWEST", required = false)
           SortType sortType,
       @Parameter(description = "Maximum number of pins to be retrieved")
           @RequestParam(defaultValue = "25")
@@ -56,50 +56,18 @@ public class PinController {
                   "Opaque pagination cursor returned by a previous request. Do not modify this value. Pass it as-is to retrieve the next page.",
               example = "AAABnJ5uOzwAAAAAAAAAew")
           @RequestParam(required = false)
-          String cursor) {
-
+          String cursor,
+      @Parameter(description = "tag of the pin") @RequestParam(required = false) String tag) {
     if (limit <= 0) {
       throw new IllegalArgumentException("Limit must be greater than 0.");
     }
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(pinService.getAllPins(sortType, limit, cursor));
-  }
-
-  @Operation(summary = "Get all pins by specific hashtag")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Successfully get all pins",
-            content = {
-              @Content(mediaType = "application/json", schema = @Schema(implementation = Pin.class))
-            }),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content(mediaType = "application/json"))
-      })
-  @GetMapping("/by-hashtag/{tag}")
-  public ResponseEntity<CursorPage<Pin>> getAllPinsByTag(
-      @Parameter(description = "tag of the pin", required = true) @PathVariable String tag,
-      @Parameter(description = "Maximum number of pins to be retrieved")
-          @RequestParam(defaultValue = "25")
-          int limit,
-      @Parameter(
-              description =
-                  "Opaque pagination cursor returned by a previous request. Do not modify this value. Pass it as-is to retrieve the next page.",
-              example = "AAABnJ5uOzwAAAAAAAAAew")
-          @RequestParam(required = false)
-          String cursor) {
-    if (limit <= 0) {
-      throw new IllegalArgumentException("Limit must be greater than 0 and must be non-negative.");
-    }
-
-    CursorPage<Pin> pins = pinService.getAllPinsByHashtag(tag, limit, cursor);
-
-    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
+        .body(
+            tag != null && !tag.isBlank()
+                ? pinService.getAllPinsByHashtag(tag, limit, cursor)
+                : pinService.getAllPins(sortType, limit, cursor));
   }
 
   @Operation(summary = "Upload a pin")

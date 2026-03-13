@@ -32,7 +32,7 @@ class PinControllerUnitTest {
   @Test
   void getAllPins_ShouldThrow_WhenLimitIsInvalid() {
     assertThrows(
-        IllegalArgumentException.class, () -> pinController.getAllPins(SortType.NEWEST, 0, ""));
+        IllegalArgumentException.class, () -> pinController.getPins(SortType.NEWEST, 0, "", null));
   }
 
   @Test
@@ -44,17 +44,11 @@ class PinControllerUnitTest {
         .thenReturn(new CursorPage<>(pins, cursor, false));
 
     ResponseEntity<CursorPage<Pin>> response =
-        pinController.getAllPins(SortType.NEWEST, 10, cursor);
+        pinController.getPins(SortType.NEWEST, 10, cursor, null);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
     assertEquals(1, response.getBody().data().size());
-  }
-
-  @Test
-  void getAllPinsByTag_shouldThrow_whenLimitIsInvalid() {
-    assertThrows(
-        IllegalArgumentException.class, () -> pinController.getAllPinsByTag("tag", 0, null));
   }
 
   @Test
@@ -72,7 +66,8 @@ class PinControllerUnitTest {
     CursorPage<Pin> page = new CursorPage<>(pins, null, false);
     when(pinService.getAllPinsByHashtag(eq("tag"), eq(10), eq(null))).thenReturn(page);
 
-    ResponseEntity<CursorPage<Pin>> response = pinController.getAllPinsByTag("tag", 10, null);
+    ResponseEntity<CursorPage<Pin>> response =
+        pinController.getPins(SortType.NEWEST, 10, null, "tag");
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());

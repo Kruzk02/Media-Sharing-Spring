@@ -19,6 +19,7 @@ import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.BiFunction;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,44 +51,37 @@ public class PinServiceImpl implements PinService {
   @Override
   @Transactional(readOnly = true)
   public CursorPage<Pin> getAllPins(SortType sortType, int limit, String cursor) {
-
-    var decodedCursor = cursor != null ? KeysetCursorCodec.decode(cursor) : null;
-
-    List<Pin> pins =
-        pinDao.getAllPins(
-            sortType,
-            limit + 1,
-            decodedCursor != null ? decodedCursor.dateTime() : null,
-            decodedCursor != null ? decodedCursor.id() : null);
-
-    boolean hasNext = pins.size() > limit;
-
-    if (hasNext) {
-      pins = pins.subList(0, limit);
-    }
-
-    String encodedCursor = null;
-
-    if (hasNext) {
-      var lastPin = pins.getLast();
-      encodedCursor = KeysetCursorCodec.encode(lastPin.getCreatedAt(), lastPin.getId());
-    }
-
-    return new CursorPage<>(pins, encodedCursor, hasNext);
+    return paginatePins(
+        limit,
+        cursor,
+        (decodedCursor, queryLimit) ->
+            pinDao.getAllPins(
+                sortType,
+                queryLimit,
+                decodedCursor != null ? decodedCursor.dateTime() : null,
+                decodedCursor != null ? decodedCursor.id() : null));
   }
 
   /** {@inheritDoc} */
   @Transactional(readOnly = true)
   @Override
   public CursorPage<Pin> getAllPinsByHashtag(String tag, int limit, String cursor) {
+    return paginatePins(
+        limit,
+        cursor,
+        (decodedCursor, queryLimit) ->
+            pinDao.getAllPinsByHashtag(
+                tag,
+                queryLimit,
+                decodedCursor != null ? decodedCursor.dateTime() : null,
+                decodedCursor != null ? decodedCursor.id() : null));
+  }
+
+  private CursorPage<Pin> paginatePins(
+      int limit, String cursor, BiFunction<DecodedCursor, Integer, List<Pin>> queryFn) {
     DecodedCursor decodedCursor = cursor != null ? KeysetCursorCodec.decode(cursor) : null;
 
-    List<Pin> pins =
-        pinDao.getAllPinsByHashtag(
-            tag,
-            limit + 1,
-            decodedCursor != null ? decodedCursor.dateTime() : null,
-            decodedCursor != null ? decodedCursor.id() : null);
+    List<Pin> pins = queryFn.apply(decodedCursor, limit + 1);
 
     boolean hasNext = pins.size() > limit;
 
