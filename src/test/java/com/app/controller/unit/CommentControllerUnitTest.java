@@ -33,7 +33,8 @@ class CommentControllerUnitTest {
   @Test
   void getAllCommentByTag_shouldThrow_whenLimitIsValid() {
     assertThrows(
-        IllegalArgumentException.class, () -> commentController.getAllComment(null,"tag", SortType.NEWEST, 0, 0));
+        IllegalArgumentException.class,
+        () -> commentController.getAllComment(null, "tag", SortType.NEWEST, 0, 0));
   }
 
   @Test
