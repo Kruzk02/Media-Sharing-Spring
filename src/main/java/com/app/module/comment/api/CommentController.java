@@ -86,7 +86,7 @@ public class CommentController {
     return commentService.createEmitter(id);
   }
 
-  @Operation(summary = "Find all comment by pin id")
+  @Operation(summary = "Find all comment by neither pinId or hashtag")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -99,13 +99,15 @@ public class CommentController {
         @ApiResponse(responseCode = "404", description = "Pin not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
       })
-  @GetMapping("/of-pin/{id}/comments")
-  public ResponseEntity<List<CommentResponse>> getAllCommentByPinId(
-      @Parameter(description = "id of the pin whose comment are to be retrieved", required = true)
-          @PathVariable
-          Long id,
+  @GetMapping()
+  public ResponseEntity<List<CommentResponse>> getAllComment(
+      @Parameter(description = "id of the pin whose comment are to be retrieved", required = false)
+          @RequestParam(required = false)
+          Long pinId,
+      @Parameter(description = "tag of the comments")
+        @RequestParam(required = false) String tag,
       @Parameter(description = "Sorting type for comments: NEWEST, OLDEST")
-          @RequestParam(defaultValue = "NEWEST")
+          @RequestParam(defaultValue = "NEWEST", required = false)
           SortType sortType,
       @Parameter(description = "Maximum number of comments to be retrieved")
           @RequestParam(defaultValue = "10")
@@ -118,54 +120,24 @@ public class CommentController {
           "Limit must be greater than 0 and offset must be non-negative.");
     }
 
-    List<CommentResponse> comments =
-        commentService.findByPinId(id, sortType, limit, offset).stream()
-            .sorted(Comparator.comparing(Comment::getCreated_at))
-            .map(CommentResponse::fromEntity)
-            .toList();
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(comments);
-  }
-
-  @Operation(summary = "Get all Comment")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Successfully get all pins",
-            content = {
-              @Content(mediaType = "application/json", schema = @Schema(implementation = Pin.class))
-            }),
-        @ApiResponse(
-            responseCode = "500",
-            description = "Internal server error",
-            content = @Content(mediaType = "application/json"))
-      })
-  @GetMapping("/by-hashtag/{tag}")
-  public ResponseEntity<List<CommentResponse>> getAllCommentByTag(
-      @Parameter(description = "tag of the comments", required = true) @PathVariable String tag,
-      @Parameter(description = "Maximum number of comments to be retrieved")
-          @RequestParam(defaultValue = "10")
-          int limit,
-      @Parameter(description = "Offset for pagination, indicating the starting point")
-          @RequestParam(defaultValue = "0")
-          int offset) {
-    if (limit <= 0 || offset < 0) {
-      throw new IllegalArgumentException(
-          "Limit must be greater than 0 and offset must be non-negative.");
+    if (pinId != null && tag != null) {
+        throw new IllegalArgumentException("Cannot filter by pinId and tag at the same time");
     }
 
-    List<CommentResponse> comments =
-        commentService.findByHashtag(tag, limit, offset).stream()
-            .sorted(Comparator.comparing(Comment::getCreated_at).reversed())
-            .map(CommentResponse::fromEntity)
-            .toList();
+    if (pinId == null && tag == null) {
+        throw new IllegalArgumentException("Either pinId or tag must be provided");
+    }
+
+    List<Comment> comments;
+    if (pinId != null) {
+        comments = commentService.findByPinId(pinId, sortType, limit, offset);
+    } else {
+        comments = commentService.findByHashtag(tag, limit, offset);
+    }
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(comments);
+        .body(comments.stream().map(CommentResponse::fromEntity).toList());
   }
 
   @Operation(summary = "Fetch all sub comments by comment id")

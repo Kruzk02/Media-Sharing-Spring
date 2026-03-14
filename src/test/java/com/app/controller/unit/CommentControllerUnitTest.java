@@ -33,7 +33,7 @@ class CommentControllerUnitTest {
   @Test
   void getAllCommentByTag_shouldThrow_whenLimitIsValid() {
     assertThrows(
-        IllegalArgumentException.class, () -> commentController.getAllCommentByTag("tag", 0, 0));
+        IllegalArgumentException.class, () -> commentController.getAllComment(null,"tag", SortType.NEWEST, 0, 0));
   }
 
   @Test
@@ -51,7 +51,7 @@ class CommentControllerUnitTest {
 
     when(commentService.findByHashtag(eq("tag"), eq(10), eq(0))).thenReturn(comments);
 
-    var response = commentController.getAllCommentByTag("tag", 10, 0);
+    var response = commentController.getAllComment(null, "tag", SortType.NEWEST, 10, 0);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
