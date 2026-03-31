@@ -7,8 +7,6 @@ import static org.mockito.Mockito.when;
 import com.app.module.board.application.service.BoardService;
 import com.app.module.board.application.service.CachedBoardService;
 import com.app.module.board.domain.Board;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -31,22 +29,7 @@ class CachedBoardServiceTest extends AbstractRedisTest<Board> {
     boardService = mock(BoardService.class);
     cachedBoardService = new CachedBoardService(redisTemplate, boardService);
 
-    board =
-        Board.builder()
-            .id(3L)
-            .name("name")
-            .user(
-                User.builder()
-                    .id(1L)
-                    .username("username")
-                    .email("email@gmail.com")
-                    .password("HashedPassword")
-                    .gender(Gender.MALE)
-                    .mediaId(1L)
-                    .bio("bio")
-                    .enable(false)
-                    .build())
-            .build();
+    board = Board.builder().id(3L).name("name").userId(1L).build();
   }
 
   @Test

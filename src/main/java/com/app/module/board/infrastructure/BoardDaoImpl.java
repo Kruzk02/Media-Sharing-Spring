@@ -3,7 +3,6 @@ package com.app.module.board.infrastructure;
 import com.app.module.board.domain.Board;
 import com.app.module.board.domain.BoardNotFoundException;
 import com.app.module.pin.domain.Pin;
-import com.app.module.user.domain.entity.User;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
@@ -33,7 +32,7 @@ public class BoardDaoImpl implements BoardDao {
           jdbcTemplate.update(
               con -> {
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setLong(1, board.getUser().getId());
+                ps.setLong(1, board.getUserId());
                 ps.setString(2, board.getName());
                 return ps;
               },
@@ -103,10 +102,8 @@ public class BoardDaoImpl implements BoardDao {
     try {
       String boardSql =
           """
-            SELECT b.id AS board_id, b.board_name,
-                   u.id AS user_id, u.username
+            SELECT b.id AS board_id, b.board_name, user_id
             FROM boards b
-            JOIN users u ON b.user_id = u.id
             WHERE b.id = ?
         """;
 
@@ -119,12 +116,7 @@ public class BoardDaoImpl implements BoardDao {
                         .id(rs.getLong("board_id"))
                         .name(rs.getString("board_name"))
                         .build();
-                var user =
-                    User.builder()
-                        .id(rs.getLong("user_id"))
-                        .username(rs.getString("username"))
-                        .build();
-                b.setUser(user);
+                b.setUserId(rs.getLong("user_id"));
                 return b;
               },
               id);
@@ -165,9 +157,8 @@ public class BoardDaoImpl implements BoardDao {
     String boardSql =
         """
         SELECT b.id AS board_id, b.board_name,
-            u.id AS user_id, u.username
+            user_id
         FROM boards b
-        JOIN users u ON b.user_id = u.id
         WHERE b.user_id = ?
         ORDER BY b.id DESC
         LIMIT ? OFFSET ?
@@ -179,11 +170,7 @@ public class BoardDaoImpl implements BoardDao {
               Board board = new Board();
               board.setId(rs.getLong("board_id"));
               board.setName(rs.getString("board_name"));
-
-              User user = new User();
-              user.setId(rs.getLong("user_id"));
-              user.setUsername(rs.getString("username"));
-              board.setUser(user);
+              board.setUserId(rs.getLong("user_id"));
 
               board.setPins(new ArrayList<>());
               return board;

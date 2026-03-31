@@ -7,8 +7,6 @@ import com.app.module.board.domain.Board;
 import com.app.module.board.infrastructure.BoardDao;
 import com.app.module.board.infrastructure.BoardDaoImpl;
 import com.app.module.pin.domain.Pin;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,22 +29,7 @@ class BoardDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(1)
   void save() {
-    Board result =
-        boardDao.save(
-            Board.builder()
-                .name("name")
-                .user(
-                    User.builder()
-                        .id(1L)
-                        .username("username")
-                        .email("email@gmail.com")
-                        .password("HashedPassword")
-                        .gender(Gender.MALE)
-                        .bio("bio")
-                        .enable(false)
-                        .mediaId(1L)
-                        .build())
-                .build());
+    Board result = boardDao.save(Board.builder().name("name").userId(1L).build());
 
     assertNotNull(result);
     assertEquals(1L, result.getId());

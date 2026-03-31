@@ -9,10 +9,9 @@ import com.app.module.board.domain.BoardNotFoundException;
 import com.app.module.board.infrastructure.BoardDao;
 import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.exception.sub.PinNotFoundException;
+import com.app.shared.gateway.UserGateway;
 import com.app.shared.type.DetailsType;
 import java.util.Collections;
 import java.util.List;
@@ -32,28 +31,19 @@ class BoardServiceImplTest {
 
   @Mock private BoardDao boardDao;
   @Mock private PinDao pinDao;
-  @Mock private UserDao userDao;
+  @Mock private UserGateway userGateway;
 
   @InjectMocks private BoardServiceImpl boardService;
 
-  private User user;
   private Pin pin;
   private Board board;
 
   @BeforeEach
   void setUp() {
 
-    user =
-        User.builder()
-            .username("username")
-            .email("email@gmail.com")
-            .password("encodedPassword")
-            .gender(Gender.OTHER)
-            .build();
-
     pin = Pin.builder().id(1L).description("description").userId(1L).mediaId(1L).build();
 
-    board = Board.builder().id(1L).user(user).name("name").pins(List.of(pin)).build();
+    board = Board.builder().id(1L).userId(1L).name("name").pins(List.of(pin)).build();
   }
 
   @Test
@@ -65,6 +55,8 @@ class BoardServiceImplTest {
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
 
+    Mockito.when(userGateway.getUserByUsername(Mockito.anyString()))
+        .thenReturn(new UserDTO(1L, "qwe"));
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
     Mockito.when(boardDao.save(Mockito.argThat(b -> b.getName() != null)))
@@ -84,6 +76,8 @@ class BoardServiceImplTest {
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
+    Mockito.when(userGateway.getUserByUsername(Mockito.anyString()))
+        .thenReturn(new UserDTO(1L, "qwe"));
 
     assertThrows(
         PinNotFoundException.class,

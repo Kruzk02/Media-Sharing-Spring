@@ -8,10 +8,10 @@ import com.app.module.board.domain.BoardNotFoundException;
 import com.app.module.board.infrastructure.BoardDao;
 import com.app.module.pin.domain.Pin;
 import com.app.module.pin.infrastructure.PinDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.exception.sub.*;
 import com.app.shared.exception.sub.UserNotMatchException;
+import com.app.shared.gateway.UserGateway;
 import com.app.shared.type.DetailsType;
 import java.util.*;
 import lombok.AllArgsConstructor;
@@ -33,11 +33,11 @@ public class BoardServiceImpl implements BoardService {
 
   private final BoardDao boardDao;
   private final PinDao pinDao;
-  private final UserDao userDao;
+  private final UserGateway userGateway;
 
-  private User getAuthenticatedUser() {
+  private UserDTO getAuthenticatedUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(authentication.getName());
+    return userGateway.getUserByUsername(Objects.requireNonNull(authentication).getName());
   }
 
   /**
@@ -61,7 +61,8 @@ public class BoardServiceImpl implements BoardService {
           "Board name should be longer than 3 characters and less than 256 characters");
     }
 
-    Board board = Board.builder().name(boardRequest.name()).user(getAuthenticatedUser()).build();
+    Board board =
+        Board.builder().name(boardRequest.name()).userId(getAuthenticatedUser().id()).build();
 
     if (boardRequest.pin_id() != null && boardRequest.pin_id().length > 0) {
       List<Pin> pins = new ArrayList<>();
@@ -95,7 +96,7 @@ public class BoardServiceImpl implements BoardService {
       throw new BoardNotFoundException("Board not found with ID: " + boardId);
     }
 
-    if (!board.getUser().getId().equals(getAuthenticatedUser().getId())) {
+    if (!board.getUserId().equals(getAuthenticatedUser().id())) {
       throw new UserNotMatchException("Authenticated user does not own this board");
     }
 
@@ -118,7 +119,7 @@ public class BoardServiceImpl implements BoardService {
       throw new BoardNotFoundException("Board not found with ID: " + boardId);
     }
 
-    if (!board.getUser().getId().equals(getAuthenticatedUser().getId())) {
+    if (!board.getUserId().equals(getAuthenticatedUser().id())) {
       throw new UserNotMatchException("Authenticated user does not own this board");
     }
 
@@ -136,7 +137,7 @@ public class BoardServiceImpl implements BoardService {
       throw new BoardNotFoundException("Board not found with a id: " + id);
     }
 
-    if (!Objects.equals(existingBoard.getUser().getId(), getAuthenticatedUser().getId())) {
+    if (!Objects.equals(existingBoard.getUserId(), getAuthenticatedUser().id())) {
       throw new UserNotMatchException("Authenticated user not own this board");
     }
 
@@ -181,7 +182,7 @@ public class BoardServiceImpl implements BoardService {
         Optional.ofNullable(boardDao.findById(id))
             .orElseThrow(() -> new BoardNotFoundException("Board not found with a id"));
 
-    if (!Objects.equals(board.getUser().getId(), getAuthenticatedUser().getId())) {
+    if (!Objects.equals(board.getUserId(), getAuthenticatedUser().id())) {
       throw new UserNotMatchException("Authenticated user does not own this board");
     }
 
