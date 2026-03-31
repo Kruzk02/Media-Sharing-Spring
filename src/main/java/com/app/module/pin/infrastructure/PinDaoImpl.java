@@ -1,4 +1,4 @@
-package com.app.module.pin.infrastructure.dao;
+package com.app.module.pin.infrastructure;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.domain.Pin;

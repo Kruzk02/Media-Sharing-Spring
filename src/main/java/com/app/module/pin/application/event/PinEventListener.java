@@ -1,7 +1,7 @@
 package com.app.module.pin.application.event;
 
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.pin.infrastructure.dao.PinDao;
+import com.app.module.pin.infrastructure.PinDao;
 import com.app.shared.event.hashtag.PinHashTagCreatedEvent;
 import com.app.shared.event.hashtag.PinHashTagUpdatedEvent;
 import com.app.shared.event.pin.save.PinMediaSavedEvent;

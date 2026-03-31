@@ -8,9 +8,9 @@ import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.service.PinServiceImpl;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.client.UserGateway;
-import com.app.module.pin.infrastructure.dao.PinDao;
-import com.app.module.pin.infrastructure.dto.UserDto;
+import com.app.shared.gateway.UserGateway;
+import com.app.module.pin.infrastructure.PinDao;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.event.pin.delete.DeletePinMediaCommand;
 import com.app.shared.event.pin.save.SavePinMediaCommand;
 import com.app.shared.event.pin.update.UpdatePinMediaCommand;
@@ -43,12 +43,12 @@ class PinServiceImplTest {
   @InjectMocks private PinServiceImpl pinService;
 
   private Pin pin;
-  private UserDto userDto;
+  private UserDTO userDto;
 
   @BeforeEach
   void setUp() {
     Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
-    userDto = new UserDto(1L);
+    userDto = new UserDTO(1L, "username");
 
     pin =
         Pin.builder()

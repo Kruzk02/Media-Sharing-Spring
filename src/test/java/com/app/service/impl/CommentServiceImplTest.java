@@ -12,7 +12,7 @@ import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.notification.domain.Notification;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.dao.PinDao;
+import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import com.app.module.user.infrastructure.user.UserDao;

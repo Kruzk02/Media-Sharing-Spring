@@ -9,7 +9,7 @@ import com.app.module.comment.infrastructure.CommentDao;
 import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.notification.domain.Notification;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.dao.PinDao;
+import com.app.module.pin.infrastructure.PinDao;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;

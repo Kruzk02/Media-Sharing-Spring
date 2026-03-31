@@ -1,6 +1,7 @@
-package com.app.module.pin.infrastructure.client;
+package com.app.module.user.infrastructure.client;
 
-import com.app.module.pin.infrastructure.dto.UserDto;
+import com.app.shared.dto.response.UserDTO;
+import com.app.shared.gateway.UserGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -16,11 +17,11 @@ public class UserApiClient implements UserGateway {
   }
 
   @Override
-  public UserDto getUserByUsername(String username) {
+  public UserDTO getUserByUsername(String username) {
     return restClient
         .get()
         .uri("/api/users/{username}/info", username)
         .retrieve()
-        .body(UserDto.class);
+        .body(UserDTO.class);
   }
 }
