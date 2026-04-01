@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -188,6 +189,25 @@ public class PinController {
                     ? new ArrayList<>(pin.getHashtags())
                     : new ArrayList<>(),
                 pin.getCreatedAt()));
+  }
+
+  @Operation(summary = "Fetch a multiple pin its ID")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Found the pin",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = List.class))),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @PostMapping("/by-ids")
+  public ResponseEntity<List<PinResponse>> getPinByIds(@RequestBody List<Long> ids) {
+    List<PinResponse> pins =
+        pinService.findByIdIn(ids).stream().map(PinResponse::fromEntity).toList();
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
   }
 
   @Operation(summary = "Delete an pin by its id")
