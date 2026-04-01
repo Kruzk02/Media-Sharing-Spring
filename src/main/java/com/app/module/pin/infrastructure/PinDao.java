@@ -35,6 +35,14 @@ public interface PinDao extends Creatable<Pin>, Updatable<Pin>, Deletable {
   Pin findById(Long id, DetailsType detailsType);
 
   /**
+   * Finds the pin in batch id.
+   *
+   * @param ids The list id of the pins to be found.
+   * @return a list of pin.
+   */
+  List<Pin> findByIdIn(List<Long> ids);
+
+  /**
    * Find the pin that associated with a user id.
    *
    * @param userId The id of user.

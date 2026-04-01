@@ -232,6 +232,14 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
+  public List<Pin> findByIdIn(List<Long> ids) {
+    String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
+    String sql =
+        "SELECT id, user_id, media_id, created_at FROM pins WHERE id IN (" + placeholders + ")";
+    return jdbcTemplate.query(sql, new PinRowMapper(false, true), ids.toArray());
+  }
+
+  @Override
   public List<Pin> findPinByUserId(Long userId, int limit, int offset) {
     try {
       String sql =

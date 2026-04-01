@@ -108,6 +108,26 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
 
   @Test
   @Order(5)
+  void findByIdIn() {
+    List<Pin> result = pinDao.findByIdIn(List.of(1L));
+    Pin expected =
+        Pin.builder()
+            .id(1L)
+            .userId(1L)
+            .description(null)
+            .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
+            .build();
+
+    Pin actual = result.getFirst();
+
+    assertEquals(expected.getId(), actual.getId());
+    assertEquals(expected.getUserId(), actual.getUserId());
+    assertEquals(expected.getDescription(), actual.getDescription());
+    assertNotNull(actual.getCreatedAt());
+  }
+
+  @Test
+  @Order(6)
   void findPinByUserId() {
     List<Pin> result = pinDao.findPinByUserId(1L, 10, 0);
     Pin expected =
@@ -127,7 +147,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   }
 
   @Test
-  @Order(6)
+  @Order(7)
   void update() {
     Pin pin =
         pinDao.update(
@@ -148,7 +168,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   }
 
   @Test
-  @Order(7)
+  @Order(8)
   void deleteById() {
     int result = pinDao.deleteById(1L);
 
