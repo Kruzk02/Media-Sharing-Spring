@@ -99,13 +99,20 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
 
   @Test
   @Order(5)
+  void findByIdIn() {
+    List<Pin> pins = cachedPinService.findByIdIn(List.of(1L));
+    assertTrue(pins.isEmpty());
+  }
+
+  @Test
+  @Order(6)
   void findPinByUserId() {
     List<Pin> pins = cachedPinService.findPinByUserId(1L, 10, 0);
     assertTrue(pins.isEmpty());
   }
 
   @Test
-  @Order(6)
+  @Order(7)
   void update() {
     when(mockPinService.update(1L, new PinRequest("Description", null, Set.of("tag"))))
         .thenReturn(

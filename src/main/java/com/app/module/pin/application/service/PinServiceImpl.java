@@ -181,6 +181,14 @@ public class PinServiceImpl implements PinService {
     return pinDao.findById(id, detailsType);
   }
 
+  @Override
+  public List<Pin> findByIdIn(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return Collections.emptyList();
+    }
+    return pinDao.findByIdIn(ids);
+  }
+
   /** {@inheritDoc} */
   @Transactional(readOnly = true)
   @Override

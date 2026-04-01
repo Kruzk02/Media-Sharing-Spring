@@ -108,6 +108,12 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
   }
 
   @Override
+  public List<Pin> findByIdIn(List<Long> ids) {
+    var redisKey = "pins:" + ids;
+    return super.getListOrLoad(redisKey, () -> delegate.findByIdIn(ids), 0, 0, Duration.ofHours(2));
+  }
+
+  @Override
   public List<Pin> findPinByUserId(Long userId, int limit, int offset) {
     var redisKey = "user:" + userId + ":pins";
     return super.getListOrLoad(

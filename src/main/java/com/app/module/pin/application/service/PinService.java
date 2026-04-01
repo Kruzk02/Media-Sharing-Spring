@@ -74,6 +74,14 @@ public interface PinService {
   Pin findById(Long id, DetailsType detailsType);
 
   /**
+   * Retrieves multiple pins by its id.
+   *
+   * @param ids list of id.
+   * @return a list of pins.
+   */
+  List<Pin> findByIdIn(List<Long> ids);
+
+  /**
    * Retrieves all pins created by a specific user.
    *
    * @param userId the ID of the user

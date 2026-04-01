@@ -153,6 +153,15 @@ class PinServiceImplTest {
   }
 
   @Test
+  void findByIdIn_shouldReturnListOfPin() {
+    Mockito.when(pinDao.findByIdIn(List.of(1L))).thenReturn(List.of(pin));
+    var result = pinService.findByIdIn(List.of(1L));
+
+    assertNotNull(result);
+    assertEquals(List.of(pin), result);
+  }
+
+  @Test
   void findPinByUserId_shouldReturnListOfPin() {
     Mockito.when(pinDao.findPinByUserId(1L, 10, 0)).thenReturn(List.of(pin));
     var result = pinService.findPinByUserId(1L, 10, 0);
