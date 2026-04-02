@@ -5,4 +5,6 @@ import java.util.List;
 
 public interface PinGateway {
   List<PinDTO> getPinsByIds(List<Long> ids);
+
+  PinDTO getPinById(Long pinId);
 }

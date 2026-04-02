@@ -26,4 +26,14 @@ public class PinApiClient implements PinGateway {
         .retrieve()
         .body(new ParameterizedTypeReference<>() {});
   }
+
+  @Override
+  public PinDTO getPinById(Long pinId) {
+    return restClient
+        .get()
+        .uri("/api/pin/{id}?view=basic", pinId)
+        .accept(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .body(PinDTO.class);
+  }
 }
