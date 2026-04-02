@@ -3,7 +3,7 @@ package com.app.module.pin.application.service;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.exception.PinIsEmptyException;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.PinDao;
+import com.app.module.pin.infrastructure.dao.PinDao;
 import com.app.shared.dto.response.CursorPage;
 import com.app.shared.event.hashtag.SavePinHashTagCommand;
 import com.app.shared.event.hashtag.UpdatePinHashTagCommand;

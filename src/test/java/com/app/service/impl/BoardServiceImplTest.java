@@ -8,7 +8,7 @@ import com.app.module.board.domain.Board;
 import com.app.module.board.domain.BoardNotFoundException;
 import com.app.module.board.infrastructure.BoardDao;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.PinDao;
+import com.app.module.pin.infrastructure.dao.PinDao;
 import com.app.shared.dto.response.UserDTO;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.gateway.UserGateway;
