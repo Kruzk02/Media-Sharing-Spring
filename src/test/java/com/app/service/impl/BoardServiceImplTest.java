@@ -7,12 +7,9 @@ import com.app.module.board.application.service.BoardServiceImpl;
 import com.app.module.board.domain.Board;
 import com.app.module.board.domain.BoardNotFoundException;
 import com.app.module.board.infrastructure.BoardDao;
-import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.dao.PinDao;
 import com.app.shared.dto.response.UserDTO;
-import com.app.shared.exception.sub.PinNotFoundException;
+import com.app.shared.gateway.PinGateway;
 import com.app.shared.gateway.UserGateway;
-import com.app.shared.type.DetailsType;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,20 +27,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 class BoardServiceImplTest {
 
   @Mock private BoardDao boardDao;
-  @Mock private PinDao pinDao;
+  @Mock private PinGateway pinGateway;
   @Mock private UserGateway userGateway;
 
   @InjectMocks private BoardServiceImpl boardService;
-
-  private Pin pin;
   private Board board;
 
   @BeforeEach
   void setUp() {
-
-    pin = Pin.builder().id(1L).description("description").userId(1L).mediaId(1L).build();
-
-    board = Board.builder().id(1L).userId(1L).name("name").pins(List.of(pin)).build();
+    board = Board.builder().id(1L).userId(1L).name("name").pins(List.of(1L)).build();
   }
 
   @Test
@@ -57,31 +49,14 @@ class BoardServiceImplTest {
 
     Mockito.when(userGateway.getUserByUsername(Mockito.anyString()))
         .thenReturn(new UserDTO(1L, "qwe"));
-    Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
     Mockito.when(boardDao.save(Mockito.argThat(b -> b.getName() != null)))
         .thenAnswer(invocation -> invocation.getArgument(0));
 
-    var result = boardService.save(new BoardRequest(new long[] {1}, "name"));
+    var result = boardService.save(new BoardRequest(new Long[] {1L}, "name"));
 
     assertNotNull(result);
     assertEquals(board.getName(), result.getName());
-  }
-
-  @Test
-  void save_shouldThrowException_whenPinNotFound() {
-    Authentication auth = Mockito.mock(Authentication.class);
-    Mockito.when(auth.getName()).thenReturn("username");
-
-    SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-    Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
-    SecurityContextHolder.setContext(securityContext);
-    Mockito.when(userGateway.getUserByUsername(Mockito.anyString()))
-        .thenReturn(new UserDTO(1L, "qwe"));
-
-    assertThrows(
-        PinNotFoundException.class,
-        () -> boardService.save(new BoardRequest(new long[] {1}, "name")));
   }
 
   @Test

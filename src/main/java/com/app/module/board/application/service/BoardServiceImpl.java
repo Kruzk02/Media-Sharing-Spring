@@ -6,9 +6,11 @@ import com.app.module.board.application.exception.PinNotInBoardException;
 import com.app.module.board.domain.Board;
 import com.app.module.board.domain.BoardNotFoundException;
 import com.app.module.board.infrastructure.BoardDao;
+import com.app.shared.dto.response.PinDTO;
 import com.app.shared.dto.response.UserDTO;
 import com.app.shared.exception.sub.*;
 import com.app.shared.exception.sub.UserNotMatchException;
+import com.app.shared.gateway.PinGateway;
 import com.app.shared.gateway.UserGateway;
 import java.util.*;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 public class BoardServiceImpl implements BoardService {
 
   private final BoardDao boardDao;
+  private final PinGateway pinGateway;
   private final UserGateway userGateway;
 
   private UserDTO getAuthenticatedUser() {
@@ -48,6 +51,7 @@ public class BoardServiceImpl implements BoardService {
    */
   @Override
   public Board save(BoardRequest boardRequest) {
+
     if (boardRequest.name() == null) {
       throw new NameValidationException("Board name shouldn't be empty");
     }
@@ -61,7 +65,12 @@ public class BoardServiceImpl implements BoardService {
         Board.builder().name(boardRequest.name()).userId(getAuthenticatedUser().id()).build();
 
     if (boardRequest.pin_id() != null && boardRequest.pin_id().length > 0) {
-      board.setPins(Arrays.asList(boardRequest.pin_id()));
+      List<PinDTO> pinDTOs = pinGateway.getPinsByIds(Arrays.asList(boardRequest.pin_id()));
+      if (!pinDTOs.isEmpty()) {
+        for (var pinDto : pinDTOs) {
+          board.getPins().add(pinDto.id());
+        }
+      }
     } else {
       board.setPins(Collections.emptyList());
     }
@@ -71,6 +80,11 @@ public class BoardServiceImpl implements BoardService {
 
   @Override
   public Board addPinToBoard(Long pinId, Long boardId) {
+    PinDTO pinDTO = pinGateway.getPinById(pinId);
+    if (pinDTO == null) {
+      throw new PinNotFoundException("Pin not found with ID: " + pinId);
+    }
+
     Board board = boardDao.findById(boardId);
     if (board == null) {
       throw new BoardNotFoundException("Board not found with ID: " + boardId);
@@ -80,15 +94,20 @@ public class BoardServiceImpl implements BoardService {
       throw new UserNotMatchException("Authenticated user does not own this board");
     }
 
-    if (board.getPins().contains(pinId)) {
+    if (board.getPins().contains(pinDTO.id())) {
       throw new PinAlreadyExistingException("Pin already exists in the board");
     }
 
-    return boardDao.addPinToBoard(pinId, board);
+    return boardDao.addPinToBoard(pinDTO.id(), board);
   }
 
   @Override
   public Board deletePinFromBoard(Long pinId, Long boardId) {
+    PinDTO pinDTO = pinGateway.getPinById(pinId);
+    if (pinDTO == null) {
+      throw new PinNotFoundException("Pin not found with ID: " + pinId);
+    }
+
     Board board = boardDao.findById(boardId);
     if (board == null) {
       throw new BoardNotFoundException("Board not found with ID: " + boardId);
@@ -98,11 +117,11 @@ public class BoardServiceImpl implements BoardService {
       throw new UserNotMatchException("Authenticated user does not own this board");
     }
 
-    if (board.getPins().stream().noneMatch(pinId::equals)) {
+    if (board.getPins().stream().noneMatch(pinDTO.id()::equals)) {
       throw new PinNotInBoardException("Pin not found in a board");
     }
 
-    return boardDao.deletePinFromBoard(pinId, board);
+    return boardDao.deletePinFromBoard(pinDTO.id(), board);
   }
 
   @Override
