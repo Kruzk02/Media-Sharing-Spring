@@ -1,6 +1,6 @@
-package com.app.module.follower.infrastructure;
+package com.app.module.user.infrastructure.follower;
 
-import com.app.module.follower.domain.Follower;
+import com.app.module.user.domain.entity.Follower;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
 import java.util.List;

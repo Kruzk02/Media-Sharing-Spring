@@ -1,7 +1,7 @@
-package com.app.module.follower.application.service;
+package com.app.module.user.application.service;
 
-import com.app.module.follower.domain.Follower;
-import com.app.module.follower.infrastructure.FollowerDao;
+import com.app.module.user.domain.entity.Follower;
+import com.app.module.user.infrastructure.follower.FollowerDao;
 import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.infrastructure.user.UserDao;
