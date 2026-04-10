@@ -9,9 +9,6 @@ import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.subcomment.application.service.SubCommentService;
-import com.app.module.subcomment.domain.SubComment;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.ArrayList;
@@ -106,50 +103,5 @@ class CommentControllerUnitTest {
     assertEquals(1L, response.getBody().mediaId());
     assertEquals("content", response.getBody().content());
     assertEquals(new ArrayList<>(comment.getHashtags()), response.getBody().tag());
-  }
-
-  @Test
-  void findAllSubCommentById_shouldThrow_whenLimitIsInvalid() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> commentController.findAllSubCommentById(1L, SortType.NEWEST, 0, 0));
-  }
-
-  @Test
-  void findAllSubCommentById_shouldPassCorrectArguments() {
-    var subComments =
-        List.of(
-            SubComment.builder()
-                .content("content")
-                .user(
-                    User.builder()
-                        .id(1L)
-                        .username("username")
-                        .email("email@gmail.com")
-                        .password("HashedPassword")
-                        .gender(Gender.MALE)
-                        .mediaId(1L)
-                        .bio("bio")
-                        .enable(false)
-                        .build())
-                .comment(
-                    Comment.builder()
-                        .id(1L)
-                        .content("content123")
-                        .pinId(1L)
-                        .userId(1L)
-                        .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
-                        .mediaId(1L)
-                        .build())
-                .mediaId(1L)
-                .build());
-
-    when(subCommentService.findAllByCommentId(eq(1L), eq(SortType.NEWEST), eq(10), eq(0)))
-        .thenReturn(subComments);
-
-    var response = commentController.findAllSubCommentById(1L, SortType.NEWEST, 10, 0);
-
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
   }
 }

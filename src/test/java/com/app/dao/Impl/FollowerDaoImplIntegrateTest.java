@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
 import com.app.module.user.domain.entity.Follower;
-import com.app.module.user.infrastructure.follower.FollowerDao;
-import com.app.module.user.infrastructure.follower.FollowerDaoImpl;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.domain.status.Gender;
+import com.app.module.user.infrastructure.follower.FollowerDao;
+import com.app.module.user.infrastructure.follower.FollowerDaoImpl;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;

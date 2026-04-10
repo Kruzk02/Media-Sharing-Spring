@@ -8,17 +8,14 @@ import com.app.module.comment.application.service.CommentServiceImpl;
 import com.app.module.comment.domain.Comment;
 import com.app.module.comment.infrastructure.CommentDao;
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.hashtag.infrastructure.HashtagDao;
-import com.app.module.media.domain.entity.Media;
 import com.app.module.notification.domain.Notification;
-import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.dao.PinDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.PinDTO;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
 import com.app.shared.event.comment.save.SaveCommentMediaEvent;
 import com.app.shared.event.comment.update.UpdateCommentMediaEvent;
+import com.app.shared.gateway.PinGateway;
+import com.app.shared.gateway.UserGateway;
 import com.app.shared.message.producer.NotificationEventProducer;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -43,9 +40,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 class CommentServiceImplTest {
 
   @Mock private CommentDao commentDao;
-  @Mock private UserDao userDao;
-  @Mock private PinDao pinDao;
-  @Mock private HashtagDao hashtagDao;
+  @Mock private UserGateway userGateway;
+  @Mock private PinGateway pinGateway;
   @Mock private Map<Long, SseEmitter> emitters;
   @Mock private NotificationEventProducer notificationEventProducer;
   @Mock private MultipartFile mockFile;
@@ -54,22 +50,13 @@ class CommentServiceImplTest {
   @InjectMocks private CommentServiceImpl commentService;
 
   private Comment comment;
-  private User user;
-  private Media media;
-  private Pin pin;
+  private UserDTO userDTO;
+  private PinDTO pinDTO;
 
   @BeforeEach
   void setUp() {
     Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
-    user =
-        User.builder()
-            .id(1L)
-            .username("username")
-            .email("email@gmail.com")
-            .password("encodedPassword")
-            .enable(false)
-            .gender(Gender.MALE)
-            .build();
+    userDTO = new UserDTO(1L, "username");
     comment =
         Comment.builder()
             .id(1L)
@@ -80,14 +67,7 @@ class CommentServiceImplTest {
             .hashtags(List.of(hashtag))
             .build();
 
-    pin =
-        Pin.builder()
-            .id(1L)
-            .description("description")
-            .userId(1L)
-            .mediaId(1L)
-            .hashtags(List.of(hashtag))
-            .build();
+    pinDTO = new PinDTO(1L, 1L, 1L);
   }
 
   @Test
@@ -97,11 +77,11 @@ class CommentServiceImplTest {
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDTO);
 
     var request = new CreateCommentRequest("content", 1L, mockFile, Set.of("tag1", "tag2"));
 
-    Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
+    Mockito.when(pinGateway.getPinById(1L)).thenReturn(pinDTO);
 
     Mockito.when(
             commentDao.save(
@@ -126,7 +106,7 @@ class CommentServiceImplTest {
   void update_shouldUpdateComment_whenValidRequestAndMatchUser() {
 
     Mockito.when(commentDao.findById(1L, DetailsType.BASIC)).thenReturn(comment);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDTO);
 
     var request = new UpdatedCommentRequest("content", mockFile, Set.of("tag1", "tag2"));
 
@@ -189,7 +169,7 @@ class CommentServiceImplTest {
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDTO);
 
     Mockito.when(commentDao.findById(1L, DetailsType.BASIC)).thenReturn(comment);
 
