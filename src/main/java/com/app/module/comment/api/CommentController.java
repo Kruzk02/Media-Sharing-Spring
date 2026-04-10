@@ -5,9 +5,6 @@ import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.application.dto.response.CommentResponse;
 import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
-import com.app.module.subcomment.application.dto.SubCommentResponse;
-import com.app.module.subcomment.application.service.SubCommentService;
-import com.app.module.subcomment.domain.SubComment;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,7 +28,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class CommentController {
 
   private final CommentService commentService;
-  private final SubCommentService subCommentService;
 
   @Operation(description = "Get comment details by its ID ")
   @ApiResponses(
@@ -136,48 +131,6 @@ public class CommentController {
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
         .body(comments.stream().map(CommentResponse::fromEntity).toList());
-  }
-
-  @Operation(summary = "Fetch all sub comments by comment id")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Successfully fetch all sub comments",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = SubComment.class))
-            }),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-      })
-  @GetMapping("/{id}/sub-comments")
-  public ResponseEntity<List<SubCommentResponse>> findAllSubCommentById(
-      @Parameter(description = "Comment Id of the sub comments to be searched") @PathVariable
-          Long id,
-      @Parameter(description = "Sorting type for sub comments: NEWEST, OLDEST or DEFAULT")
-          @RequestParam(defaultValue = "NEWEST")
-          SortType sortType,
-      @Parameter(description = "Maximum number of sub comments to be retrieved")
-          @RequestParam(defaultValue = "10")
-          int limit,
-      @Parameter(description = "Offset for pagination, indicating the starting point")
-          @RequestParam(defaultValue = "0")
-          int offset) {
-    if (limit <= 0 || offset < 0) {
-      throw new IllegalArgumentException(
-          "Limit must be greater than 0 and offset must be non-negative.");
-    }
-
-    List<SubCommentResponse> subComments =
-        subCommentService.findAllByCommentId(id, sortType, limit, offset).stream()
-            .sorted(Comparator.comparing(SubComment::getCreateAt))
-            .map(SubCommentResponse::fromEntity)
-            .toList();
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(subComments);
   }
 
   @Operation(description = "create an comment")

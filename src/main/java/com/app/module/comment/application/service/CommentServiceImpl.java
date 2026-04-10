@@ -6,12 +6,9 @@ import com.app.module.comment.application.exception.CommentIsEmptyException;
 import com.app.module.comment.domain.Comment;
 import com.app.module.comment.domain.CommentNotFoundException;
 import com.app.module.comment.infrastructure.CommentDao;
-import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.notification.domain.Notification;
-import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.dao.PinDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.PinDTO;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
 import com.app.shared.event.comment.save.SaveCommentMediaEvent;
 import com.app.shared.event.comment.update.UpdateCommentMediaEvent;
@@ -19,6 +16,8 @@ import com.app.shared.event.hashtag.SaveCommentHashTagCommand;
 import com.app.shared.event.hashtag.UpdateCommentHashtagCommand;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.exception.sub.UserNotMatchException;
+import com.app.shared.gateway.PinGateway;
+import com.app.shared.gateway.UserGateway;
 import com.app.shared.message.producer.NotificationEventProducer;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -28,7 +27,6 @@ import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,17 +38,11 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class CommentServiceImpl implements CommentService {
 
   private final CommentDao commentDao;
-  private final UserDao userDao;
-  private final PinDao pinDao;
-  private final HashtagDao hashtagDao;
+  private final UserGateway userGateway;
+  private final PinGateway pinGateway;
   private final Map<Long, SseEmitter> emitters;
   private final NotificationEventProducer notificationEventProducer;
   private final ApplicationEventPublisher eventPublisher;
-
-  private User getAuthenticatedUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(Objects.requireNonNull(authentication).getName());
-  }
 
   @Override
   @Transactional
@@ -61,20 +53,19 @@ public class CommentServiceImpl implements CommentService {
           "A comment must have either content or a media attachment.");
     }
 
-    User user = getAuthenticatedUser();
+    UserDTO user =
+        userGateway.getUserByUsername(
+            Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication())
+                .getName());
 
-    Pin pin = pinDao.findById(request.pinId(), DetailsType.BASIC);
+    PinDTO pin = pinGateway.getPinById(request.pinId());
     if (pin == null) {
       throw new PinNotFoundException("Pin not found with a id: " + request.pinId());
     }
 
     Comment savedComment =
         commentDao.save(
-            Comment.builder()
-                .content(request.content())
-                .pinId(request.pinId())
-                .userId(user.getId())
-                .build());
+            Comment.builder().content(request.content()).pinId(pin.id()).userId(user.id()).build());
 
     if (request.media() != null && !request.media().isEmpty()) {
       eventPublisher.publishEvent(
@@ -87,8 +78,8 @@ public class CommentServiceImpl implements CommentService {
 
     notificationEventProducer.send(
         Notification.builder()
-            .userId(pin.getUserId())
-            .message(user.getUsername() + " comment on your pin: " + request.pinId())
+            .userId(user.id())
+            .message(user.username() + " comment on your pin: " + request.pinId())
             .build());
     return savedComment;
   }
@@ -101,7 +92,13 @@ public class CommentServiceImpl implements CommentService {
       throw new CommentNotFoundException("Comment not found with a id: " + id);
     }
 
-    if (!Objects.equals(getAuthenticatedUser().getId(), comment.getUserId())) {
+    if (!Objects.equals(
+        userGateway
+            .getUserByUsername(
+                Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication())
+                    .getName())
+            .id(),
+        comment.getUserId())) {
       throw new UserNotMatchException("User not matching with a comment");
     }
 
@@ -212,7 +209,13 @@ public class CommentServiceImpl implements CommentService {
       throw new CommentNotFoundException("Comment not found with a id: " + id);
     }
 
-    if (!Objects.equals(getAuthenticatedUser().getId(), comment.getUserId())) {
+    if (!Objects.equals(
+        userGateway
+            .getUserByUsername(
+                Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication())
+                    .getName())
+            .id(),
+        comment.getUserId())) {
       // Throw exception if user not own comment
       throw new UserNotMatchException("Authenticated user does not own the comment.");
     }
