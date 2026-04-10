@@ -20,8 +20,13 @@ public class UserApiClient implements UserGateway {
   public UserDTO getUserByUsername(String username) {
     return restClient
         .get()
-        .uri("/api/users/{username}/info", username)
+        .uri("/api/users/info/username/{username}", username)
         .retrieve()
         .body(UserDTO.class);
+  }
+
+  @Override
+  public UserDTO getUserById(Long id) {
+    return restClient.get().uri("/api/users/info/id/{id}", id).retrieve().body(UserDTO.class);
   }
 }

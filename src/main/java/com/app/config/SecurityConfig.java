@@ -47,7 +47,8 @@ public class SecurityConfig {
                 authorize
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
-                    .requestMatchers("/api/users/login", "/api/users/register", "/api/users/*/info")
+                    .requestMatchers(
+                        "/api/users/login", "/api/users/register", "/api/users/info/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/pin/*")
                     .permitAll()

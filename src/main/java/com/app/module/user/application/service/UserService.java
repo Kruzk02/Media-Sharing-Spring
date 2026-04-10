@@ -12,6 +12,8 @@ public interface UserService {
 
   User findFullUserByUsername(String username);
 
+  User findById(Long id);
+
   User update(UpdateUserRequest request);
 
   void verifyAccount(String token);

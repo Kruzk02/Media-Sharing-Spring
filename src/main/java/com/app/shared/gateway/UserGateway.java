@@ -4,4 +4,6 @@ import com.app.shared.dto.response.UserDTO;
 
 public interface UserGateway {
   UserDTO getUserByUsername(String username);
+
+  UserDTO getUserById(Long id);
 }

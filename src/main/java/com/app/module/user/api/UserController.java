@@ -131,19 +131,20 @@ public class UserController {
         .body(new JwtResponse(accessToken));
   }
 
-  @GetMapping("/{username}/info")
-  public ResponseEntity<?> findByUsername(@PathVariable String username) {
+  @GetMapping("/info/username/{username}")
+  public ResponseEntity<UserResponse> findByUsername(@PathVariable String username) {
     var user = userService.findFullUserByUsername(username);
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getMediaId(),
-                user.getBio(),
-                user.getGender()));
+        .body(UserResponse.fromEntity(user));
+  }
+
+  @GetMapping("/info/id/{id}")
+  public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+    var user = userService.findById(id);
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(UserResponse.fromEntity(user));
   }
 
   @Operation(summary = "Register user account")
