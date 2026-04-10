@@ -62,7 +62,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     Board board =
-        Board.builder().name(boardRequest.name()).userId(getAuthenticatedUser().id()).build();
+        Board.builder()
+            .name(boardRequest.name())
+            .userId(getAuthenticatedUser().id())
+            .pins(new ArrayList<>())
+            .build();
 
     if (boardRequest.pin_id() != null && boardRequest.pin_id().length > 0) {
       List<PinDTO> pinDTOs = pinGateway.getPinsByIds(Arrays.asList(boardRequest.pin_id()));
@@ -91,7 +95,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     if (!board.getUserId().equals(getAuthenticatedUser().id())) {
-      throw new UserNotMatchException("Authenticated user does not own this board");
+      throw new UserNotMatchException(
+          "Authenticated user does not have permission to access this board.");
     }
 
     if (board.getPins().contains(pinDTO.id())) {
