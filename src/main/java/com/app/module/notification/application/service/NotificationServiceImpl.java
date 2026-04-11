@@ -1,11 +1,12 @@
 package com.app.module.notification.application.service;
 
+import com.app.module.notification.application.exception.NotificationMessageIsEmptyException;
 import com.app.module.notification.application.exception.NotificationNotFoundException;
 import com.app.module.notification.domain.Notification;
 import com.app.module.notification.infrastructure.NotificationDao;
 import com.app.module.user.application.exception.UserNotFoundException;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.UserDTO;
+import com.app.shared.gateway.UserGateway;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -21,32 +22,32 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class NotificationServiceImpl implements NotificationService {
 
   private final NotificationDao notificationDao;
-  private final UserDao userDao;
+  private final UserGateway userGateway;
   private final Map<Long, SseEmitter> emitters;
 
-  private User getAuthenticationUser() {
+  private UserDTO getAuthenticationUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(authentication.getName());
+    return userGateway.getUserByUsername(authentication.getName());
   }
 
   @Override
   public Notification save(Notification notification) {
-    User user = userDao.findUserById(notification.getUserId());
+    UserDTO user = userGateway.getUserById(notification.getUserId());
     if (user == null) {
       throw new UserNotFoundException("User not found with a id: " + notification.getUserId());
     }
 
     if (notification.getMessage().isEmpty()) {
-      throw new RuntimeException("Notification message is empty");
+      throw new NotificationMessageIsEmptyException("Notification message is empty");
     }
 
     Notification savedNotification = notificationDao.save(notification);
-    SseEmitter emitter = emitters.get(user.getId());
+    SseEmitter emitter = emitters.get(user.id());
     if (emitter != null) {
       try {
         emitter.send(SseEmitter.event().name("notification").data(savedNotification));
       } catch (IOException e) {
-        emitters.remove(user.getId());
+        emitters.remove(user.id());
         emitter.completeWithError(e);
       }
     }
@@ -56,12 +57,13 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Override
   public List<Notification> findByUserId(int limit, int offset, Boolean fetchUnread) {
-    User user = getAuthenticationUser();
+    UserDTO user = getAuthenticationUser();
     if (user == null) {
-      throw new UserNotFoundException("User not found with a id: " + user.getId());
+      throw new UserNotFoundException("User not found");
     }
+
     List<Notification> notifications =
-        notificationDao.findByUserId(user.getId(), limit, offset, fetchUnread);
+        notificationDao.findByUserId(user.id(), limit, offset, fetchUnread);
     if (notifications.isEmpty()) {
       return Collections.emptyList();
     }
@@ -102,13 +104,13 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Override
   public void markAllAsRead() {
-    User user = getAuthenticationUser();
-    notificationDao.markAllAsRead(user.getId());
+    UserDTO user = getAuthenticationUser();
+    notificationDao.markAllAsRead(user.id());
   }
 
   @Override
   public void deleteByUserId() {
-    User user = getAuthenticationUser();
-    notificationDao.deleteByUserId(user.getId());
+    UserDTO user = getAuthenticationUser();
+    notificationDao.deleteByUserId(user.id());
   }
 }

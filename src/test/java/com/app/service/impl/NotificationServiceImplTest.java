@@ -6,9 +6,8 @@ import com.app.module.notification.application.service.NotificationServiceImpl;
 import com.app.module.notification.domain.Notification;
 import com.app.module.notification.infrastructure.NotificationDao;
 import com.app.module.user.application.exception.UserNotFoundException;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.UserDTO;
+import com.app.shared.gateway.UserGateway;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,24 +26,17 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 class NotificationServiceImplTest {
 
   @Mock private NotificationDao notificationDao;
-  @Mock private UserDao userDao;
+  @Mock private UserGateway userGateway;
   @Mock Map<Long, SseEmitter> sseEmitters;
 
   @InjectMocks NotificationServiceImpl notificationService;
 
-  private User user;
+  private UserDTO user;
   private Notification notification;
 
   @BeforeEach
   void setUp() {
-    user =
-        User.builder()
-            .id(1L)
-            .username("username")
-            .email("email@gmail.com")
-            .password("encodedPassword")
-            .gender(Gender.OTHER)
-            .build();
+    user = new UserDTO(1L, "username");
 
     notification =
         Notification.builder().id(1L).message("message").userId(1L).isRead(false).build();
@@ -52,7 +44,7 @@ class NotificationServiceImplTest {
 
   @Test
   void save_shouldSaveNotification() {
-    Mockito.when(userDao.findUserById(1L)).thenReturn(user);
+    Mockito.when(userGateway.getUserById(1L)).thenReturn(user);
     Mockito.when(
             notificationDao.save(
                 Mockito.argThat(n -> n.getUserId() != null && n.getMessage() != null)))
@@ -66,7 +58,7 @@ class NotificationServiceImplTest {
 
   @Test
   void save_shouldThrowException_whenUserNotFound() {
-    Mockito.when(userDao.findUserById(1L)).thenReturn(null);
+    Mockito.when(userGateway.getUserById(1L)).thenReturn(null);
     assertThrows(UserNotFoundException.class, () -> notificationService.save(notification));
   }
 
@@ -79,7 +71,7 @@ class NotificationServiceImplTest {
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
 
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(user);
     Mockito.when(notificationDao.findByUserId(1L, 10, 0, true)).thenReturn(List.of(notification));
 
     var result = notificationService.findByUserId(10, 0, true);
@@ -119,7 +111,7 @@ class NotificationServiceImplTest {
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
 
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(user);
 
     notificationService.markAllAsRead();
 
@@ -134,7 +126,7 @@ class NotificationServiceImplTest {
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
 
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(user);
 
     notificationService.deleteByUserId();
 
