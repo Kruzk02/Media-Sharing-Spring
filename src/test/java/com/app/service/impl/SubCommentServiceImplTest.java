@@ -11,12 +11,11 @@ import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.service.SubCommentServiceImpl;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.event.subcomment.delete.DeleteSubCommentMediaEvent;
 import com.app.shared.event.subcomment.save.SaveSubCommentMediaEvent;
 import com.app.shared.event.subcomment.update.UpdateSubCommentMediaEvent;
+import com.app.shared.gateway.UserGateway;
 import com.app.shared.message.producer.NotificationEventProducer;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -40,29 +39,18 @@ class SubCommentServiceImplTest {
 
   @Mock private SubCommentDao subCommentDao;
   @Mock private CommentDao commentDao;
-  @Mock private UserDao userDao;
+  @Mock private UserGateway userGateway;
   @Mock private NotificationEventProducer notificationEventProducer;
   @Mock private MultipartFile mockFile;
   @Mock private ApplicationEventPublisher eventPublisher;
 
   @InjectMocks private SubCommentServiceImpl subCommentService;
 
-  private User user;
   private Comment comment;
   private SubComment subComment;
 
   @BeforeEach
   void setUp() {
-    user =
-        User.builder()
-            .id(1L)
-            .username("username")
-            .email("email@gmail.com")
-            .password("encodedPassword")
-            .mediaId(1L)
-            .gender(Gender.OTHER)
-            .build();
-
     Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
 
     comment =
@@ -92,7 +80,7 @@ class SubCommentServiceImplTest {
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(new UserDTO(1L, "username"));
 
     var request = new CreateSubCommentRequest("content", mockFile, 1L);
 
@@ -123,7 +111,7 @@ class SubCommentServiceImplTest {
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(new UserDTO(1L, "username"));
 
     Mockito.when(subCommentDao.findById(1L)).thenReturn(subComment);
 
@@ -170,7 +158,7 @@ class SubCommentServiceImplTest {
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(new UserDTO(1L, "username"));
 
     Mockito.when(subCommentDao.findById(1L)).thenReturn(subComment);
 
