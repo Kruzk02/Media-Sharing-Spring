@@ -1,22 +1,21 @@
 package com.app.module.subcomment.application.service;
 
 import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.domain.Comment;
-import com.app.module.comment.infrastructure.dao.CommentDao;
 import com.app.module.notification.domain.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.domain.SubCommentNotFoundException;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
 import com.app.module.subcomment.internal.SubCommentValidator;
+import com.app.shared.dto.response.CommentDTO;
 import com.app.shared.dto.response.UserDTO;
 import com.app.shared.event.subcomment.delete.DeleteSubCommentMediaEvent;
 import com.app.shared.event.subcomment.save.SaveSubCommentMediaEvent;
 import com.app.shared.event.subcomment.update.UpdateSubCommentMediaEvent;
 import com.app.shared.exception.sub.UserNotMatchException;
+import com.app.shared.gateway.CommentGateway;
 import com.app.shared.gateway.UserGateway;
 import com.app.shared.message.producer.NotificationEventProducer;
-import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -36,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubCommentServiceImpl implements SubCommentService {
 
   private final SubCommentDao subCommentDao;
-  private final CommentDao commentDao;
+  private final CommentGateway commentGateway;
   private final UserGateway userGateway;
   private final NotificationEventProducer notificationEventProducer;
   private final ApplicationEventPublisher eventPublisher;
@@ -51,12 +50,12 @@ public class SubCommentServiceImpl implements SubCommentService {
   public SubComment save(CreateSubCommentRequest request) {
     SubCommentValidator.validateContent(request.content(), request.media());
 
-    Comment comment = commentDao.findById(request.commentId(), DetailsType.BASIC);
+    CommentDTO comment = commentGateway.getCommentById(request.commentId());
     if (comment == null) {
       throw new SubCommentNotFoundException("Comment not found with a id: " + request.commentId());
     }
 
-    SubComment savedSubComment = saveSubComment(request, comment);
+    SubComment savedSubComment = saveSubComment(request, comment.id());
 
     if (request.media() != null && !request.media().isEmpty()) {
       eventPublisher.publishEvent(
@@ -66,19 +65,19 @@ public class SubCommentServiceImpl implements SubCommentService {
 
     notificationEventProducer.send(
         Notification.builder()
-            .userId(comment.getUserId())
+            .userId(comment.userId())
             .message(
-                getAuthenticationUser().username() + " replies on your comment " + comment.getId())
+                getAuthenticationUser().username() + " replies on your comment " + comment.id())
             .build());
     return savedSubComment;
   }
 
   @Transactional
-  private SubComment saveSubComment(CreateSubCommentRequest request, Comment comment) {
+  private SubComment saveSubComment(CreateSubCommentRequest request, Long commentId) {
     return subCommentDao.save(
         SubComment.builder()
             .content(request.content())
-            .commentId(comment.getId())
+            .commentId(commentId)
             .userId(getAuthenticationUser().id())
             .build());
   }

@@ -3,21 +3,20 @@ package com.app.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.domain.Comment;
-import com.app.module.comment.infrastructure.dao.CommentDao;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.notification.domain.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.service.SubCommentServiceImpl;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
+import com.app.shared.dto.response.CommentDTO;
 import com.app.shared.dto.response.UserDTO;
 import com.app.shared.event.subcomment.delete.DeleteSubCommentMediaEvent;
 import com.app.shared.event.subcomment.save.SaveSubCommentMediaEvent;
 import com.app.shared.event.subcomment.update.UpdateSubCommentMediaEvent;
+import com.app.shared.gateway.CommentGateway;
 import com.app.shared.gateway.UserGateway;
 import com.app.shared.message.producer.NotificationEventProducer;
-import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 class SubCommentServiceImplTest {
 
   @Mock private SubCommentDao subCommentDao;
-  @Mock private CommentDao commentDao;
+  @Mock private CommentGateway commentGateway;
   @Mock private UserGateway userGateway;
   @Mock private NotificationEventProducer notificationEventProducer;
   @Mock private MultipartFile mockFile;
@@ -46,23 +45,11 @@ class SubCommentServiceImplTest {
 
   @InjectMocks private SubCommentServiceImpl subCommentService;
 
-  private Comment comment;
   private SubComment subComment;
 
   @BeforeEach
   void setUp() {
     Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
-
-    comment =
-        Comment.builder()
-            .id(1L)
-            .pinId(1L)
-            .userId(1L)
-            .mediaId(1L)
-            .content("content")
-            .hashtags(List.of(hashtag))
-            .build();
-
     subComment =
         SubComment.builder().id(1L).commentId(1L).userId(1L).mediaId(1L).content("WEWEWE").build();
   }
@@ -78,7 +65,7 @@ class SubCommentServiceImplTest {
 
     var request = new CreateSubCommentRequest("content", mockFile, 1L);
 
-    Mockito.when(commentDao.findById(1L, DetailsType.BASIC)).thenReturn(comment);
+    Mockito.when(commentGateway.getCommentById(1L)).thenReturn(new CommentDTO(1L, "content", 1L));
 
     Mockito.when(
             subCommentDao.save(
@@ -122,7 +109,7 @@ class SubCommentServiceImplTest {
 
     var result = subCommentService.update(1L, request);
     assertNotNull(result);
-    assertEquals(comment.getId(), result.getId());
+    assertEquals(1L, result.getId());
     Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdateSubCommentMediaEvent.class));
   }
 

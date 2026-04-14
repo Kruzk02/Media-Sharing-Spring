@@ -21,7 +21,7 @@ public class CommentApiClient implements CommentGateway {
   public CommentDTO getCommentById(Long commentId) {
     return restClient
         .get()
-        .uri("/api/comments/{commentId}", commentId)
+        .uri("/api/comment/{commentId}", commentId)
         .accept(MediaType.APPLICATION_JSON)
         .retrieve()
         .body(CommentDTO.class);

@@ -50,7 +50,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         "/api/users/login", "/api/users/register", "/api/users/info/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/pin/*")
+                    .requestMatchers(HttpMethod.GET, "/api/pin/*", "/api/comment/*")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/pin/by-ids")
                     .permitAll()
