@@ -6,13 +6,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.domain.Comment;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.service.CachedSubCommentService;
 import com.app.module.subcomment.application.service.SubCommentService;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.shared.type.SortType;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -36,20 +34,7 @@ class CachedSubCommentServiceTest extends AbstractRedisTest<SubComment> {
     mockSubCommentService = mock(SubCommentService.class);
     cachedService = new CachedSubCommentService(redisTemplate, mockSubCommentService);
 
-    subComment =
-        SubComment.builder()
-            .id(1L)
-            .comment(
-                Comment.builder()
-                    .id(1L)
-                    .mediaId(1L)
-                    .pinId(1L)
-                    .hashtags(Collections.emptyList())
-                    .userId(1L)
-                    .build())
-            .content("content")
-            .userId(1L)
-            .build();
+    subComment = SubComment.builder().id(1L).commentId(1L).content("content").userId(1L).build();
   }
 
   @Test
@@ -85,19 +70,7 @@ class CachedSubCommentServiceTest extends AbstractRedisTest<SubComment> {
   void update() {
     when(mockSubCommentService.update(1L, new UpdatedCommentRequest("Content", null, null)))
         .thenReturn(
-            SubComment.builder()
-                .id(1L)
-                .comment(
-                    Comment.builder()
-                        .id(1L)
-                        .mediaId(1L)
-                        .pinId(1L)
-                        .hashtags(Collections.emptyList())
-                        .userId(1L)
-                        .build())
-                .content("Content")
-                .userId(1L)
-                .build());
+            SubComment.builder().id(1L).commentId(1L).content("Content").userId(1L).build());
 
     SubComment updated = cachedService.update(1L, new UpdatedCommentRequest("Content", null, null));
 

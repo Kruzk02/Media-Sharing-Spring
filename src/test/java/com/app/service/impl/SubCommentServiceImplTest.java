@@ -64,13 +64,7 @@ class SubCommentServiceImplTest {
             .build();
 
     subComment =
-        SubComment.builder()
-            .id(1L)
-            .comment(comment)
-            .userId(1L)
-            .mediaId(1L)
-            .content("WEWEWE")
-            .build();
+        SubComment.builder().id(1L).commentId(1L).userId(1L).mediaId(1L).content("WEWEWE").build();
   }
 
   @Test
@@ -90,7 +84,7 @@ class SubCommentServiceImplTest {
             subCommentDao.save(
                 Mockito.argThat(
                     sc ->
-                        sc.getComment() != null
+                        sc.getCommentId() != null
                             && sc.getUserId() != null
                             && sc.getContent() != null)))
         .thenReturn(subComment);
@@ -123,7 +117,7 @@ class SubCommentServiceImplTest {
                     sc ->
                         sc.getContent() != null
                             && sc.getUserId() != null
-                            && sc.getComment() != null)))
+                            && sc.getCommentId() != null)))
         .thenAnswer(invocation -> invocation.getArgument(1));
 
     var result = subCommentService.update(1L, request);

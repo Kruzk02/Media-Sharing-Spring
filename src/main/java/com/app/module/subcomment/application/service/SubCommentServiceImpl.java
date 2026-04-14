@@ -78,7 +78,7 @@ public class SubCommentServiceImpl implements SubCommentService {
     return subCommentDao.save(
         SubComment.builder()
             .content(request.content())
-            .comment(comment)
+            .commentId(comment.getId())
             .userId(getAuthenticationUser().id())
             .build());
   }

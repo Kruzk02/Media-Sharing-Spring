@@ -1,6 +1,5 @@
 package com.app.module.subcomment.infrastructure.subcomment;
 
-import com.app.module.comment.domain.Comment;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.domain.SubCommentNotFoundException;
 import com.app.shared.exception.sub.SaveDataFailedException;
@@ -39,7 +38,7 @@ public class SubCommentDaoImpl implements SubCommentDao {
                     con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 ps.setString(1, subComment.getContent());
                 ps.setLong(2, subComment.getUserId());
-                ps.setLong(3, subComment.getComment().getId());
+                ps.setLong(3, subComment.getCommentId());
                 return ps;
               },
               keyHolder);
@@ -142,20 +141,14 @@ public class SubCommentDaoImpl implements SubCommentDao {
 
     @Override
     public SubComment mapRow(ResultSet rs, int rowNum) throws SQLException {
-      SubComment subComment = new SubComment();
-      subComment.setId(rs.getLong("sc_id"));
-
-      subComment.setContent(rs.getString("sc_content"));
-      subComment.setMediaId(rs.getLong("sc_media_id"));
-      subComment.setUserId(rs.getLong("user_id"));
-
-      Comment comment = new Comment();
-      comment.setId(rs.getLong("sc_comment_id"));
-      comment.setContent(rs.getString("comment_content"));
-      subComment.setComment(comment);
-
-      subComment.setCreateAt(rs.getTimestamp("sc_create_at").toLocalDateTime());
-      return subComment;
+      return SubComment.builder()
+          .id(rs.getLong("sc_id"))
+          .content(rs.getString("sc_content"))
+          .mediaId(rs.getLong("sc_media_id"))
+          .userId(rs.getLong("user_id"))
+          .commentId(rs.getLong("sc_comment_id"))
+          .createAt(rs.getTimestamp("sc_create_at").toLocalDateTime())
+          .build();
     }
   }
 }
