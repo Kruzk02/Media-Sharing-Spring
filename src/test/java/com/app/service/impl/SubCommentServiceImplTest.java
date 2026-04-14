@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.domain.Comment;
-import com.app.module.comment.infrastructure.CommentDao;
+import com.app.module.comment.infrastructure.dao.CommentDao;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.notification.domain.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;

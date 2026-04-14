@@ -5,7 +5,7 @@ import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.application.exception.CommentIsEmptyException;
 import com.app.module.comment.domain.Comment;
 import com.app.module.comment.domain.CommentNotFoundException;
-import com.app.module.comment.infrastructure.CommentDao;
+import com.app.module.comment.infrastructure.dao.CommentDao;
 import com.app.module.notification.domain.Notification;
 import com.app.shared.dto.response.PinDTO;
 import com.app.shared.dto.response.UserDTO;

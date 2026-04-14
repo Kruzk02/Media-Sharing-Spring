@@ -1,4 +1,4 @@
-package com.app.module.comment.infrastructure;
+package com.app.module.comment.infrastructure.dao;
 
 import com.app.module.comment.domain.Comment;
 import com.app.shared.dao.Creatable;

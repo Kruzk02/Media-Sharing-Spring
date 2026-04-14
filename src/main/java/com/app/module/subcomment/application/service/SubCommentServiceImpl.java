@@ -2,7 +2,7 @@ package com.app.module.subcomment.application.service;
 
 import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.domain.Comment;
-import com.app.module.comment.infrastructure.CommentDao;
+import com.app.module.comment.infrastructure.dao.CommentDao;
 import com.app.module.notification.domain.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.domain.SubComment;

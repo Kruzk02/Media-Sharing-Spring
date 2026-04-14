@@ -1,6 +1,6 @@
 package com.app.module.comment.application.event;
 
-import com.app.module.comment.infrastructure.CommentDao;
+import com.app.module.comment.infrastructure.dao.CommentDao;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.shared.event.comment.save.CommentMediaSavedEvent;
 import com.app.shared.event.hashtag.CommentHashtagCreatedEvent;
