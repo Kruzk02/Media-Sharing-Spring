@@ -8,8 +8,6 @@ import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDaoImpl;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
 import com.app.shared.type.SortType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,17 +41,7 @@ class SubCommentDaoImplIntegrateTest extends AbstractMySQLTest {
         subCommentDao.save(
             SubComment.builder()
                 .content("content")
-                .user(
-                    User.builder()
-                        .id(1L)
-                        .username("username")
-                        .email("email@gmail.com")
-                        .password("HashedPassword")
-                        .gender(Gender.MALE)
-                        .mediaId(1L)
-                        .bio("bio")
-                        .enable(false)
-                        .build())
+                .userId(1L)
                 .comment(
                     Comment.builder()
                         .id(1L)
@@ -100,17 +88,7 @@ class SubCommentDaoImplIntegrateTest extends AbstractMySQLTest {
             SubComment.builder()
                 .id(1L)
                 .content("content123")
-                .user(
-                    User.builder()
-                        .id(1L)
-                        .username("username")
-                        .email("email@gmail.com")
-                        .password("HashedPassword")
-                        .gender(Gender.MALE)
-                        .mediaId(1L)
-                        .bio("bio")
-                        .enable(false)
-                        .build())
+                .userId(1L)
                 .comment(
                     Comment.builder()
                         .id(1L)

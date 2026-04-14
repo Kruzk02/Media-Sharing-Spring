@@ -3,7 +3,6 @@ package com.app.module.subcomment.infrastructure.subcomment;
 import com.app.module.comment.domain.Comment;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.domain.SubCommentNotFoundException;
-import com.app.module.user.domain.entity.User;
 import com.app.shared.exception.sub.SaveDataFailedException;
 import com.app.shared.type.SortType;
 import java.sql.PreparedStatement;
@@ -39,7 +38,7 @@ public class SubCommentDaoImpl implements SubCommentDao {
                 PreparedStatement ps =
                     con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 ps.setString(1, subComment.getContent());
-                ps.setLong(2, subComment.getUser().getId());
+                ps.setLong(2, subComment.getUserId());
                 ps.setLong(3, subComment.getComment().getId());
                 return ps;
               },
@@ -148,11 +147,7 @@ public class SubCommentDaoImpl implements SubCommentDao {
 
       subComment.setContent(rs.getString("sc_content"));
       subComment.setMediaId(rs.getLong("sc_media_id"));
-
-      User user = new User();
-      user.setId(rs.getLong("user_id"));
-      user.setUsername(rs.getString("user_username"));
-      subComment.setUser(user);
+      subComment.setUserId(rs.getLong("user_id"));
 
       Comment comment = new Comment();
       comment.setId(rs.getLong("sc_comment_id"));

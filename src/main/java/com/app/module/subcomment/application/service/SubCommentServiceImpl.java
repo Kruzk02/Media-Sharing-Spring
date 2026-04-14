@@ -81,7 +81,7 @@ public class SubCommentServiceImpl implements SubCommentService {
         SubComment.builder()
             .content(request.content())
             .comment(comment)
-            .user(getAuthenticationUser())
+            .userId(getAuthenticationUser().getId())
             .build());
   }
 
@@ -94,7 +94,7 @@ public class SubCommentServiceImpl implements SubCommentService {
       throw new SubCommentNotFoundException("Sub comment not found with a id: " + id);
     }
 
-    if (!Objects.equals(getAuthenticationUser().getId(), subComment.getUser().getId())) {
+    if (!Objects.equals(getAuthenticationUser().getId(), subComment.getUserId())) {
       throw new UserNotMatchException("User does not match with sub comment");
     }
 
@@ -141,7 +141,7 @@ public class SubCommentServiceImpl implements SubCommentService {
       throw new SubCommentNotFoundException("Sub comment not found with id: " + id);
     }
 
-    if (!Objects.equals(subComment.getUser().getId(), getAuthenticationUser().getId())) {
+    if (!Objects.equals(subComment.getUserId(), getAuthenticationUser().getId())) {
       throw new UserNotMatchException("Authenticated user does not own the sub comment");
     }
 

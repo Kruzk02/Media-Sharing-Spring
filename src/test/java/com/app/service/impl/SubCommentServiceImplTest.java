@@ -55,6 +55,7 @@ class SubCommentServiceImplTest {
   void setUp() {
     user =
         User.builder()
+            .id(1L)
             .username("username")
             .email("email@gmail.com")
             .password("encodedPassword")
@@ -78,7 +79,7 @@ class SubCommentServiceImplTest {
         SubComment.builder()
             .id(1L)
             .comment(comment)
-            .user(user)
+            .userId(1L)
             .mediaId(1L)
             .content("WEWEWE")
             .build();
@@ -102,7 +103,7 @@ class SubCommentServiceImplTest {
                 Mockito.argThat(
                     sc ->
                         sc.getComment() != null
-                            && sc.getUser() != null
+                            && sc.getUserId() != null
                             && sc.getContent() != null)))
         .thenReturn(subComment);
 
@@ -133,7 +134,7 @@ class SubCommentServiceImplTest {
                 Mockito.argThat(
                     sc ->
                         sc.getContent() != null
-                            && sc.getUser() != null
+                            && sc.getUserId() != null
                             && sc.getComment() != null)))
         .thenAnswer(invocation -> invocation.getArgument(1));
 

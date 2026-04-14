@@ -11,8 +11,6 @@ import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.service.CachedSubCommentService;
 import com.app.module.subcomment.application.service.SubCommentService;
 import com.app.module.subcomment.domain.SubComment;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
 import com.app.shared.type.SortType;
 import java.util.Collections;
 import java.util.List;
@@ -50,17 +48,7 @@ class CachedSubCommentServiceTest extends AbstractRedisTest<SubComment> {
                     .userId(1L)
                     .build())
             .content("content")
-            .user(
-                User.builder()
-                    .id(1L)
-                    .username("username3")
-                    .email("email3@gmail.com")
-                    .password("HashedPassword")
-                    .gender(Gender.MALE)
-                    .mediaId(1L)
-                    .bio("bio")
-                    .enable(false)
-                    .build())
+            .userId(1L)
             .build();
   }
 
@@ -108,17 +96,7 @@ class CachedSubCommentServiceTest extends AbstractRedisTest<SubComment> {
                         .userId(1L)
                         .build())
                 .content("Content")
-                .user(
-                    User.builder()
-                        .id(1L)
-                        .username("username3")
-                        .email("email3@gmail.com")
-                        .password("HashedPassword")
-                        .gender(Gender.MALE)
-                        .mediaId(1L)
-                        .bio("bio")
-                        .enable(false)
-                        .build())
+                .userId(1L)
                 .build());
 
     SubComment updated = cachedService.update(1L, new UpdatedCommentRequest("Content", null, null));

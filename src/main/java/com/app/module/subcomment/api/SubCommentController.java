@@ -5,8 +5,6 @@ import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.application.dto.SubCommentResponse;
 import com.app.module.subcomment.application.service.SubCommentService;
 import com.app.module.subcomment.domain.SubComment;
-import com.app.shared.dto.response.CommentDTO;
-import com.app.shared.dto.response.UserDTO;
 import com.app.shared.type.SortType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,15 +48,7 @@ public class SubCommentController {
     SubComment subComment = subCommentService.update(id, request);
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new SubCommentResponse(
-                subComment.getId(),
-                subComment.getContent(),
-                subComment.getMediaId(),
-                new CommentDTO(
-                    subComment.getComment().getId(), subComment.getComment().getContent()),
-                new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),
-                subComment.getCreateAt()));
+        .body(SubCommentResponse.fromEntity(subComment));
   }
 
   @Operation(summary = "Fetch all sub comments by comment id")
@@ -122,15 +112,7 @@ public class SubCommentController {
     SubComment subComment = subCommentService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new SubCommentResponse(
-                subComment.getId(),
-                subComment.getContent(),
-                subComment.getMediaId(),
-                new CommentDTO(
-                    subComment.getComment().getId(), subComment.getComment().getContent()),
-                new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),
-                subComment.getCreateAt()));
+        .body(SubCommentResponse.fromEntity(subComment));
   }
 
   @Operation(summary = "Create new sub comment")
@@ -158,15 +140,7 @@ public class SubCommentController {
     SubComment subComment = subCommentService.save(request);
     return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new SubCommentResponse(
-                subComment.getId(),
-                subComment.getContent(),
-                subComment.getMediaId(),
-                new CommentDTO(
-                    subComment.getComment().getId(), subComment.getComment().getContent()),
-                new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),
-                subComment.getCreateAt()));
+        .body(SubCommentResponse.fromEntity(subComment));
   }
 
   @Operation(summary = "Delete sub comment by it ID")

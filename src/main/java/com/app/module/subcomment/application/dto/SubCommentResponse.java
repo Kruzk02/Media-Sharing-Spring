@@ -2,7 +2,6 @@ package com.app.module.subcomment.application.dto;
 
 import com.app.module.subcomment.domain.SubComment;
 import com.app.shared.dto.response.CommentDTO;
-import com.app.shared.dto.response.UserDTO;
 import java.time.LocalDateTime;
 
 public record SubCommentResponse(
@@ -10,7 +9,7 @@ public record SubCommentResponse(
     String content,
     Long mediaId,
     CommentDTO commentDTO,
-    UserDTO userDTO,
+    Long userId,
     LocalDateTime createAt) {
 
   public static SubCommentResponse fromEntity(SubComment subComment) {
@@ -19,7 +18,7 @@ public record SubCommentResponse(
         subComment.getContent(),
         subComment.getMediaId(),
         new CommentDTO(subComment.getComment().getId(), subComment.getComment().getContent()),
-        new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),
+        subComment.getUserId(),
         subComment.getCreateAt());
   }
 }
