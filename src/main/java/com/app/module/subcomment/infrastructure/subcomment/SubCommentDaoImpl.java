@@ -110,17 +110,24 @@ public class SubCommentDaoImpl implements SubCommentDao {
   public SubComment findById(Long id) {
     try {
       String sql =
-          "SELECT sc.id as sc_id, sc.content AS sc_content, sc.create_at AS sc_create_at, "
-              + "sc.media_id AS sc_media_id, "
-              + "sc.comment_id AS sc_comment_id, "
-              + "u.id AS user_id, "
-              + "u.username AS user_username, "
-              + "c.content AS comment_content "
-              + "FROM sub_comments sc "
-              + "JOIN users u ON sc.user_id = u.id "
-              + "JOIN comments c ON sc.comment_id = c.id "
-              + "WHERE sc.id = ?";
-      return template.queryForObject(sql, new SubCommentRowMapper(), id);
+          "SELECT id, content, create_at, "
+              + "media_id, "
+              + "comment_id, "
+              + "user_id "
+              + "FROM sub_comments "
+              + "WHERE id = ?";
+      return template.queryForObject(
+          sql,
+          (rs, _) ->
+              SubComment.builder()
+                  .id(rs.getLong("id"))
+                  .content(rs.getString("content"))
+                  .mediaId(rs.getLong("media_id"))
+                  .userId(rs.getLong("user_id"))
+                  .commentId(rs.getLong("comment_id"))
+                  .createAt(rs.getTimestamp("create_at").toLocalDateTime())
+                  .build(),
+          id);
     } catch (DataAccessException e) {
       System.out.println(e.getMessage());
       throw new SubCommentNotFoundException("Sub comment not found with id: " + id);
