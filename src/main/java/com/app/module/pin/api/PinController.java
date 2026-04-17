@@ -58,17 +58,19 @@ public class PinController {
               example = "AAABnJ5uOzwAAAAAAAAAew")
           @RequestParam(required = false)
           String cursor,
-      @Parameter(description = "tag of the pin") @RequestParam(required = false) String tag) {
+      @Parameter(description = "tag of the pin") @RequestParam(required = false) String tag,
+      @Parameter(description = "User id of the pin") @RequestParam(required = false) Long userId) {
     if (limit <= 0) {
       throw new IllegalArgumentException("Limit must be greater than 0.");
     }
-
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
         .body(
-            tag != null && !tag.isBlank()
-                ? pinService.getAllPinsByHashtag(tag, limit, cursor)
-                : pinService.getAllPins(sortType, limit, cursor));
+            userId != null && userId != 0
+                ? pinService.findPinByUserId(userId, limit, cursor)
+                : tag != null && !tag.isBlank()
+                    ? pinService.getAllPinsByHashtag(tag, limit, cursor)
+                    : pinService.getAllPins(sortType, limit, cursor));
   }
 
   @Operation(summary = "Upload a pin")
