@@ -2,7 +2,6 @@ package com.app.module.pin.infrastructure.dao;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.domain.Pin;
-import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -240,14 +239,32 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public List<Pin> findPinByUserId(Long userId, int limit, int offset) {
-    try {
-      String sql =
-          "SELECT id, user_id, media_id, created_at FROM pins WHERE user_id = ? ORDER BY created_at DESC limit ? offset ?";
-      return jdbcTemplate.query(sql, new PinRowMapper(false, true), userId, limit, offset);
-    } catch (DataAccessException e) {
-      throw new UserNotFoundException("User not found with a id: " + userId);
+  public List<Pin> findPinByUserId(Long userId, int limit, LocalDateTime dateTime, Long id) {
+    String sql;
+    if (dateTime == null || id == null) {
+      sql =
+          """
+        SELECT p.id, p.user_id, p.media_id, p.created_at
+        FROM pins p
+        WHERE p.user_id = ?
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT ?
+        """;
+
+      return jdbcTemplate.query(sql, new PinRowMapper(false, true), userId, limit);
     }
+
+    sql =
+        """
+        SELECT p.id, p.user_id, p.media_id, p.created_at
+        FROM pins p
+        WHERE p.user_id = ?
+          AND (p.created_at < ? OR (p.created_at = ? AND p.id < ?))
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT ?
+        """;
+    return jdbcTemplate.query(
+        sql, new PinRowMapper(false, true), userId, dateTime, dateTime, id, limit);
   }
 
   @Override

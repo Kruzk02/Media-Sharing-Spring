@@ -114,14 +114,26 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
   }
 
   @Override
-  public List<Pin> findPinByUserId(Long userId, int limit, int offset) {
-    var redisKey = "user:" + userId + ":pins";
-    return super.getListOrLoad(
-        redisKey,
-        () -> delegate.findPinByUserId(userId, limit, offset),
-        limit,
-        offset,
-        Duration.ofHours(2));
+  public CursorPage<Pin> findPinByUserId(Long userId, int limit, String cursor) {
+    if (cursor != null) {
+      return delegate.findPinByUserId(userId, limit, cursor);
+    }
+
+    String cacheKey = String.format("pins:first:userId:%s:%d", userId, limit);
+
+    List<Pin> cached = redisTemplate.opsForList().range(cacheKey, 0, limit - 1);
+    if (cached != null && !cached.isEmpty()) {
+      return new CursorPage<>(cached, null, false);
+    }
+
+    CursorPage<Pin> page = delegate.findPinByUserId(userId, limit, null);
+
+    if (!page.data().isEmpty()) {
+      redisTemplate.opsForList().rightPushAll(cacheKey, page.data());
+      redisTemplate.expire(cacheKey, Duration.ofSeconds(60));
+    }
+
+    return page;
   }
 
   @Override

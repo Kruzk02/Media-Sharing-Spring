@@ -49,5 +49,5 @@ public interface PinDao extends Creatable<Pin>, Updatable<Pin>, Deletable {
    * @param limit The maximum number of result to return
    * @return a list of pin.
    */
-  List<Pin> findPinByUserId(Long userId, int limit, int offset);
+  List<Pin> findPinByUserId(Long userId, int limit, LocalDateTime dateTime, Long id);
 }

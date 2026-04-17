@@ -18,7 +18,6 @@ import com.app.shared.gateway.UserGateway;
 import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -163,15 +162,19 @@ class PinServiceImplTest {
 
   @Test
   void findPinByUserId_shouldReturnListOfPin() {
-    Mockito.when(pinDao.findPinByUserId(1L, 10, 0)).thenReturn(List.of(pin));
-    var result = pinService.findPinByUserId(1L, 10, 0);
+    LocalDateTime now = LocalDateTime.now();
+    String cursor = KeysetCursorCodec.encode(now, 1L);
+    Mockito.when(pinDao.findPinByUserId(eq(1L), eq(11), any(LocalDateTime.class), eq(1L)))
+        .thenReturn(List.of(pin));
+    var result = pinService.findPinByUserId(1L, 10, cursor);
 
     assertNotNull(result);
-    assertEquals(List.of(pin), result);
+    assertEquals(List.of(pin), result.data());
+    assertFalse(result.hasNext());
   }
 
   @Test
-  void deleteById_shouldDeleteExistingPin() throws IOException {
+  void deleteById_shouldDeleteExistingPin() {
     Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 

@@ -192,8 +192,16 @@ public class PinServiceImpl implements PinService {
   /** {@inheritDoc} */
   @Transactional(readOnly = true)
   @Override
-  public List<Pin> findPinByUserId(Long userId, int limit, int offset) {
-    return pinDao.findPinByUserId(userId, limit, offset);
+  public CursorPage<Pin> findPinByUserId(Long userId, int limit, String cursor) {
+    return paginatePins(
+        limit,
+        cursor,
+        (decodedCursor, queryLimit) ->
+            pinDao.findPinByUserId(
+                userId,
+                queryLimit,
+                decodedCursor != null ? decodedCursor.dateTime() : null,
+                decodedCursor != null ? decodedCursor.id() : null));
   }
 
   /** {@inheritDoc} */

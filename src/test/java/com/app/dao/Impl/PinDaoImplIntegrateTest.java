@@ -129,7 +129,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(6)
   void findPinByUserId() {
-    List<Pin> result = pinDao.findPinByUserId(1L, 10, 0);
+    List<Pin> result = pinDao.findPinByUserId(1L, 10, LocalDateTime.now(), 1L);
     Pin expected =
         Pin.builder()
             .id(1L)

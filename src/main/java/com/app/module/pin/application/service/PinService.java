@@ -86,10 +86,15 @@ public interface PinService {
    *
    * @param userId the ID of the user
    * @param limit the maximum number of pins to return
-   * @param offset the starting position for pagination
-   * @return a list of pins created by the specific user
+   * @param cursor the pagination cursor representing the starting point for the next page; pass
+   *     {@code null} to retrieve the first page
+   * @return a {@link CursorPage} containing:
+   *     <ul>
+   *       <li>a list of {@link Pin} items
+   *       <li>the next cursor value (if more data is available)
+   *     </ul>
    */
-  List<Pin> findPinByUserId(Long userId, int limit, int offset);
+  CursorPage<Pin> findPinByUserId(Long userId, int limit, String cursor);
 
   /**
    * Deletes a pin by its ID

@@ -4,9 +4,7 @@ import com.app.module.board.application.service.BoardService;
 import com.app.module.notification.application.dto.NotificationResponse;
 import com.app.module.notification.application.service.NotificationService;
 import com.app.module.notification.domain.Notification;
-import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
-import com.app.module.pin.domain.Pin;
 import com.app.module.user.application.dto.request.LoginUserRequest;
 import com.app.module.user.application.dto.request.RegisterUserRequest;
 import com.app.module.user.application.dto.request.TokenRequest;
@@ -21,7 +19,6 @@ import com.app.module.user.application.service.UserService;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.security.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -281,26 +278,6 @@ public class UserController {
   public ResponseEntity<Void> unFollow(@PathVariable Long id) {
     followerService.unfollowUser(id);
     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).build();
-  }
-
-  @GetMapping("/{userId}/pins")
-  public ResponseEntity<List<PinResponse>> findPinByUserId(
-      @Parameter(description = "id of the user whose pin are to be retrieved", required = true)
-          @PathVariable
-          Long userId,
-      @Parameter(description = "Maximum number of pins to be retrieved")
-          @RequestParam(defaultValue = "10")
-          int limit,
-      @Parameter(description = "Offset for pagination, indicating the starting point")
-          @RequestParam(defaultValue = "0")
-          int offset) {
-    List<PinResponse> pins =
-        pinService.findPinByUserId(userId, limit, offset).stream()
-            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
-            .map(PinResponse::fromEntity)
-            .toList();
-
-    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
   }
 
   @GetMapping("/notification")
