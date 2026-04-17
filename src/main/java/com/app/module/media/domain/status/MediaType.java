@@ -1,10 +1,9 @@
 package com.app.module.media.domain.status;
 
-import org.springframework.modulith.NamedInterface;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.modulith.NamedInterface;
 
 @NamedInterface
 public enum MediaType {

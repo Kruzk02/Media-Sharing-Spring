@@ -1,11 +1,10 @@
 package com.app.shared.annotations;
 
-import org.springframework.modulith.NamedInterface;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.springframework.modulith.NamedInterface;
 
 @NamedInterface
 @Target({ElementType.METHOD})

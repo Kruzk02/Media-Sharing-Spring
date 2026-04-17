@@ -3,10 +3,9 @@ package com.app.shared.event;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.modulith.NamedInterface;
-
 import java.io.Serializable;
 import java.time.Instant;
+import org.springframework.modulith.NamedInterface;
 
 @NamedInterface
 public record VerificationEmailEvent(

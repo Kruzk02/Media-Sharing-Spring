@@ -1,9 +1,8 @@
 package com.app.shared.gateway;
 
 import com.app.shared.dto.response.PinDTO;
-import org.springframework.modulith.NamedInterface;
-
 import java.util.List;
+import org.springframework.modulith.NamedInterface;
 
 @NamedInterface
 public interface PinGateway {

@@ -1,8 +1,7 @@
 package com.app.shared.pagination;
 
-import org.springframework.modulith.NamedInterface;
-
 import java.time.LocalDateTime;
+import org.springframework.modulith.NamedInterface;
 
 @NamedInterface
 public record DecodedCursor(LocalDateTime dateTime, Long id) {}

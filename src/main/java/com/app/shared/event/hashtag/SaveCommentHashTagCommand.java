@@ -1,9 +1,8 @@
 package com.app.shared.event.hashtag;
 
-import org.springframework.modulith.NamedInterface;
-
 import java.time.LocalDateTime;
 import java.util.Set;
+import org.springframework.modulith.NamedInterface;
 
 @NamedInterface
 public record SaveCommentHashTagCommand(
