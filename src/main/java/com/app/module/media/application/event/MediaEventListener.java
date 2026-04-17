@@ -69,7 +69,7 @@ public class MediaEventListener {
                     media,
                     new UserMediaCreatedEvent(event.userId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(media);
               return null;
             });
@@ -95,7 +95,7 @@ public class MediaEventListener {
                     media,
                     new PinMediaSavedEvent(event.pinId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(media);
               eventPublisher.publishEvent(
                   new PinMediaSaveFailedEvent(event.pinId(), LocalDateTime.now()));
@@ -154,7 +154,7 @@ public class MediaEventListener {
                     new CommentMediaSavedEvent(
                         event.commentId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(media);
               eventPublisher.publishEvent(
                   new CommentMediaSaveFailedEvent(event.commentId(), LocalDateTime.now()));
@@ -213,7 +213,7 @@ public class MediaEventListener {
                     new SubCommentSavedEvent(
                         event.subCommentId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(media);
               eventPublisher.publishEvent(
                   new SubCommentSavedFailedEvent(event.subCommentId(), LocalDateTime.now()));
@@ -305,7 +305,7 @@ public class MediaEventListener {
                   TimeUnit.MINUTES);
             })
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(existingMedia);
               return null;
             });

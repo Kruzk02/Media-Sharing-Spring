@@ -109,7 +109,7 @@ public class BoardDaoImpl implements BoardDao {
       Board board =
           jdbcTemplate.queryForObject(
               boardSql,
-              (rs, _) -> {
+              (rs, rowNum) -> {
                 var b =
                     Board.builder()
                         .id(rs.getLong("board_id"))
@@ -132,7 +132,7 @@ public class BoardDaoImpl implements BoardDao {
             WHERE bp.board_id = ?
         """;
 
-      List<Long> pins = jdbcTemplate.query(pinsSql, (rs, _) -> rs.getLong("pin_id"), id);
+      List<Long> pins = jdbcTemplate.query(pinsSql, (rs, rowNun) -> rs.getLong("pin_id"), id);
 
       board.setPins(pins);
       return board;
@@ -155,7 +155,7 @@ public class BoardDaoImpl implements BoardDao {
     var boards =
         jdbcTemplate.query(
             boardSql,
-            (rs, _) -> {
+            (rs, rowNum) -> {
               Board board = new Board();
               board.setId(rs.getLong("board_id"));
               board.setName(rs.getString("board_name"));
@@ -191,7 +191,7 @@ public class BoardDaoImpl implements BoardDao {
         pinSql,
         rs -> {
           long boardId = rs.getLong("board_id");
-          pinMap.computeIfAbsent(boardId, _ -> new ArrayList<>()).add(rs.getLong("pin_id"));
+          pinMap.computeIfAbsent(boardId, i -> new ArrayList<>()).add(rs.getLong("pin_id"));
         },
         boardsIds.toArray());
 

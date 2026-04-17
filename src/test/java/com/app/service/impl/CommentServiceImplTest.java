@@ -20,7 +20,6 @@ import com.app.shared.message.producer.NotificationEventProducer;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
@@ -42,7 +40,7 @@ class CommentServiceImplTest {
   @Mock private CommentDao commentDao;
   @Mock private UserGateway userGateway;
   @Mock private PinGateway pinGateway;
-    @Mock private NotificationEventProducer notificationEventProducer;
+  @Mock private NotificationEventProducer notificationEventProducer;
   @Mock private MultipartFile mockFile;
   @Mock private ApplicationEventPublisher eventPublisher;
 

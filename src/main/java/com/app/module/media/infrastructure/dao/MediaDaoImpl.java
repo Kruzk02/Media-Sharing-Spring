@@ -66,7 +66,7 @@ public class MediaDaoImpl implements MediaDao {
       String sql = "SELECT id, url, media_type, status FROM media WHERE id = ?";
       return template.queryForObject(
           sql,
-          (rs, _) -> {
+          (rs, rowNum) -> {
             Media media = new Media();
             media.setId(rs.getLong("id"));
             media.setUrl(rs.getString("url"));
@@ -89,7 +89,7 @@ public class MediaDaoImpl implements MediaDao {
               + "WHERE c.id = ?";
       return template.queryForObject(
           sql,
-          (rs, _) -> {
+          (rs, rowNum) -> {
             Media media = new Media();
             media.setId(rs.getLong("id"));
             media.setUrl(rs.getString("url"));

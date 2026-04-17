@@ -118,7 +118,7 @@ public class SubCommentDaoImpl implements SubCommentDao {
               + "WHERE id = ?";
       return template.queryForObject(
           sql,
-          (rs, _) ->
+          (rs, rowNum) ->
               SubComment.builder()
                   .id(rs.getLong("id"))
                   .content(rs.getString("content"))
