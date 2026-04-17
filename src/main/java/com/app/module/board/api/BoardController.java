@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.Comparator;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -88,6 +90,35 @@ public class BoardController {
     return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
         .body(BoardResponse.fromEntity(board));
+  }
+
+  @Operation(summary = "Fetch all board by user id")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully fetch all board by user id",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Board.class))),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @GetMapping
+  public ResponseEntity<List<BoardResponse>> findAllByUserId(
+      @RequestParam Long userId,
+      @RequestParam(defaultValue = "10") int limit,
+      @RequestParam(defaultValue = "0") int offset) {
+
+    List<BoardResponse> boards =
+        boardService.findAllByUserId(userId, limit, offset).stream()
+            .sorted(Comparator.comparing(Board::getName))
+            .map(BoardResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(boards);
   }
 
   @Operation(summary = "Fetch board by its ID")

@@ -1,8 +1,6 @@
 package com.app.module.user.api;
 
-import com.app.module.board.application.dto.response.BoardResponse;
 import com.app.module.board.application.service.BoardService;
-import com.app.module.board.domain.Board;
 import com.app.module.notification.application.dto.NotificationResponse;
 import com.app.module.notification.application.service.NotificationService;
 import com.app.module.notification.domain.Notification;
@@ -50,7 +48,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class UserController {
 
   private final UserService userService;
-  private final BoardService boardService;
   private final PinService pinService;
   private final FollowerService followerService;
   private final NotificationService notificationService;
@@ -74,7 +71,6 @@ public class UserController {
       JwtProvider jwtRefreshToken,
       RedisTemplate<String, Object> redisTemplate) {
     this.userService = userService;
-    this.boardService = boardService;
     this.pinService = pinService;
     this.followerService = followerService;
     this.notificationService = notificationService;
@@ -285,35 +281,6 @@ public class UserController {
   public ResponseEntity<Void> unFollow(@PathVariable Long id) {
     followerService.unfollowUser(id);
     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).build();
-  }
-
-  @Operation(summary = "Fetch all board by user id")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Successfully fetch all board by user id",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Board.class))),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-      })
-  @GetMapping("/{userId}/boards")
-  public ResponseEntity<List<BoardResponse>> findAllByUserId(
-      @PathVariable Long userId,
-      @RequestParam(defaultValue = "10") int limit,
-      @RequestParam(defaultValue = "0") int offset) {
-
-    List<BoardResponse> boards =
-        boardService.findAllByUserId(userId, limit, offset).stream()
-            .sorted(Comparator.comparing(Board::getName))
-            .map(BoardResponse::fromEntity)
-            .toList();
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(boards);
   }
 
   @GetMapping("/{userId}/pins")
