@@ -42,8 +42,7 @@ class CommentServiceImplTest {
   @Mock private CommentDao commentDao;
   @Mock private UserGateway userGateway;
   @Mock private PinGateway pinGateway;
-  @Mock private Map<Long, SseEmitter> emitters;
-  @Mock private NotificationEventProducer notificationEventProducer;
+    @Mock private NotificationEventProducer notificationEventProducer;
   @Mock private MultipartFile mockFile;
   @Mock private ApplicationEventPublisher eventPublisher;
 
@@ -131,7 +130,6 @@ class CommentServiceImplTest {
             Mockito.argThat(
                 c -> c.getContent() != null && c.getUserId() != 0 && c.getPinId() != 0));
 
-    Mockito.verify(emitters).get(result.getId());
     Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdateCommentMediaEvent.class));
   }
 
