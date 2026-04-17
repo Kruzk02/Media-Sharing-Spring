@@ -5,7 +5,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import lombok.*;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

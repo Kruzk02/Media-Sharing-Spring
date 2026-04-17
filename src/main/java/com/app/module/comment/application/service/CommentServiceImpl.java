@@ -24,6 +24,8 @@ import com.app.shared.type.SortType;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,9 +42,10 @@ public class CommentServiceImpl implements CommentService {
   private final CommentDao commentDao;
   private final UserGateway userGateway;
   private final PinGateway pinGateway;
-  private final Map<Long, SseEmitter> emitters;
   private final NotificationEventProducer notificationEventProducer;
   private final ApplicationEventPublisher eventPublisher;
+
+  private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
   @Override
   @Transactional

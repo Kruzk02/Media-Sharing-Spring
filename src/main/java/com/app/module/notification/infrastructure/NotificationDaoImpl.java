@@ -60,7 +60,7 @@ public class NotificationDaoImpl implements NotificationDao {
 
     return template.query(
         sql,
-        (rs, rowNum) ->
+        (rs, _) ->
             Notification.builder()
                 .id(rs.getLong("id"))
                 .userId(userId)
@@ -78,7 +78,7 @@ public class NotificationDaoImpl implements NotificationDao {
     String sql = "SELECT user_id, message, is_read, created_at FROM notifications WHERE id = ?";
     return template.queryForObject(
         sql,
-        (rs, rowNum) ->
+        (rs, _) ->
             Notification.builder()
                 .id(id)
                 .userId(rs.getLong("user_id"))

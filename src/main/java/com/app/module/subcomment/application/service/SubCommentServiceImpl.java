@@ -73,7 +73,7 @@ public class SubCommentServiceImpl implements SubCommentService {
   }
 
   @Transactional
-  private SubComment saveSubComment(CreateSubCommentRequest request, Long commentId) {
+  protected SubComment saveSubComment(CreateSubCommentRequest request, Long commentId) {
     return subCommentDao.save(
         SubComment.builder()
             .content(request.content())

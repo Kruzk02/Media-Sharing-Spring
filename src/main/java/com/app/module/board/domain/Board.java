@@ -3,7 +3,9 @@ package com.app.module.board.domain;
 import java.io.Serializable;
 import java.util.List;
 import lombok.*;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

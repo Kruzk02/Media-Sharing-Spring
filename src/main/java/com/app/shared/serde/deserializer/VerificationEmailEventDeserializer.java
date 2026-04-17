@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 public class VerificationEmailEventDeserializer implements Deserializer<VerificationEmailEvent> {
 
   private final ObjectMapper objectMapper;

@@ -2,8 +2,10 @@ package com.app.module.user.infrastructure.role;
 
 import com.app.module.user.domain.entity.Role;
 import com.app.shared.dao.Creatable;
+import org.springframework.modulith.NamedInterface;
 
 /** Interface for managing Role data access operations. */
+@NamedInterface
 public interface RoleDao extends Creatable<Role> {
 
   /**

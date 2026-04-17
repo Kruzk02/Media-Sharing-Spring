@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +25,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   private final NotificationDao notificationDao;
   private final UserGateway userGateway;
-  private final Map<Long, SseEmitter> emitters;
+  private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
   private UserDTO getAuthenticationUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -16,7 +16,9 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 public class MediaManager {
 
   /**
