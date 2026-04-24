@@ -44,7 +44,7 @@ public class HashtagDaoImpl implements HashtagDao {
             Hashtag.builder()
                 .id(rs.getLong("id"))
                 .tag(rs.getString("tag"))
-                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .createdAt(rs.getTimestamp("created_at").toInstant())
                 .build());
   }
 

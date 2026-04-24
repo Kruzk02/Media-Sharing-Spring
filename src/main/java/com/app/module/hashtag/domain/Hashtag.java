@@ -1,7 +1,7 @@
 package com.app.module.hashtag.domain;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.*;
 
 @NoArgsConstructor
@@ -11,5 +11,5 @@ import lombok.*;
 public class Hashtag implements Serializable {
   private Long id;
   private String tag;
-  private LocalDateTime createdAt;
+  private Instant createdAt;
 }
