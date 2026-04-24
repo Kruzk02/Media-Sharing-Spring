@@ -125,7 +125,7 @@ public class SubCommentDaoImpl implements SubCommentDao {
                   .mediaId(rs.getLong("media_id"))
                   .userId(rs.getLong("user_id"))
                   .commentId(rs.getLong("comment_id"))
-                  .createAt(rs.getTimestamp("create_at").toLocalDateTime())
+                  .createAt(rs.getTimestamp("create_at").toInstant())
                   .build(),
           id);
     } catch (DataAccessException e) {
@@ -154,7 +154,7 @@ public class SubCommentDaoImpl implements SubCommentDao {
           .mediaId(rs.getLong("sc_media_id"))
           .userId(rs.getLong("user_id"))
           .commentId(rs.getLong("sc_comment_id"))
-          .createAt(rs.getTimestamp("sc_create_at").toLocalDateTime())
+          .createAt(rs.getTimestamp("sc_create_at").toInstant())
           .build();
     }
   }

@@ -1,6 +1,7 @@
 package com.app.module.subcomment.domain;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,5 +23,5 @@ public class SubComment implements Serializable {
   private Long commentId;
   private Long userId;
   private Long mediaId;
-  private LocalDateTime createAt;
+  private Instant createAt;
 }
