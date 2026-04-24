@@ -2,7 +2,7 @@ package com.app.module.comment.domain;
 
 import com.app.module.hashtag.domain.Hashtag;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import lombok.*;
 import org.springframework.modulith.NamedInterface;
@@ -20,5 +20,5 @@ public class Comment implements Serializable {
   private long userId;
   private long mediaId;
   private Collection<Hashtag> hashtags;
-  private LocalDateTime created_at;
+  private Instant created_at;
 }

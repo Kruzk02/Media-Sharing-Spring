@@ -149,7 +149,7 @@ public class CommentDaoImpl implements CommentDao {
                           .userId(rs.getLong("user_id"))
                           .pinId(rs.getLong("pin_id"))
                           .mediaId(rs.getLong("media_id"))
-                          .created_at(rs.getTimestamp("created_at").toLocalDateTime())
+                          .created_at(rs.getTimestamp("created_at").toInstant())
                           .hashtags(new ArrayList<>())
                           .build();
                 }
@@ -231,7 +231,7 @@ public class CommentDaoImpl implements CommentDao {
         comment.setMediaId(rs.getLong("media_id"));
       }
 
-      comment.setCreated_at(rs.getTimestamp("created_at").toLocalDateTime());
+      comment.setCreated_at(rs.getTimestamp("created_at").toInstant());
       return comment;
     }
   }
