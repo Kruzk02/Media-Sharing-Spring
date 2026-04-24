@@ -66,7 +66,7 @@ public class NotificationDaoImpl implements NotificationDao {
                 .userId(userId)
                 .message(rs.getString("message"))
                 .isRead(rs.getBoolean("is_read"))
-                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .createdAt(rs.getTimestamp("created_at").toInstant())
                 .build(),
         userId,
         limit,
@@ -84,7 +84,7 @@ public class NotificationDaoImpl implements NotificationDao {
                 .userId(rs.getLong("user_id"))
                 .message(rs.getString("message"))
                 .isRead(rs.getBoolean("is_read"))
-                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .createdAt(rs.getTimestamp("created_at").toInstant())
                 .build(),
         id);
   }

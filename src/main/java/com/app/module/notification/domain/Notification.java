@@ -1,6 +1,6 @@
 package com.app.module.notification.domain;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +16,5 @@ public class Notification {
   private Long userId;
   private String message;
   private boolean isRead;
-  private LocalDateTime createdAt;
+  private Instant createdAt;
 }
