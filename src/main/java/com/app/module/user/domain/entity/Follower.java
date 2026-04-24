@@ -1,7 +1,7 @@
 package com.app.module.user.domain.entity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +15,5 @@ public class Follower implements Serializable {
 
   private Long followerId;
   private Long followingId;
-  private LocalDateTime followingDate;
+  private Instant followingDate;
 }

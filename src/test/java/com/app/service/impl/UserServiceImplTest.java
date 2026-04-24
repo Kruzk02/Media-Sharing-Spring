@@ -17,7 +17,7 @@ import com.app.module.user.infrastructure.role.RoleDao;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.shared.event.UserUpdatedMediaEvent;
 import com.app.shared.event.VerificationEmailEvent;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,7 +116,7 @@ class UserServiceImplTest {
         VerificationToken.builder()
             .token("token")
             .userId(user.getId())
-            .expireDate(LocalDateTime.now())
+            .expireDate(Instant.now())
             .build();
 
     Mockito.when(verificationTokenService.generateVerificationToken(Mockito.eq(user)))

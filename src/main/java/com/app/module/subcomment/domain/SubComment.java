@@ -2,7 +2,6 @@ package com.app.module.subcomment.domain;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

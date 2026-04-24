@@ -6,7 +6,7 @@ import com.app.module.user.domain.entity.VerificationToken;
 import com.app.module.user.infrastructure.user.UserDao;
 import com.app.module.user.infrastructure.verificationtoken.VerificationTokenDao;
 import com.app.shared.exception.sub.UserNotMatchException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,7 +27,7 @@ public class VerificationTokenService {
         VerificationToken.builder()
             .token(token)
             .userId(user.getId())
-            .expireDate(LocalDateTime.now().plusMinutes(10))
+            .expireDate(Instant.now().plusSeconds(600))
             .build();
     return verificationTokenDao.save(verificationToken);
   }
@@ -38,7 +38,7 @@ public class VerificationTokenService {
       throw new TokenExpireException("Verification token not found");
     }
 
-    if (verificationToken.getExpireDate().isBefore(LocalDateTime.now())) {
+    if (verificationToken.getExpireDate().isBefore(Instant.now())) {
       throw new TokenExpireException("Verification token expired");
     }
 

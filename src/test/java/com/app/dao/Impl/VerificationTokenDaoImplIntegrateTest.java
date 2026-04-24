@@ -6,7 +6,7 @@ import com.app.dao.AbstractMySQLTest;
 import com.app.module.user.domain.entity.VerificationToken;
 import com.app.module.user.infrastructure.verificationtoken.VerificationTokenDao;
 import com.app.module.user.infrastructure.verificationtoken.VerificationTokenDaoImpl;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -33,7 +33,7 @@ class VerificationTokenDaoImplIntegrateTest extends AbstractMySQLTest {
             VerificationToken.builder()
                 .token("token")
                 .userId(1L)
-                .expireDate(LocalDateTime.now().plusMinutes(10))
+                .expireDate(Instant.now().plusSeconds(600))
                 .build());
 
     assertNotNull(result);

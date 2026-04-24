@@ -32,7 +32,7 @@ public class VerificationTokenDaoImpl implements VerificationTokenDao {
               VerificationToken.builder()
                   .token(rs.getString("token"))
                   .userId(rs.getLong("user_id"))
-                  .expireDate(rs.getTimestamp("expiration_date").toLocalDateTime())
+                  .expireDate(rs.getTimestamp("expiration_date").toInstant())
                   .build(),
           token);
     } catch (EmptyResultDataAccessException e) {
@@ -52,7 +52,7 @@ public class VerificationTokenDaoImpl implements VerificationTokenDao {
               PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
               ps.setString(1, verificationToken.getToken());
               ps.setLong(2, verificationToken.getUserId());
-              ps.setTimestamp(3, Timestamp.valueOf(verificationToken.getExpireDate()));
+              ps.setTimestamp(3, Timestamp.from(verificationToken.getExpireDate()));
               return ps;
             },
             keyHolder);
