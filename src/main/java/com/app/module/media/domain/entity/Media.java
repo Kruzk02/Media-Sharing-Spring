@@ -3,7 +3,7 @@ package com.app.module.media.domain.entity;
 import com.app.module.media.domain.status.MediaType;
 import com.app.shared.type.Status;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +21,5 @@ public class Media implements Serializable {
   private String url;
   private Status status;
   private MediaType mediaType;
-  private Timestamp created_at;
+  private Instant created_at;
 }
