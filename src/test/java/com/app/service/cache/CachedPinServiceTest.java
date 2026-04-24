@@ -14,7 +14,7 @@ import com.app.shared.dto.response.CursorPage;
 import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +67,7 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
   @Test
   @Order(2)
   void getAllPins() {
-    String cursor = KeysetCursorCodec.encode(LocalDateTime.now(), 1L);
+    String cursor = KeysetCursorCodec.encode(Instant.now(), 1L);
     CursorPage<Pin> keyset = new CursorPage<>(List.of(pin), cursor, false);
     when(mockPinService.getAllPins(SortType.NEWEST, 1, cursor)).thenReturn(keyset);
     var result = cachedPinService.getAllPins(SortType.NEWEST, 1, cursor);
@@ -78,7 +78,7 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
   @Test
   @Order(3)
   void getAllPinsByHashtag() {
-    String cursor = KeysetCursorCodec.encode(LocalDateTime.now(), 1L);
+    String cursor = KeysetCursorCodec.encode(Instant.now(), 1L);
     CursorPage<Pin> keyset = new CursorPage<>(List.of(pin), cursor, false);
     when(mockPinService.getAllPinsByHashtag("tag", 1, cursor)).thenReturn(keyset);
     var result = cachedPinService.getAllPinsByHashtag("tag", 1, cursor);
@@ -107,7 +107,7 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
   @Test
   @Order(6)
   void findPinByUserId() {
-    String cursor = KeysetCursorCodec.encode(LocalDateTime.now(), 1L);
+    String cursor = KeysetCursorCodec.encode(Instant.now(), 1L);
     CursorPage<Pin> keyset = new CursorPage<>(List.of(pin), cursor, false);
     when(mockPinService.findPinByUserId(1L, 1, cursor)).thenReturn(keyset);
     var result = cachedPinService.findPinByUserId(1L, 1, cursor);

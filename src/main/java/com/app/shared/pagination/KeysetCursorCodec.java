@@ -2,13 +2,11 @@ package com.app.shared.pagination;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Base64;
 
 public final class KeysetCursorCodec {
-  public static String encode(LocalDateTime dateTime, Long id) {
-    long epochMillis = dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+  public static String encode(Instant dateTime, Long id) {
+    long epochMillis = dateTime.toEpochMilli();
 
     var byteBuffer = ByteBuffer.allocate(Long.BYTES * 2);
     byteBuffer.putLong(epochMillis);
@@ -24,7 +22,7 @@ public final class KeysetCursorCodec {
     long epochMillis = buffer.getLong();
     long id = buffer.getLong();
 
-    var dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneOffset.UTC);
+    var dateTime = Instant.ofEpochMilli(epochMillis);
     return new DecodedCursor(dateTime, id);
   }
 }

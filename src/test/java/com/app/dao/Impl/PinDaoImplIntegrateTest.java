@@ -9,7 +9,7 @@ import com.app.module.pin.infrastructure.dao.PinDao;
 import com.app.module.pin.infrastructure.dao.PinDaoImpl;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -49,7 +49,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(2)
   void getAllPins() {
-    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, LocalDateTime.now(), 1L);
+    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, Instant.now(), 1L);
 
     Pin expected = Pin.builder().id(1L).userId(1L).description(null).build();
 
@@ -64,7 +64,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(2)
   void getAllPinsByKeySet() {
-    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, LocalDateTime.now(), 1L);
+    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, Instant.now(), 1L);
 
     Pin expected = Pin.builder().id(1L).userId(1L).description(null).build();
 
@@ -79,7 +79,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(3)
   void getAllPinsByHashtag() {
-    List<Pin> pins = pinDao.getAllPinsByHashtag("tag", 10, LocalDateTime.now(), 1L);
+    List<Pin> pins = pinDao.getAllPinsByHashtag("tag", 10, Instant.now(), 1L);
     Pin expected =
         Pin.builder()
             .id(1L)
@@ -129,7 +129,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(6)
   void findPinByUserId() {
-    List<Pin> result = pinDao.findPinByUserId(1L, 10, LocalDateTime.now(), 1L);
+    List<Pin> result = pinDao.findPinByUserId(1L, 10, Instant.now(), 1L);
     Pin expected =
         Pin.builder()
             .id(1L)

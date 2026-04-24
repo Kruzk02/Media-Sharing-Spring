@@ -9,7 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -32,7 +32,7 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public List<Pin> getAllPins(SortType sortType, int limit, LocalDateTime dateTime, Long id) {
+  public List<Pin> getAllPins(SortType sortType, int limit, Instant dateTime, Long id) {
     boolean isNewest = sortType == SortType.NEWEST;
 
     String operator = isNewest ? "<" : ">";
@@ -59,7 +59,7 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public List<Pin> getAllPinsByHashtag(String tag, int limit, LocalDateTime dateTime, Long id) {
+  public List<Pin> getAllPinsByHashtag(String tag, int limit, Instant dateTime, Long id) {
     String sql;
     if (dateTime == null || id == null) {
       sql =
@@ -207,7 +207,7 @@ public class PinDaoImpl implements PinDao {
                   pin.setUserId(rs.getLong("user_id"));
                   pin.setDescription(rs.getString("description"));
                   pin.setMediaId(rs.getLong("media_id"));
-                  pin.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                  pin.setCreatedAt(rs.getTimestamp("created_at").toInstant());
                   pin.setHashtags(new ArrayList<>());
                 }
 
@@ -239,7 +239,7 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public List<Pin> findPinByUserId(Long userId, int limit, LocalDateTime dateTime, Long id) {
+  public List<Pin> findPinByUserId(Long userId, int limit, Instant dateTime, Long id) {
     String sql;
     if (dateTime == null || id == null) {
       sql =
@@ -295,7 +295,7 @@ public class PinDaoImpl implements PinDao {
       }
 
       pin.setUserId(rs.getLong("user_id"));
-      pin.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+      pin.setCreatedAt(rs.getTimestamp("created_at").toInstant());
       return pin;
     }
   }

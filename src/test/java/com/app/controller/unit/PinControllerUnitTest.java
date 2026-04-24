@@ -12,7 +12,7 @@ import com.app.shared.dto.response.CursorPage;
 import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ class PinControllerUnitTest {
   void getAllPins_ShouldPassCorrectArguments() {
     List<Pin> pins =
         List.of(Pin.builder().id(1L).userId(1L).mediaId(1L).description("Hello World").build());
-    var cursor = KeysetCursorCodec.encode(LocalDateTime.now(), 1L);
+    var cursor = KeysetCursorCodec.encode(Instant.now(), 1L);
     when(pinService.getAllPins(eq(SortType.NEWEST), eq(10), eq(cursor)))
         .thenReturn(new CursorPage<>(pins, cursor, false));
 

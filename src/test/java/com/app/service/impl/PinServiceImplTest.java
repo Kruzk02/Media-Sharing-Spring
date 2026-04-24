@@ -18,7 +18,7 @@ import com.app.shared.gateway.UserGateway;
 import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,9 +61,9 @@ class PinServiceImplTest {
 
   @Test
   void getAllPins_shouldReturnListOfPin() {
-    LocalDateTime now = LocalDateTime.now();
+    Instant now = Instant.now();
     String cursor = KeysetCursorCodec.encode(now, 1L);
-    Mockito.when(pinDao.getAllPins(eq(SortType.NEWEST), eq(11), any(LocalDateTime.class), eq(1L)))
+    Mockito.when(pinDao.getAllPins(eq(SortType.NEWEST), eq(11), any(Instant.class), eq(1L)))
         .thenReturn(List.of(pin));
     var result = pinService.getAllPins(SortType.NEWEST, 10, cursor);
 
@@ -74,9 +74,9 @@ class PinServiceImplTest {
 
   @Test
   void getAllPinsByHashTag_shouldReturnListOfPin() {
-    LocalDateTime now = LocalDateTime.now();
+    Instant now = Instant.now();
     String cursor = KeysetCursorCodec.encode(now, 1L);
-    Mockito.when(pinDao.getAllPinsByHashtag(eq("tag"), eq(11), any(LocalDateTime.class), eq(1L)))
+    Mockito.when(pinDao.getAllPinsByHashtag(eq("tag"), eq(11), any(Instant.class), eq(1L)))
         .thenReturn(List.of(pin));
     var result = pinService.getAllPinsByHashtag("tag", 10, cursor);
 
@@ -162,9 +162,9 @@ class PinServiceImplTest {
 
   @Test
   void findPinByUserId_shouldReturnListOfPin() {
-    LocalDateTime now = LocalDateTime.now();
+    Instant now = Instant.now();
     String cursor = KeysetCursorCodec.encode(now, 1L);
-    Mockito.when(pinDao.findPinByUserId(eq(1L), eq(11), any(LocalDateTime.class), eq(1L)))
+    Mockito.when(pinDao.findPinByUserId(eq(1L), eq(11), any(Instant.class), eq(1L)))
         .thenReturn(List.of(pin));
     var result = pinService.findPinByUserId(1L, 10, cursor);
 
