@@ -28,7 +28,8 @@ public class HashtagDaoImpl implements HashtagDao {
     List<Hashtag> foundItems = getHashtags(tag, sql);
 
     return foundItems.stream()
-        .collect(Collectors.toMap(Hashtag::getTag, hashtag -> hashtag, (existing, _) -> existing));
+        .collect(
+            Collectors.toMap(Hashtag::getTag, hashtag -> hashtag, (existing, hashtag) -> existing));
   }
 
   private List<Hashtag> getHashtags(Set<String> tag, String sql) {
@@ -39,11 +40,11 @@ public class HashtagDaoImpl implements HashtagDao {
     return namedJdbcTemplate.query(
         sql,
         params,
-        (rs, _) ->
+        (rs, rowNum) ->
             Hashtag.builder()
                 .id(rs.getLong("id"))
                 .tag(rs.getString("tag"))
-                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .createdAt(rs.getTimestamp("created_at").toInstant())
                 .build());
   }
 

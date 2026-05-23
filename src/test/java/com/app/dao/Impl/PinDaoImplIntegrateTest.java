@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.app.dao.AbstractMySQLTest;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.PinDao;
-import com.app.module.pin.infrastructure.PinDaoImpl;
+import com.app.module.pin.infrastructure.dao.PinDao;
+import com.app.module.pin.infrastructure.dao.PinDaoImpl;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -48,7 +49,22 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(2)
   void getAllPins() {
-    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, 0);
+    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, Instant.now(), 1L);
+
+    Pin expected = Pin.builder().id(1L).userId(1L).description(null).build();
+
+    Pin actual = pins.getFirst();
+
+    assertEquals(expected.getId(), actual.getId());
+    assertEquals(expected.getUserId(), actual.getUserId());
+    assertEquals(expected.getDescription(), actual.getDescription());
+    assertNotNull(actual.getCreatedAt());
+  }
+
+  @Test
+  @Order(2)
+  void getAllPinsByKeySet() {
+    List<Pin> pins = pinDao.getAllPins(SortType.NEWEST, 10, Instant.now(), 1L);
 
     Pin expected = Pin.builder().id(1L).userId(1L).description(null).build();
 
@@ -63,7 +79,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(3)
   void getAllPinsByHashtag() {
-    List<Pin> pins = pinDao.getAllPinsByHashtag("tag", 10, 0);
+    List<Pin> pins = pinDao.getAllPinsByHashtag("tag", 10, Instant.now(), 1L);
     Pin expected =
         Pin.builder()
             .id(1L)
@@ -92,8 +108,8 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
 
   @Test
   @Order(5)
-  void findPinByUserId() {
-    List<Pin> result = pinDao.findPinByUserId(1L, 10, 0);
+  void findByIdIn() {
+    List<Pin> result = pinDao.findByIdIn(List.of(1L));
     Pin expected =
         Pin.builder()
             .id(1L)
@@ -112,6 +128,26 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
 
   @Test
   @Order(6)
+  void findPinByUserId() {
+    List<Pin> result = pinDao.findPinByUserId(1L, 10, Instant.now(), 1L);
+    Pin expected =
+        Pin.builder()
+            .id(1L)
+            .userId(1L)
+            .description(null)
+            .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
+            .build();
+
+    Pin actual = result.getFirst();
+
+    assertEquals(expected.getId(), actual.getId());
+    assertEquals(expected.getUserId(), actual.getUserId());
+    assertEquals(expected.getDescription(), actual.getDescription());
+    assertNotNull(actual.getCreatedAt());
+  }
+
+  @Test
+  @Order(7)
   void update() {
     Pin pin =
         pinDao.update(
@@ -132,7 +168,7 @@ class PinDaoImplIntegrateTest extends AbstractMySQLTest {
   }
 
   @Test
-  @Order(7)
+  @Order(8)
   void deleteById() {
     int result = pinDao.deleteById(1L);
 

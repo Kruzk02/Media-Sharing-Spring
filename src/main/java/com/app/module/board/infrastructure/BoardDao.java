@@ -1,16 +1,15 @@
 package com.app.module.board.infrastructure;
 
 import com.app.module.board.domain.Board;
-import com.app.module.pin.domain.Pin;
 import com.app.shared.dao.CRUDDao;
 import java.util.List;
 
 /** Interface for managing Board data access operations. */
 public interface BoardDao extends CRUDDao<Board> {
 
-  Board addPinToBoard(Pin pin, Board board);
+  Board addPinToBoard(Long pinId, Board board);
 
-  Board deletePinFromBoard(Pin pin, Board board);
+  Board deletePinFromBoard(Long pinId, Board board);
 
   /**
    * Find all board by user id

@@ -2,6 +2,7 @@ package com.app.module.pin.application.service;
 
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.io.IOException;
@@ -16,24 +17,35 @@ import java.util.List;
 public interface PinService {
 
   /**
-   * Retrieves all pins with optional sorting and pagination.
+   * Retrieves a paginated list of {@link Pin} objects using cursor-based pagination.
    *
-   * @param sortType the sorting strategy to apply
-   * @param limit the maximum number of pins to return
-   * @param offset the starting position for pagination
-   * @return a list of pins
+   * @param sortType the sorting strategy applied to the result set (newest, oldest)
+   * @param limit the maximum number of pins to return in a single page
+   * @param cursor the pagination cursor representing the starting point for the next page; pass
+   *     {@code null} to retrieve the first page
+   * @return a {@link CursorPage} containing:
+   *     <ul>
+   *       <li>a list of {@link Pin} items
+   *       <li>the next cursor value (if more data is available)
+   *     </ul>
    */
-  List<Pin> getAllPins(SortType sortType, int limit, int offset);
+  CursorPage<Pin> getAllPins(SortType sortType, int limit, String cursor);
 
   /**
-   * Retrieves all pins associated with a specific hashtag.
+   * Retrieves a paginated list of {@link Pin} objects associated with a specific hashtag using
+   * cursor-based pagination.
    *
    * @param tag the hashtag to filter pins by (without '#')
-   * @param limit the maximum number of pins to return
-   * @param offset the starting position for pagination
-   * @return a list of pins containing the given hashtag
+   * @param limit the maximum number of pins to return in single page
+   * @param cursor the pagination cursor representing the starting point for the next page; pass
+   *     {@code null} to retrieve the first page
+   * @return a {@link CursorPage} containing:
+   *     <ul>
+   *       <li>a list of {@link Pin} items
+   *       <li>the next cursor value (if more data is available)
+   *     </ul>
    */
-  List<Pin> getAllPinsByHashtag(String tag, int limit, int offset);
+  CursorPage<Pin> getAllPinsByHashtag(String tag, int limit, String cursor);
 
   /**
    * Create and saves a new pin.
@@ -62,14 +74,27 @@ public interface PinService {
   Pin findById(Long id, DetailsType detailsType);
 
   /**
+   * Retrieves multiple pins by its id.
+   *
+   * @param ids list of id.
+   * @return a list of pins.
+   */
+  List<Pin> findByIdIn(List<Long> ids);
+
+  /**
    * Retrieves all pins created by a specific user.
    *
    * @param userId the ID of the user
    * @param limit the maximum number of pins to return
-   * @param offset the starting position for pagination
-   * @return a list of pins created by the specific user
+   * @param cursor the pagination cursor representing the starting point for the next page; pass
+   *     {@code null} to retrieve the first page
+   * @return a {@link CursorPage} containing:
+   *     <ul>
+   *       <li>a list of {@link Pin} items
+   *       <li>the next cursor value (if more data is available)
+   *     </ul>
    */
-  List<Pin> findPinByUserId(Long userId, int limit, int offset);
+  CursorPage<Pin> findPinByUserId(Long userId, int limit, String cursor);
 
   /**
    * Deletes a pin by its ID

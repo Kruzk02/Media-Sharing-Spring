@@ -2,6 +2,7 @@ package com.app.module.pin.application.service;
 
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.helper.CachedServiceHelper;
 import com.app.shared.type.DetailsType;
@@ -38,25 +39,47 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
   }
 
   @Override
-  public List<Pin> getAllPins(SortType sortType, int limit, int offset) {
-    var redisKey = "pins:" + sortType + ":limit:" + limit + ":offset:" + offset;
-    return super.getListOrLoad(
-        redisKey,
-        () -> delegate.getAllPins(sortType, limit, offset),
-        limit,
-        offset,
-        Duration.ofHours(2));
+  public CursorPage<Pin> getAllPins(SortType sortType, int limit, String cursor) {
+    if (cursor != null) {
+      return delegate.getAllPins(sortType, limit, cursor);
+    }
+
+    String cacheKey = String.format("pins:first:%s:%d", sortType.name(), limit);
+    List<Pin> cached = super.redisTemplate.opsForList().range(cacheKey, 0, limit - 1);
+
+    if (cached != null && !cached.isEmpty()) {
+      return new CursorPage<>(cached, null, false);
+    }
+
+    CursorPage<Pin> page = delegate.getAllPins(sortType, limit, null);
+
+    super.redisTemplate.opsForList().rightPushAll(cacheKey, page.data());
+    super.redisTemplate.expire(cacheKey, Duration.ofSeconds(60));
+
+    return page;
   }
 
   @Override
-  public List<Pin> getAllPinsByHashtag(String tag, int limit, int offset) {
-    var redisKey = "pins_hashtag:" + tag + ":limit:" + limit + ":offset:" + offset;
-    return super.getListOrLoad(
-        redisKey,
-        () -> delegate.getAllPinsByHashtag(tag, limit, offset),
-        limit,
-        offset,
-        Duration.ofHours(2));
+  public CursorPage<Pin> getAllPinsByHashtag(String tag, int limit, String cursor) {
+    if (cursor != null) {
+      return delegate.getAllPinsByHashtag(tag, limit, cursor);
+    }
+
+    String cacheKey = String.format("pins:first:hashtag:%s:%d", tag, limit);
+
+    List<Pin> cached = redisTemplate.opsForList().range(cacheKey, 0, limit - 1);
+    if (cached != null && !cached.isEmpty()) {
+      return new CursorPage<>(cached, null, false);
+    }
+
+    CursorPage<Pin> page = delegate.getAllPinsByHashtag(tag, limit, null);
+
+    if (!page.data().isEmpty()) {
+      redisTemplate.opsForList().rightPushAll(cacheKey, page.data());
+      redisTemplate.expire(cacheKey, Duration.ofSeconds(60));
+    }
+
+    return page;
   }
 
   @Override
@@ -85,14 +108,32 @@ public class CachedPinService extends CachedServiceHelper<Pin> implements PinSer
   }
 
   @Override
-  public List<Pin> findPinByUserId(Long userId, int limit, int offset) {
-    var redisKey = "user:" + userId + ":pins";
-    return super.getListOrLoad(
-        redisKey,
-        () -> delegate.findPinByUserId(userId, limit, offset),
-        limit,
-        offset,
-        Duration.ofHours(2));
+  public List<Pin> findByIdIn(List<Long> ids) {
+    var redisKey = "pins:" + ids;
+    return super.getListOrLoad(redisKey, () -> delegate.findByIdIn(ids), 0, 0, Duration.ofHours(2));
+  }
+
+  @Override
+  public CursorPage<Pin> findPinByUserId(Long userId, int limit, String cursor) {
+    if (cursor != null) {
+      return delegate.findPinByUserId(userId, limit, cursor);
+    }
+
+    String cacheKey = String.format("pins:first:userId:%s:%d", userId, limit);
+
+    List<Pin> cached = redisTemplate.opsForList().range(cacheKey, 0, limit - 1);
+    if (cached != null && !cached.isEmpty()) {
+      return new CursorPage<>(cached, null, false);
+    }
+
+    CursorPage<Pin> page = delegate.findPinByUserId(userId, limit, null);
+
+    if (!page.data().isEmpty()) {
+      redisTemplate.opsForList().rightPushAll(cacheKey, page.data());
+      redisTemplate.expire(cacheKey, Duration.ofSeconds(60));
+    }
+
+    return page;
   }
 
   @Override

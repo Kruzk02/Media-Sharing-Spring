@@ -5,15 +5,14 @@ import com.app.module.board.application.dto.request.BoardUpdateRequest;
 import com.app.module.board.application.dto.response.BoardResponse;
 import com.app.module.board.application.service.BoardService;
 import com.app.module.board.domain.Board;
-import com.app.shared.dto.response.PinDTO;
-import com.app.shared.dto.response.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,16 +53,7 @@ public class BoardController {
     Board board = boardService.save(boardRequest);
     return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new BoardResponse(
-                board.getId(),
-                board.getName(),
-                new UserDTO(board.getUser().getId(), board.getUser().getUsername()),
-                !board.getPins().isEmpty()
-                    ? board.getPins().stream()
-                        .map(pin -> new PinDTO(pin.getId(), pin.getUserId(), pin.getMediaId()))
-                        .toList()
-                    : Collections.emptyList()));
+        .body(BoardResponse.fromEntity(board));
   }
 
   @PostMapping("/{boardId}/pin/{pinId}")
@@ -72,16 +62,7 @@ public class BoardController {
     Board board = boardService.addPinToBoard(pinId, boardId);
     return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new BoardResponse(
-                board.getId(),
-                board.getName(),
-                new UserDTO(board.getUser().getId(), board.getUser().getUsername()),
-                !board.getPins().isEmpty()
-                    ? board.getPins().stream()
-                        .map(pin -> new PinDTO(pin.getId(), pin.getUserId(), pin.getMediaId()))
-                        .toList()
-                    : Collections.emptyList()));
+        .body(BoardResponse.fromEntity(board));
   }
 
   @DeleteMapping("/{boardId}/pin/{pinId}")
@@ -90,16 +71,7 @@ public class BoardController {
     Board board = boardService.deletePinFromBoard(pinId, boardId);
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new BoardResponse(
-                board.getId(),
-                board.getName(),
-                new UserDTO(board.getUser().getId(), board.getUser().getUsername()),
-                !board.getPins().isEmpty()
-                    ? board.getPins().stream()
-                        .map(pin -> new PinDTO(pin.getId(), pin.getUserId(), pin.getMediaId()))
-                        .toList()
-                    : Collections.emptyList()));
+        .body(BoardResponse.fromEntity(board));
   }
 
   @PutMapping("/{id}")
@@ -117,14 +89,36 @@ public class BoardController {
     Board board = boardService.update(id, request.name());
     return ResponseEntity.status(HttpStatus.CREATED)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new BoardResponse(
-                board.getId(),
-                board.getName(),
-                new UserDTO(board.getUser().getId(), board.getUser().getUsername()),
-                board.getPins().stream()
-                    .map(pin -> new PinDTO(pin.getId(), pin.getUserId(), pin.getMediaId()))
-                    .toList()));
+        .body(BoardResponse.fromEntity(board));
+  }
+
+  @Operation(summary = "Fetch all board by user id")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully fetch all board by user id",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Board.class))),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+      })
+  @GetMapping
+  public ResponseEntity<List<BoardResponse>> findAllByUserId(
+      @RequestParam Long userId,
+      @RequestParam(defaultValue = "10") int limit,
+      @RequestParam(defaultValue = "0") int offset) {
+
+    List<BoardResponse> boards =
+        boardService.findAllByUserId(userId, limit, offset).stream()
+            .sorted(Comparator.comparing(Board::getName))
+            .map(BoardResponse::fromEntity)
+            .toList();
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(boards);
   }
 
   @Operation(summary = "Fetch board by its ID")
@@ -147,16 +141,7 @@ public class BoardController {
     Board board = boardService.findById(id);
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(
-            new BoardResponse(
-                board.getId(),
-                board.getName(),
-                new UserDTO(board.getUser().getId(), board.getUser().getUsername()),
-                !board.getPins().isEmpty()
-                    ? board.getPins().stream()
-                        .map(pin -> new PinDTO(pin.getId(), pin.getUserId(), pin.getMediaId()))
-                        .toList()
-                    : Collections.emptyList()));
+        .body(BoardResponse.fromEntity(board));
   }
 
   @Operation(summary = "Delete a board by its ID")

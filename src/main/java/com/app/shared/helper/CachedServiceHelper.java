@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 public abstract class CachedServiceHelper<T> {
 
   protected final RedisTemplate<String, T> redisTemplate;

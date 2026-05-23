@@ -5,7 +5,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 public record VerificationEmailEvent(
     @NotNull @Email String userEmail,
     @NotNull String verificationToken,

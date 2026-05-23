@@ -1,12 +1,10 @@
 package com.app.module.pin.api;
 
-import com.app.module.comment.application.dto.response.CommentResponse;
-import com.app.module.comment.application.service.CommentService;
-import com.app.module.comment.domain.Comment;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,14 +16,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/pin")
@@ -33,7 +29,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class PinController {
 
   private final PinService pinService;
-  private final CommentService commentService;
 
   @Operation(summary = "Get all Pins")
   @ApiResponses(
@@ -50,30 +45,32 @@ public class PinController {
             content = @Content(mediaType = "application/json"))
       })
   @GetMapping
-  public ResponseEntity<List<PinResponse>> getAllPins(
+  public ResponseEntity<CursorPage<Pin>> getPins(
       @Parameter(description = "Sorting type for pins: NEWEST, OLDEST or DEFAULT")
-          @RequestParam(defaultValue = "NEWEST")
+          @RequestParam(defaultValue = "NEWEST", required = false)
           SortType sortType,
       @Parameter(description = "Maximum number of pins to be retrieved")
-          @RequestParam(defaultValue = "10")
+          @RequestParam(defaultValue = "25")
           int limit,
-      @Parameter(description = "Offset for pagination, indicating the starting point")
-          @RequestParam(defaultValue = "0")
-          int offset) {
-    if (limit <= 0 || offset < 0) {
-      throw new IllegalArgumentException(
-          "Limit must be greater than 0 and offset must be non-negative.");
+      @Parameter(
+              description =
+                  "Opaque pagination cursor returned by a previous request. Do not modify this value. Pass it as-is to retrieve the next page.",
+              example = "AAABnJ5uOzwAAAAAAAAAew")
+          @RequestParam(required = false)
+          String cursor,
+      @Parameter(description = "tag of the pin") @RequestParam(required = false) String tag,
+      @Parameter(description = "User id of the pin") @RequestParam(required = false) Long userId) {
+    if (limit <= 0) {
+      throw new IllegalArgumentException("Limit must be greater than 0.");
     }
-
-    List<PinResponse> pinResponses =
-        pinService.getAllPins(sortType, limit, offset).stream()
-            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
-            .map(PinResponse::fromEntity)
-            .toList();
-
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(pinResponses);
+        .body(
+            userId != null && userId != 0
+                ? pinService.findPinByUserId(userId, limit, cursor)
+                : tag != null && !tag.isBlank()
+                    ? pinService.getAllPinsByHashtag(tag, limit, cursor)
+                    : pinService.getAllPins(sortType, limit, cursor));
   }
 
   @Operation(summary = "Upload a pin")
@@ -148,11 +145,6 @@ public class PinController {
                 pin.getCreatedAt()));
   }
 
-  @GetMapping(value = "/{id}/sse-comment", produces = "text/event-stream")
-  public SseEmitter stream(@PathVariable long id) {
-    return commentService.createEmitter(id);
-  }
-
   @Operation(summary = "Fetch a basic pin detail by its ID")
   @ApiResponses(
       value = {
@@ -201,47 +193,23 @@ public class PinController {
                 pin.getCreatedAt()));
   }
 
-  @Operation(summary = "Find all comment by pin id")
+  @Operation(summary = "Fetch a multiple pin its ID")
   @ApiResponses(
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Successfully get all comment",
+            description = "Found the pin",
             content =
                 @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = Comment.class))),
-        @ApiResponse(responseCode = "404", description = "Pin not found"),
+                    schema = @Schema(implementation = List.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error")
       })
-  @GetMapping("/{id}/comment")
-  public ResponseEntity<List<CommentResponse>> getAllCommentByPinId(
-      @Parameter(description = "id of the pin whose comment are to be retrieved", required = true)
-          @PathVariable
-          Long id,
-      @Parameter(description = "Sorting type for comments: NEWEST, OLDEST")
-          @RequestParam(defaultValue = "NEWEST")
-          SortType sortType,
-      @Parameter(description = "Maximum number of comments to be retrieved")
-          @RequestParam(defaultValue = "10")
-          int limit,
-      @Parameter(description = "Offset for pagination, indicating the starting point")
-          @RequestParam(defaultValue = "0")
-          int offset) {
-    if (limit <= 0 || offset < 0) {
-      throw new IllegalArgumentException(
-          "Limit must be greater than 0 and offset must be non-negative.");
-    }
-
-    List<CommentResponse> comments =
-        commentService.findByPinId(id, sortType, limit, offset).stream()
-            .sorted(Comparator.comparing(Comment::getCreated_at))
-            .map(CommentResponse::fromEntity)
-            .toList();
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(comments);
+  @PostMapping("/by-ids")
+  public ResponseEntity<List<PinResponse>> getPinByIds(@RequestBody List<Long> ids) {
+    List<PinResponse> pins =
+        pinService.findByIdIn(ids).stream().map(PinResponse::fromEntity).toList();
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
   }
 
   @Operation(summary = "Delete an pin by its id")

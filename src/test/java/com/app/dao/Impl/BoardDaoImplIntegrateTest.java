@@ -6,9 +6,6 @@ import com.app.dao.AbstractMySQLTest;
 import com.app.module.board.domain.Board;
 import com.app.module.board.infrastructure.BoardDao;
 import com.app.module.board.infrastructure.BoardDaoImpl;
-import com.app.module.pin.domain.Pin;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,22 +28,7 @@ class BoardDaoImplIntegrateTest extends AbstractMySQLTest {
   @Test
   @Order(1)
   void save() {
-    Board result =
-        boardDao.save(
-            Board.builder()
-                .name("name")
-                .user(
-                    User.builder()
-                        .id(1L)
-                        .username("username")
-                        .email("email@gmail.com")
-                        .password("HashedPassword")
-                        .gender(Gender.MALE)
-                        .bio("bio")
-                        .enable(false)
-                        .mediaId(1L)
-                        .build())
-                .build());
+    Board result = boardDao.save(Board.builder().name("name").userId(1L).build());
 
     assertNotNull(result);
     assertEquals(1L, result.getId());
@@ -60,22 +42,12 @@ class BoardDaoImplIntegrateTest extends AbstractMySQLTest {
         "INSERT INTO pins(user_id, description, media_id) VALUES (?, ?, ?)", 1L, "description", 1L);
     Board result =
         boardDao.addPinToBoard(
-            Pin.builder().id(1L).userId(1L).mediaId(1L).description("description").build(),
-            Board.builder().id(1L).name("name").pins(new ArrayList<>()).build());
+            1L, Board.builder().id(1L).name("name").pins(new ArrayList<>()).build());
 
     assertNotNull(result);
     assertEquals(1L, result.getId());
     assertEquals("name", result.getName());
-    assertIterableEquals(
-        List.of(
-            Pin.builder()
-                .id(1L)
-                .userId(1L)
-                .mediaId(1L)
-                .hashtags(null)
-                .description("description")
-                .build()),
-        result.getPins());
+    assertIterableEquals(List.of(1L), result.getPins());
   }
 
   @Test
@@ -83,8 +55,7 @@ class BoardDaoImplIntegrateTest extends AbstractMySQLTest {
   void deletePinFromBoard() {
     Board result =
         boardDao.deletePinFromBoard(
-            Pin.builder().id(1L).userId(1L).mediaId(1L).description("description").build(),
-            Board.builder().id(1L).name("name").pins(new ArrayList<>()).build());
+            1L, Board.builder().id(1L).name("name").pins(new ArrayList<>()).build());
 
     assertNotNull(result);
     assertEquals(1L, result.getId());
