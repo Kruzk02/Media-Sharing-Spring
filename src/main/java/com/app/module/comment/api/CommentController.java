@@ -5,9 +5,6 @@ import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
 import com.app.module.comment.application.dto.response.CommentResponse;
 import com.app.module.comment.application.service.CommentService;
 import com.app.module.comment.domain.Comment;
-import com.app.module.subcomment.application.dto.SubCommentResponse;
-import com.app.module.subcomment.application.service.SubCommentService;
-import com.app.module.subcomment.domain.SubComment;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,13 +14,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/comment")
@@ -31,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
   private final CommentService commentService;
-  private final SubCommentService subCommentService;
 
   @Operation(description = "Get comment details by its ID ")
   @ApiResponses(
@@ -79,27 +75,34 @@ public class CommentController {
                     : new ArrayList<>()));
   }
 
-  @Operation(summary = "Fetch all sub comments by comment id")
+  @GetMapping(value = "/of-pin/{id}/sse-comment", produces = "text/event-stream")
+  public SseEmitter stream(@PathVariable long id) {
+    return commentService.createEmitter(id);
+  }
+
+  @Operation(summary = "Find all comment by neither pinId or hashtag")
   @ApiResponses(
       value = {
         @ApiResponse(
             responseCode = "200",
-            description = "Successfully fetch all sub comments",
-            content = {
-              @Content(
-                  mediaType = "application/json",
-                  schema = @Schema(implementation = SubComment.class))
-            }),
+            description = "Successfully get all comment",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Comment.class))),
+        @ApiResponse(responseCode = "404", description = "Pin not found"),
         @ApiResponse(responseCode = "500", description = "Internal server error")
       })
-  @GetMapping("/{id}/sub-comments")
-  public ResponseEntity<List<SubCommentResponse>> findAllSubCommentById(
-      @Parameter(description = "Comment Id of the sub comments to be searched") @PathVariable
-          Long id,
-      @Parameter(description = "Sorting type for sub comments: NEWEST, OLDEST or DEFAULT")
-          @RequestParam(defaultValue = "NEWEST")
+  @GetMapping()
+  public ResponseEntity<List<CommentResponse>> getAllComment(
+      @Parameter(description = "id of the pin whose comment are to be retrieved", required = false)
+          @RequestParam(required = false)
+          Long pinId,
+      @Parameter(description = "tag of the comments") @RequestParam(required = false) String tag,
+      @Parameter(description = "Sorting type for comments: NEWEST, OLDEST")
+          @RequestParam(defaultValue = "NEWEST", required = false)
           SortType sortType,
-      @Parameter(description = "Maximum number of sub comments to be retrieved")
+      @Parameter(description = "Maximum number of comments to be retrieved")
           @RequestParam(defaultValue = "10")
           int limit,
       @Parameter(description = "Offset for pagination, indicating the starting point")
@@ -110,15 +113,24 @@ public class CommentController {
           "Limit must be greater than 0 and offset must be non-negative.");
     }
 
-    List<SubCommentResponse> subComments =
-        subCommentService.findAllByCommentId(id, sortType, limit, offset).stream()
-            .sorted(Comparator.comparing(SubComment::getCreateAt))
-            .map(SubCommentResponse::fromEntity)
-            .toList();
+    if (pinId != null && tag != null) {
+      throw new IllegalArgumentException("Cannot filter by pinId and tag at the same time");
+    }
+
+    if (pinId == null && tag == null) {
+      throw new IllegalArgumentException("Either pinId or tag must be provided");
+    }
+
+    List<Comment> comments;
+    if (pinId != null) {
+      comments = commentService.findByPinId(pinId, sortType, limit, offset);
+    } else {
+      comments = commentService.findByHashtag(tag, limit, offset);
+    }
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(subComments);
+        .body(comments.stream().map(CommentResponse::fromEntity).toList());
   }
 
   @Operation(description = "create an comment")

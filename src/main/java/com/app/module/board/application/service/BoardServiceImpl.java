@@ -6,13 +6,12 @@ import com.app.module.board.application.exception.PinNotInBoardException;
 import com.app.module.board.domain.Board;
 import com.app.module.board.domain.BoardNotFoundException;
 import com.app.module.board.infrastructure.BoardDao;
-import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.PinDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.PinDTO;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.exception.sub.*;
 import com.app.shared.exception.sub.UserNotMatchException;
-import com.app.shared.type.DetailsType;
+import com.app.shared.gateway.PinGateway;
+import com.app.shared.gateway.UserGateway;
 import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,12 +31,12 @@ import org.springframework.stereotype.Service;
 public class BoardServiceImpl implements BoardService {
 
   private final BoardDao boardDao;
-  private final PinDao pinDao;
-  private final UserDao userDao;
+  private final PinGateway pinGateway;
+  private final UserGateway userGateway;
 
-  private User getAuthenticatedUser() {
+  private UserDTO getAuthenticatedUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(authentication.getName());
+    return userGateway.getUserByUsername(Objects.requireNonNull(authentication).getName());
   }
 
   /**
@@ -52,6 +51,7 @@ public class BoardServiceImpl implements BoardService {
    */
   @Override
   public Board save(BoardRequest boardRequest) {
+
     if (boardRequest.name() == null) {
       throw new NameValidationException("Board name shouldn't be empty");
     }
@@ -61,21 +61,20 @@ public class BoardServiceImpl implements BoardService {
           "Board name should be longer than 3 characters and less than 256 characters");
     }
 
-    Board board = Board.builder().name(boardRequest.name()).user(getAuthenticatedUser()).build();
+    Board board =
+        Board.builder()
+            .name(boardRequest.name())
+            .userId(getAuthenticatedUser().id())
+            .pins(new ArrayList<>())
+            .build();
 
     if (boardRequest.pin_id() != null && boardRequest.pin_id().length > 0) {
-      List<Pin> pins = new ArrayList<>();
-
-      for (Long pinId : boardRequest.pin_id()) {
-        Pin pin = pinDao.findById(pinId, DetailsType.BASIC);
-        if (pin == null) {
-          throw new PinNotFoundException("Pin not found with a id: " + pinId);
+      List<PinDTO> pinDTOs = pinGateway.getPinsByIds(Arrays.asList(boardRequest.pin_id()));
+      if (!pinDTOs.isEmpty()) {
+        for (var pinDto : pinDTOs) {
+          board.getPins().add(pinDto.id());
         }
-
-        pins.add(pin);
       }
-
-      board.setPins(pins);
     } else {
       board.setPins(Collections.emptyList());
     }
@@ -85,8 +84,8 @@ public class BoardServiceImpl implements BoardService {
 
   @Override
   public Board addPinToBoard(Long pinId, Long boardId) {
-    Pin pin = pinDao.findById(pinId, DetailsType.BASIC);
-    if (pin == null) {
+    PinDTO pinDTO = pinGateway.getPinById(pinId);
+    if (pinDTO == null) {
       throw new PinNotFoundException("Pin not found with ID: " + pinId);
     }
 
@@ -95,21 +94,22 @@ public class BoardServiceImpl implements BoardService {
       throw new BoardNotFoundException("Board not found with ID: " + boardId);
     }
 
-    if (!board.getUser().getId().equals(getAuthenticatedUser().getId())) {
-      throw new UserNotMatchException("Authenticated user does not own this board");
+    if (!board.getUserId().equals(getAuthenticatedUser().id())) {
+      throw new UserNotMatchException(
+          "Authenticated user does not have permission to access this board.");
     }
 
-    if (board.getPins().contains(pin)) {
+    if (board.getPins().contains(pinDTO.id())) {
       throw new PinAlreadyExistingException("Pin already exists in the board");
     }
 
-    return boardDao.addPinToBoard(pin, board);
+    return boardDao.addPinToBoard(pinDTO.id(), board);
   }
 
   @Override
   public Board deletePinFromBoard(Long pinId, Long boardId) {
-    Pin pin = pinDao.findById(pinId, DetailsType.BASIC);
-    if (pin == null) {
+    PinDTO pinDTO = pinGateway.getPinById(pinId);
+    if (pinDTO == null) {
       throw new PinNotFoundException("Pin not found with ID: " + pinId);
     }
 
@@ -118,15 +118,15 @@ public class BoardServiceImpl implements BoardService {
       throw new BoardNotFoundException("Board not found with ID: " + boardId);
     }
 
-    if (!board.getUser().getId().equals(getAuthenticatedUser().getId())) {
+    if (!board.getUserId().equals(getAuthenticatedUser().id())) {
       throw new UserNotMatchException("Authenticated user does not own this board");
     }
 
-    if (board.getPins().stream().noneMatch(pin::equals)) {
+    if (board.getPins().stream().noneMatch(pinDTO.id()::equals)) {
       throw new PinNotInBoardException("Pin not found in a board");
     }
 
-    return boardDao.deletePinFromBoard(pin, board);
+    return boardDao.deletePinFromBoard(pinDTO.id(), board);
   }
 
   @Override
@@ -136,7 +136,7 @@ public class BoardServiceImpl implements BoardService {
       throw new BoardNotFoundException("Board not found with a id: " + id);
     }
 
-    if (!Objects.equals(existingBoard.getUser().getId(), getAuthenticatedUser().getId())) {
+    if (!Objects.equals(existingBoard.getUserId(), getAuthenticatedUser().id())) {
       throw new UserNotMatchException("Authenticated user not own this board");
     }
 
@@ -181,7 +181,7 @@ public class BoardServiceImpl implements BoardService {
         Optional.ofNullable(boardDao.findById(id))
             .orElseThrow(() -> new BoardNotFoundException("Board not found with a id"));
 
-    if (!Objects.equals(board.getUser().getId(), getAuthenticatedUser().getId())) {
+    if (!Objects.equals(board.getUserId(), getAuthenticatedUser().id())) {
       throw new UserNotMatchException("Authenticated user does not own this board");
     }
 

@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.app.dao.AbstractMySQLTest;
 import com.app.module.comment.domain.Comment;
-import com.app.module.comment.infrastructure.CommentDao;
-import com.app.module.comment.infrastructure.CommentDaoImpl;
+import com.app.module.comment.infrastructure.dao.CommentDao;
+import com.app.module.comment.infrastructure.dao.CommentDaoImpl;
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;

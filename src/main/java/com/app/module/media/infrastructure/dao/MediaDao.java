@@ -1,10 +1,12 @@
-package com.app.module.media.infrastructure;
+package com.app.module.media.infrastructure.dao;
 
 import com.app.module.media.domain.entity.Media;
 import com.app.shared.dao.CRUDDao;
 import com.app.shared.type.Status;
+import org.springframework.modulith.NamedInterface;
 
 /** Data Access Object interface for managing Media entities. */
+@NamedInterface
 public interface MediaDao extends CRUDDao<Media> {
 
   /**

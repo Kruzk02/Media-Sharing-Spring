@@ -1,25 +1,18 @@
 package com.app.module.subcomment.application.dto;
 
 import com.app.module.subcomment.domain.SubComment;
-import com.app.shared.dto.response.CommentDTO;
-import com.app.shared.dto.response.UserDTO;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record SubCommentResponse(
-    Long id,
-    String content,
-    Long mediaId,
-    CommentDTO commentDTO,
-    UserDTO userDTO,
-    LocalDateTime createAt) {
+    Long id, String content, Long mediaId, Long commentId, Long userId, Instant createAt) {
 
   public static SubCommentResponse fromEntity(SubComment subComment) {
     return new SubCommentResponse(
         subComment.getId(),
         subComment.getContent(),
         subComment.getMediaId(),
-        new CommentDTO(subComment.getComment().getId(), subComment.getComment().getContent()),
-        new UserDTO(subComment.getUser().getId(), subComment.getUser().getUsername()),
+        subComment.getCommentId(),
+        subComment.getUserId(),
         subComment.getCreateAt());
   }
 }

@@ -6,11 +6,13 @@ import static org.mockito.Mockito.when;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.api.PinController;
-import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
+import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
+import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,21 +32,47 @@ class PinControllerUnitTest {
   @Test
   void getAllPins_ShouldThrow_WhenLimitIsInvalid() {
     assertThrows(
-        IllegalArgumentException.class, () -> pinController.getAllPins(SortType.NEWEST, 0, 0));
+        IllegalArgumentException.class,
+        () -> pinController.getPins(SortType.NEWEST, 0, "", null, null));
   }
 
   @Test
   void getAllPins_ShouldPassCorrectArguments() {
     List<Pin> pins =
         List.of(Pin.builder().id(1L).userId(1L).mediaId(1L).description("Hello World").build());
+    var cursor = KeysetCursorCodec.encode(Instant.now(), 1L);
+    when(pinService.getAllPins(eq(SortType.NEWEST), eq(10), eq(cursor)))
+        .thenReturn(new CursorPage<>(pins, cursor, false));
 
-    when(pinService.getAllPins(eq(SortType.NEWEST), eq(10), eq(0))).thenReturn(pins);
-
-    ResponseEntity<List<PinResponse>> response = pinController.getAllPins(SortType.NEWEST, 10, 0);
+    ResponseEntity<CursorPage<Pin>> response =
+        pinController.getPins(SortType.NEWEST, 10, cursor, null, null);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
-    assertEquals(1, response.getBody().size());
+    assertEquals(1, response.getBody().data().size());
+  }
+
+  @Test
+  void getAllPinsByTag_shouldPassCorrectArguments() {
+    List<Pin> pins =
+        List.of(
+            Pin.builder()
+                .id(1L)
+                .userId(1L)
+                .mediaId(1L)
+                .description("Hello World")
+                .hashtags(List.of(Hashtag.builder().id(1L).tag("tag").build()))
+                .build());
+
+    CursorPage<Pin> page = new CursorPage<>(pins, null, false);
+    when(pinService.getAllPinsByHashtag(eq("tag"), eq(10), eq(null))).thenReturn(page);
+
+    ResponseEntity<CursorPage<Pin>> response =
+        pinController.getPins(SortType.NEWEST, 10, null, "tag", null);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(1, response.getBody().data().size());
   }
 
   @Test

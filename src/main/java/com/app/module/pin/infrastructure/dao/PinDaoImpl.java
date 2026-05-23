@@ -1,8 +1,7 @@
-package com.app.module.pin.infrastructure;
+package com.app.module.pin.infrastructure.dao;
 
 import com.app.module.hashtag.domain.Hashtag;
 import com.app.module.pin.domain.Pin;
-import com.app.module.user.application.exception.UserNotFoundException;
 import com.app.shared.exception.sub.PinNotFoundException;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
@@ -10,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -32,26 +32,62 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public List<Pin> getAllPins(SortType sortType, int limit, int offset) {
-    String orderBy = (sortType == SortType.NEWEST) ? "DESC" : "ASC";
+  public List<Pin> getAllPins(SortType sortType, int limit, Instant dateTime, Long id) {
+    boolean isNewest = sortType == SortType.NEWEST;
 
-    String sql =
-        "SELECT id, user_id, media_id, created_at FROM pins ORDER BY created_at "
-            + orderBy
-            + " LIMIT ? OFFSET ?";
+    String operator = isNewest ? "<" : ">";
+    String direction = isNewest ? "DESC" : "ASC";
 
-    return jdbcTemplate.query(sql, new PinRowMapper(false, true), limit, offset);
+    String sql;
+
+    if (dateTime == null || id == null) {
+      sql =
+          """
+        SELECT id, user_id, media_id, created_at
+        FROM pins
+        ORDER BY created_at %s, id %s
+        LIMIT ?
+        """
+              .formatted(direction, direction);
+      return jdbcTemplate.query(sql, new PinRowMapper(false, true), limit);
+    }
+
+    sql =
+        "SELECT id, user_id, media_id, created_at FROM pins WHERE (created_at, id) %s (?, ?) ORDER BY created_at %s, id %s LIMIT ?"
+            .formatted(operator, direction, direction);
+    return jdbcTemplate.query(sql, new PinRowMapper(false, true), dateTime, id, limit);
   }
 
   @Override
-  public List<Pin> getAllPinsByHashtag(String tag, int limit, int offset) {
-    String sql =
-        "SELECT p.id, p.user_id, p.media_id, p.created_at "
-            + "FROM pins p "
-            + "JOIN hashtags_pins hp ON p.id = hp.pin_id "
-            + "JOIN hashtags h ON hp.hashtag_id = h.id "
-            + "WHERE h.tag = ? ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
-    return jdbcTemplate.query(sql, new PinRowMapper(false, true), tag, limit, offset);
+  public List<Pin> getAllPinsByHashtag(String tag, int limit, Instant dateTime, Long id) {
+    String sql;
+    if (dateTime == null || id == null) {
+      sql =
+          """
+    SELECT p.id, p.user_id, p.media_id, p.created_at
+    FROM pins p
+    JOIN hashtags_pins hp ON p.id = hp.pin_id
+    JOIN hashtags h ON hp.hashtag_id = h.id
+    WHERE h.tag = ?
+    ORDER BY p.created_at DESC, p.id DESC
+    LIMIT ?
+    """;
+
+      return jdbcTemplate.query(sql, new PinRowMapper(false, true), tag, limit);
+    }
+
+    sql =
+        """
+        SELECT p.id, p.user_id, p.media_id, p.created_at
+        FROM pins p
+        JOIN hashtags_pins hp ON p.id = hp.pin_id
+        JOIN hashtags h ON hp.hashtag_id = h.id
+        WHERE h.tag = ? AND (p.created_at < ? OR (p.created_at = ? AND p.id < ?))
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT ?
+        """;
+    return jdbcTemplate.query(
+        sql, new PinRowMapper(false, true), tag, dateTime, dateTime, id, limit);
   }
 
   @Override
@@ -171,7 +207,7 @@ public class PinDaoImpl implements PinDao {
                   pin.setUserId(rs.getLong("user_id"));
                   pin.setDescription(rs.getString("description"));
                   pin.setMediaId(rs.getLong("media_id"));
-                  pin.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                  pin.setCreatedAt(rs.getTimestamp("created_at").toInstant());
                   pin.setHashtags(new ArrayList<>());
                 }
 
@@ -195,14 +231,40 @@ public class PinDaoImpl implements PinDao {
   }
 
   @Override
-  public List<Pin> findPinByUserId(Long userId, int limit, int offset) {
-    try {
-      String sql =
-          "SELECT id, user_id, media_id, created_at FROM pins WHERE user_id = ? ORDER BY created_at DESC limit ? offset ?";
-      return jdbcTemplate.query(sql, new PinRowMapper(false, true), userId, limit, offset);
-    } catch (DataAccessException e) {
-      throw new UserNotFoundException("User not found with a id: " + userId);
+  public List<Pin> findByIdIn(List<Long> ids) {
+    String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
+    String sql =
+        "SELECT id, user_id, media_id, created_at FROM pins WHERE id IN (" + placeholders + ")";
+    return jdbcTemplate.query(sql, new PinRowMapper(false, true), ids.toArray());
+  }
+
+  @Override
+  public List<Pin> findPinByUserId(Long userId, int limit, Instant dateTime, Long id) {
+    String sql;
+    if (dateTime == null || id == null) {
+      sql =
+          """
+        SELECT p.id, p.user_id, p.media_id, p.created_at
+        FROM pins p
+        WHERE p.user_id = ?
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT ?
+        """;
+
+      return jdbcTemplate.query(sql, new PinRowMapper(false, true), userId, limit);
     }
+
+    sql =
+        """
+        SELECT p.id, p.user_id, p.media_id, p.created_at
+        FROM pins p
+        WHERE p.user_id = ?
+          AND (p.created_at < ? OR (p.created_at = ? AND p.id < ?))
+        ORDER BY p.created_at DESC, p.id DESC
+        LIMIT ?
+        """;
+    return jdbcTemplate.query(
+        sql, new PinRowMapper(false, true), userId, dateTime, dateTime, id, limit);
   }
 
   @Override
@@ -233,7 +295,7 @@ public class PinDaoImpl implements PinDao {
       }
 
       pin.setUserId(rs.getLong("user_id"));
-      pin.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+      pin.setCreatedAt(rs.getTimestamp("created_at").toInstant());
       return pin;
     }
   }
