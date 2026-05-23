@@ -3,7 +3,9 @@ package com.app.module.media.domain.status;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 public enum MediaType {
   IMAGE("JPEG", "JPG", "PNG", "GIF"),
   VIDEO("MP4");

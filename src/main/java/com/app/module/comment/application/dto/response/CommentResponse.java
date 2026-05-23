@@ -3,7 +3,7 @@ package com.app.module.comment.application.dto.response;
 import com.app.module.comment.domain.Comment;
 import com.app.module.hashtag.domain.Hashtag;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +14,7 @@ public record CommentResponse(
     @Schema(description = "Id of the pin associated with comment", example = "123") long pinId,
     @Schema(description = "Id of the user associated with comment", example = "123") long userId,
     @Schema(description = "Id of the media associated with comment", example = "123") long mediaId,
-    LocalDateTime created_at,
+    Instant created_at,
     List<Hashtag> tag) {
 
   public static CommentResponse fromEntity(Comment comment) {

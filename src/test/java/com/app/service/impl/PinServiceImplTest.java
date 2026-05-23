@@ -1,23 +1,24 @@
 package com.app.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import com.app.module.hashtag.domain.Hashtag;
-import com.app.module.hashtag.infrastructure.HashtagDao;
 import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.service.PinServiceImpl;
 import com.app.module.pin.domain.Pin;
-import com.app.module.pin.infrastructure.PinDao;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.domain.status.Gender;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.module.pin.infrastructure.dao.PinDao;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.event.pin.delete.DeletePinMediaCommand;
 import com.app.shared.event.pin.save.SavePinMediaCommand;
 import com.app.shared.event.pin.update.UpdatePinMediaCommand;
 import com.app.shared.exception.sub.PinNotFoundException;
+import com.app.shared.gateway.UserGateway;
+import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
-import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,28 +35,20 @@ import org.springframework.web.multipart.MultipartFile;
 class PinServiceImplTest {
 
   @Mock private PinDao pinDao;
-  @Mock private UserDao userDao;
-  @Mock private HashtagDao hashtagDao;
+  @Mock private UserGateway userGateway;
   @Mock private MultipartFile mockFile;
   @Mock private ApplicationEventPublisher eventPublisher;
 
   @InjectMocks private PinServiceImpl pinService;
 
   private Pin pin;
-  private User user;
+  private UserDTO userDto;
 
   @BeforeEach
   void setUp() {
     Hashtag hashtag = Hashtag.builder().id(1L).tag("tag").build();
-    user =
-        User.builder()
-            .id(1L)
-            .username("username")
-            .email("email@gmail.com")
-            .password("encodedPassword")
-            .enable(false)
-            .gender(Gender.MALE)
-            .build();
+    userDto = new UserDTO(1L, "username");
+
     pin =
         Pin.builder()
             .id(1L)
@@ -68,20 +61,27 @@ class PinServiceImplTest {
 
   @Test
   void getAllPins_shouldReturnListOfPin() {
-    Mockito.when(pinDao.getAllPins(SortType.NEWEST, 10, 0)).thenReturn(List.of(pin));
-    var result = pinService.getAllPins(SortType.NEWEST, 10, 0);
+    Instant now = Instant.now();
+    String cursor = KeysetCursorCodec.encode(now, 1L);
+    Mockito.when(pinDao.getAllPins(eq(SortType.NEWEST), eq(11), any(Instant.class), eq(1L)))
+        .thenReturn(List.of(pin));
+    var result = pinService.getAllPins(SortType.NEWEST, 10, cursor);
 
     assertNotNull(result);
-    assertEquals(List.of(pin), result);
+    assertEquals(List.of(pin), result.data());
+    assertFalse(result.hasNext());
   }
 
   @Test
   void getAllPinsByHashTag_shouldReturnListOfPin() {
-    Mockito.when(pinDao.getAllPinsByHashtag("tag", 10, 0)).thenReturn(List.of(pin));
-    var result = pinService.getAllPinsByHashtag("tag", 10, 0);
+    Instant now = Instant.now();
+    String cursor = KeysetCursorCodec.encode(now, 1L);
+    Mockito.when(pinDao.getAllPinsByHashtag(eq("tag"), eq(11), any(Instant.class), eq(1L)))
+        .thenReturn(List.of(pin));
+    var result = pinService.getAllPinsByHashtag("tag", 10, cursor);
 
     assertNotNull(result);
-    assertEquals(List.of(pin), result);
+    assertEquals(List.of(pin), result.data());
   }
 
   @Test
@@ -92,7 +92,7 @@ class PinServiceImplTest {
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
     Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
 
     PinRequest request = new PinRequest("Description", mockFile, Set.of("tag1", "tag2"));
 
@@ -105,19 +105,19 @@ class PinServiceImplTest {
     assertNotNull(result);
     Mockito.verify(pinDao)
         .save(Mockito.argThat(p -> p.getDescription() != null && p.getUserId() != 0));
-    Mockito.verify(eventPublisher).publishEvent(Mockito.any(SavePinMediaCommand.class));
+    Mockito.verify(eventPublisher).publishEvent(any(SavePinMediaCommand.class));
   }
 
   @Test
   void update_ShouldUpdatePin_WhenValidRequestAndMatchingUser() {
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
 
     PinRequest pinRequest = new PinRequest("New description", mockFile, Set.of("tag1"));
 
     Mockito.when(
             pinDao.update(
-                Mockito.eq(1L),
+                eq(1L),
                 Mockito.argThat(
                     p ->
                         !p.getHashtags().isEmpty()
@@ -128,18 +128,18 @@ class PinServiceImplTest {
     Pin updatedPin = pinService.update(1L, pinRequest);
 
     assertEquals("New description", updatedPin.getDescription());
-    assertEquals(user.getId(), updatedPin.getUserId());
+    assertEquals(userDto.id(), updatedPin.getUserId());
 
     Mockito.verify(pinDao)
         .update(
-            Mockito.eq(1L),
+            eq(1L),
             Mockito.argThat(
                 p ->
                     p.getId() != null
                         && !p.getHashtags().isEmpty()
                         && p.getDescription() != null
                         && p.getUserId() != 0));
-    Mockito.verify(eventPublisher).publishEvent(Mockito.any(UpdatePinMediaCommand.class));
+    Mockito.verify(eventPublisher).publishEvent(any(UpdatePinMediaCommand.class));
   }
 
   @Test
@@ -152,27 +152,41 @@ class PinServiceImplTest {
   }
 
   @Test
-  void findPinByUserId_shouldReturnListOfPin() {
-    Mockito.when(pinDao.findPinByUserId(1L, 10, 0)).thenReturn(List.of(pin));
-    var result = pinService.findPinByUserId(1L, 10, 0);
+  void findByIdIn_shouldReturnListOfPin() {
+    Mockito.when(pinDao.findByIdIn(List.of(1L))).thenReturn(List.of(pin));
+    var result = pinService.findByIdIn(List.of(1L));
 
     assertNotNull(result);
     assertEquals(List.of(pin), result);
   }
 
   @Test
-  void deleteById_shouldDeleteExistingPin() throws IOException {
-    Mockito.when(userDao.findUserByUsername("username")).thenReturn(user);
+  void findPinByUserId_shouldReturnListOfPin() {
+    Instant now = Instant.now();
+    String cursor = KeysetCursorCodec.encode(now, 1L);
+    Mockito.when(pinDao.findPinByUserId(eq(1L), eq(11), any(Instant.class), eq(1L)))
+        .thenReturn(List.of(pin));
+    var result = pinService.findPinByUserId(1L, 10, cursor);
+
+    assertNotNull(result);
+    assertEquals(List.of(pin), result.data());
+    assertFalse(result.hasNext());
+  }
+
+  @Test
+  void deleteById_shouldDeleteExistingPin() {
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
     Mockito.when(pinDao.findById(1L, DetailsType.BASIC)).thenReturn(pin);
 
     pinService.delete(1L);
 
     Mockito.verify(pinDao).deleteById(1L);
-    Mockito.verify(eventPublisher).publishEvent(Mockito.any(DeletePinMediaCommand.class));
+    Mockito.verify(eventPublisher).publishEvent(any(DeletePinMediaCommand.class));
   }
 
   @Test
   void testDeleteById_PinNotFound() {
+    Mockito.when(userGateway.getUserByUsername("username")).thenReturn(userDto);
     Mockito.when(pinDao.findById(2L, DetailsType.BASIC)).thenReturn(null);
 
     PinNotFoundException ex = assertThrows(PinNotFoundException.class, () -> pinService.delete(2L));

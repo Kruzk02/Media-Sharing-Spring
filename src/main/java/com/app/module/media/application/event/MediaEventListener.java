@@ -1,8 +1,10 @@
 package com.app.module.media.application.event;
 
+import com.app.module.media.application.dto.MediaInfo;
+import com.app.module.media.application.port.MediaStorage;
 import com.app.module.media.domain.entity.Media;
 import com.app.module.media.domain.status.MediaType;
-import com.app.module.media.infrastructure.MediaDao;
+import com.app.module.media.infrastructure.dao.MediaDao;
 import com.app.shared.event.UserMediaCreatedEvent;
 import com.app.shared.event.UserUpdatedMediaEvent;
 import com.app.shared.event.comment.delete.DeleteCommentMediaEvent;
@@ -20,7 +22,6 @@ import com.app.shared.event.subcomment.save.SaveSubCommentMediaEvent;
 import com.app.shared.event.subcomment.save.SubCommentSavedEvent;
 import com.app.shared.event.subcomment.save.SubCommentSavedFailedEvent;
 import com.app.shared.event.subcomment.update.UpdateSubCommentMediaEvent;
-import com.app.shared.storage.FileManager;
 import com.app.shared.storage.MediaManager;
 import com.app.shared.type.Status;
 import java.time.LocalDateTime;
@@ -43,6 +44,7 @@ public class MediaEventListener {
 
   private final MediaDao mediaDao;
   private final ApplicationEventPublisher eventPublisher;
+  private final MediaStorage mediaStorage;
   private static final ScheduledExecutorService scheduler =
       Executors.newSingleThreadScheduledExecutor();
 
@@ -67,7 +69,7 @@ public class MediaEventListener {
                     media,
                     new UserMediaCreatedEvent(event.userId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(media);
               return null;
             });
@@ -93,7 +95,7 @@ public class MediaEventListener {
                     media,
                     new PinMediaSavedEvent(event.pinId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(media);
               eventPublisher.publishEvent(
                   new PinMediaSaveFailedEvent(event.pinId(), LocalDateTime.now()));
@@ -152,7 +154,7 @@ public class MediaEventListener {
                     new CommentMediaSavedEvent(
                         event.commentId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(media);
               eventPublisher.publishEvent(
                   new CommentMediaSaveFailedEvent(event.commentId(), LocalDateTime.now()));
@@ -211,7 +213,7 @@ public class MediaEventListener {
                     new SubCommentSavedEvent(
                         event.subCommentId(), media.getId(), LocalDateTime.now())))
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(media);
               eventPublisher.publishEvent(
                   new SubCommentSavedFailedEvent(event.subCommentId(), LocalDateTime.now()));
@@ -278,7 +280,8 @@ public class MediaEventListener {
 
   private CompletableFuture<Void> saveFileAsync(
       MultipartFile file, String filename, String extension) {
-    return CompletableFuture.runAsync(() -> FileManager.save(file, filename, extension));
+    return CompletableFuture.runAsync(
+        () -> mediaStorage.save(file, new MediaInfo(filename, extension)));
   }
 
   private void updateMediaFile(Media existingMedia, MultipartFile newFile) {
@@ -297,17 +300,20 @@ public class MediaEventListener {
               mediaDao.update(existingMedia.getId(), existingMedia);
 
               scheduler.schedule(
-                  () -> FileManager.delete(oldFilename, oldExt), 30, TimeUnit.MINUTES);
+                  () -> mediaStorage.delete(new MediaInfo(oldFilename, oldExt)),
+                  30,
+                  TimeUnit.MINUTES);
             })
         .exceptionally(
-            _ -> {
+            e -> {
               markFailed(existingMedia);
               return null;
             });
   }
 
   private void deleteMedia(Media media) {
-    FileManager.delete(media.getUrl(), MediaManager.getFileExtension(media.getUrl()));
+    mediaStorage.delete(
+        new MediaInfo(media.getUrl(), MediaManager.getFileExtension(media.getUrl())));
     mediaDao.deleteById(media.getId());
   }
 

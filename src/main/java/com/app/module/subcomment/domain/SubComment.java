@@ -1,15 +1,15 @@
 package com.app.module.subcomment.domain;
 
-import com.app.module.comment.domain.Comment;
-import com.app.module.user.domain.entity.User;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -19,8 +19,8 @@ public class SubComment implements Serializable {
 
   private long id;
   private String content;
-  private Comment comment;
-  private User user;
+  private Long commentId;
+  private Long userId;
   private Long mediaId;
-  private LocalDateTime createAt;
+  private Instant createAt;
 }

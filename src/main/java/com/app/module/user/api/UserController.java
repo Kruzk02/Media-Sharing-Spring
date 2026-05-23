@@ -1,29 +1,24 @@
 package com.app.module.user.api;
 
-import com.app.module.board.application.dto.response.BoardResponse;
 import com.app.module.board.application.service.BoardService;
-import com.app.module.board.domain.Board;
-import com.app.module.follower.application.dto.FollowerResponse;
-import com.app.module.follower.application.service.FollowerService;
 import com.app.module.notification.application.dto.NotificationResponse;
 import com.app.module.notification.application.service.NotificationService;
 import com.app.module.notification.domain.Notification;
-import com.app.module.pin.application.dto.PinResponse;
 import com.app.module.pin.application.service.PinService;
-import com.app.module.pin.domain.Pin;
 import com.app.module.user.application.dto.request.LoginUserRequest;
 import com.app.module.user.application.dto.request.RegisterUserRequest;
 import com.app.module.user.application.dto.request.TokenRequest;
 import com.app.module.user.application.dto.request.UpdateUserRequest;
 import com.app.module.user.application.dto.request.VerifyAccountRequest;
+import com.app.module.user.application.dto.response.FollowerResponse;
 import com.app.module.user.application.dto.response.JwtResponse;
 import com.app.module.user.application.dto.response.UserResponse;
 import com.app.module.user.application.dto.response.VerifyAccountResponse;
+import com.app.module.user.application.service.FollowerService;
 import com.app.module.user.application.service.UserService;
 import com.app.module.user.domain.entity.User;
 import com.app.module.user.security.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,7 +45,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class UserController {
 
   private final UserService userService;
-  private final BoardService boardService;
   private final PinService pinService;
   private final FollowerService followerService;
   private final NotificationService notificationService;
@@ -74,7 +68,6 @@ public class UserController {
       JwtProvider jwtRefreshToken,
       RedisTemplate<String, Object> redisTemplate) {
     this.userService = userService;
-    this.boardService = boardService;
     this.pinService = pinService;
     this.followerService = followerService;
     this.notificationService = notificationService;
@@ -129,6 +122,22 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.APPLICATION_JSON)
         .body(new JwtResponse(accessToken));
+  }
+
+  @GetMapping("/info/username/{username}")
+  public ResponseEntity<UserResponse> findByUsername(@PathVariable String username) {
+    var user = userService.findFullUserByUsername(username);
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(UserResponse.fromEntity(user));
+  }
+
+  @GetMapping("/info/id/{id}")
+  public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+    var user = userService.findById(id);
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(UserResponse.fromEntity(user));
   }
 
   @Operation(summary = "Register user account")
@@ -269,55 +278,6 @@ public class UserController {
   public ResponseEntity<Void> unFollow(@PathVariable Long id) {
     followerService.unfollowUser(id);
     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).build();
-  }
-
-  @Operation(summary = "Fetch all board by user id")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Successfully fetch all board by user id",
-            content =
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Board.class))),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-      })
-  @GetMapping("/{userId}/boards")
-  public ResponseEntity<List<BoardResponse>> findAllByUserId(
-      @PathVariable Long userId,
-      @RequestParam(defaultValue = "10") int limit,
-      @RequestParam(defaultValue = "0") int offset) {
-
-    List<BoardResponse> boards =
-        boardService.findAllByUserId(userId, limit, offset).stream()
-            .sorted(Comparator.comparing(Board::getName))
-            .map(BoardResponse::fromEntity)
-            .toList();
-
-    return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(boards);
-  }
-
-  @GetMapping("/{userId}/pins")
-  public ResponseEntity<List<PinResponse>> findPinByUserId(
-      @Parameter(description = "id of the user whose pin are to be retrieved", required = true)
-          @PathVariable
-          Long userId,
-      @Parameter(description = "Maximum number of pins to be retrieved")
-          @RequestParam(defaultValue = "10")
-          int limit,
-      @Parameter(description = "Offset for pagination, indicating the starting point")
-          @RequestParam(defaultValue = "0")
-          int offset) {
-    List<PinResponse> pins =
-        pinService.findPinByUserId(userId, limit, offset).stream()
-            .sorted(Comparator.comparing(Pin::getCreatedAt).reversed())
-            .map(PinResponse::fromEntity)
-            .toList();
-
-    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(pins);
   }
 
   @GetMapping("/notification")

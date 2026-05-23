@@ -10,8 +10,11 @@ import com.app.module.pin.application.dto.PinRequest;
 import com.app.module.pin.application.service.CachedPinService;
 import com.app.module.pin.application.service.PinService;
 import com.app.module.pin.domain.Pin;
+import com.app.shared.dto.response.CursorPage;
+import com.app.shared.pagination.KeysetCursorCodec;
 import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,15 +67,23 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
   @Test
   @Order(2)
   void getAllPins() {
-    List<Pin> pins = cachedPinService.getAllPins(SortType.NEWEST, 10, 0);
-    assertTrue(pins.isEmpty());
+    String cursor = KeysetCursorCodec.encode(Instant.now(), 1L);
+    CursorPage<Pin> keyset = new CursorPage<>(List.of(pin), cursor, false);
+    when(mockPinService.getAllPins(SortType.NEWEST, 1, cursor)).thenReturn(keyset);
+    var result = cachedPinService.getAllPins(SortType.NEWEST, 1, cursor);
+    assertNotNull(result);
+    assertFalse(result.data().isEmpty());
   }
 
   @Test
   @Order(3)
   void getAllPinsByHashtag() {
-    List<Pin> pins = cachedPinService.getAllPinsByHashtag("tag", 10, 0);
-    assertTrue(pins.isEmpty());
+    String cursor = KeysetCursorCodec.encode(Instant.now(), 1L);
+    CursorPage<Pin> keyset = new CursorPage<>(List.of(pin), cursor, false);
+    when(mockPinService.getAllPinsByHashtag("tag", 1, cursor)).thenReturn(keyset);
+    var result = cachedPinService.getAllPinsByHashtag("tag", 1, cursor);
+    assertNotNull(result);
+    assertFalse(result.data().isEmpty());
   }
 
   @Test
@@ -88,13 +99,24 @@ class CachedPinServiceTest extends AbstractRedisTest<Pin> {
 
   @Test
   @Order(5)
-  void findPinByUserId() {
-    List<Pin> pins = cachedPinService.findPinByUserId(1L, 10, 0);
+  void findByIdIn() {
+    List<Pin> pins = cachedPinService.findByIdIn(List.of(1L));
     assertTrue(pins.isEmpty());
   }
 
   @Test
   @Order(6)
+  void findPinByUserId() {
+    String cursor = KeysetCursorCodec.encode(Instant.now(), 1L);
+    CursorPage<Pin> keyset = new CursorPage<>(List.of(pin), cursor, false);
+    when(mockPinService.findPinByUserId(1L, 1, cursor)).thenReturn(keyset);
+    var result = cachedPinService.findPinByUserId(1L, 1, cursor);
+    assertNotNull(result);
+    assertFalse(result.data().isEmpty());
+  }
+
+  @Test
+  @Order(7)
   void update() {
     when(mockPinService.update(1L, new PinRequest("Description", null, Set.of("tag"))))
         .thenReturn(

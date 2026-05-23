@@ -1,22 +1,21 @@
 package com.app.module.subcomment.application.service;
 
 import com.app.module.comment.application.dto.request.UpdatedCommentRequest;
-import com.app.module.comment.domain.Comment;
-import com.app.module.comment.infrastructure.CommentDao;
 import com.app.module.notification.domain.Notification;
 import com.app.module.subcomment.application.dto.CreateSubCommentRequest;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.domain.SubCommentNotFoundException;
 import com.app.module.subcomment.infrastructure.subcomment.SubCommentDao;
 import com.app.module.subcomment.internal.SubCommentValidator;
-import com.app.module.user.domain.entity.User;
-import com.app.module.user.infrastructure.user.UserDao;
+import com.app.shared.dto.response.CommentDTO;
+import com.app.shared.dto.response.UserDTO;
 import com.app.shared.event.subcomment.delete.DeleteSubCommentMediaEvent;
 import com.app.shared.event.subcomment.save.SaveSubCommentMediaEvent;
 import com.app.shared.event.subcomment.update.UpdateSubCommentMediaEvent;
 import com.app.shared.exception.sub.UserNotMatchException;
+import com.app.shared.gateway.CommentGateway;
+import com.app.shared.gateway.UserGateway;
 import com.app.shared.message.producer.NotificationEventProducer;
-import com.app.shared.type.DetailsType;
 import com.app.shared.type.SortType;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -36,14 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubCommentServiceImpl implements SubCommentService {
 
   private final SubCommentDao subCommentDao;
-  private final CommentDao commentDao;
-  private final UserDao userDao;
+  private final CommentGateway commentGateway;
+  private final UserGateway userGateway;
   private final NotificationEventProducer notificationEventProducer;
   private final ApplicationEventPublisher eventPublisher;
 
-  private User getAuthenticationUser() {
+  private UserDTO getAuthenticationUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return userDao.findUserByUsername(Objects.requireNonNull(authentication).getName());
+    return userGateway.getUserByUsername(Objects.requireNonNull(authentication).getName());
   }
 
   @Override
@@ -51,12 +50,12 @@ public class SubCommentServiceImpl implements SubCommentService {
   public SubComment save(CreateSubCommentRequest request) {
     SubCommentValidator.validateContent(request.content(), request.media());
 
-    Comment comment = commentDao.findById(request.commentId(), DetailsType.BASIC);
+    CommentDTO comment = commentGateway.getCommentById(request.commentId());
     if (comment == null) {
       throw new SubCommentNotFoundException("Comment not found with a id: " + request.commentId());
     }
 
-    SubComment savedSubComment = saveSubComment(request, comment);
+    SubComment savedSubComment = saveSubComment(request, comment.id());
 
     if (request.media() != null && !request.media().isEmpty()) {
       eventPublisher.publishEvent(
@@ -66,22 +65,20 @@ public class SubCommentServiceImpl implements SubCommentService {
 
     notificationEventProducer.send(
         Notification.builder()
-            .userId(comment.getUserId())
+            .userId(comment.userId())
             .message(
-                getAuthenticationUser().getUsername()
-                    + " replies on your comment "
-                    + comment.getId())
+                getAuthenticationUser().username() + " replies on your comment " + comment.id())
             .build());
     return savedSubComment;
   }
 
   @Transactional
-  private SubComment saveSubComment(CreateSubCommentRequest request, Comment comment) {
+  protected SubComment saveSubComment(CreateSubCommentRequest request, Long commentId) {
     return subCommentDao.save(
         SubComment.builder()
             .content(request.content())
-            .comment(comment)
-            .user(getAuthenticationUser())
+            .commentId(commentId)
+            .userId(getAuthenticationUser().id())
             .build());
   }
 
@@ -94,7 +91,7 @@ public class SubCommentServiceImpl implements SubCommentService {
       throw new SubCommentNotFoundException("Sub comment not found with a id: " + id);
     }
 
-    if (!Objects.equals(getAuthenticationUser().getId(), subComment.getUser().getId())) {
+    if (!Objects.equals(getAuthenticationUser().id(), subComment.getUserId())) {
       throw new UserNotMatchException("User does not match with sub comment");
     }
 
@@ -141,7 +138,7 @@ public class SubCommentServiceImpl implements SubCommentService {
       throw new SubCommentNotFoundException("Sub comment not found with id: " + id);
     }
 
-    if (!Objects.equals(subComment.getUser().getId(), getAuthenticationUser().getId())) {
+    if (!Objects.equals(subComment.getUserId(), getAuthenticationUser().id())) {
       throw new UserNotMatchException("Authenticated user does not own the sub comment");
     }
 

@@ -1,4 +1,4 @@
-package com.app.module.media.infrastructure;
+package com.app.module.media.infrastructure.dao;
 
 import com.app.module.media.application.exception.MediaNotFoundException;
 import com.app.module.media.domain.entity.Media;
@@ -66,7 +66,7 @@ public class MediaDaoImpl implements MediaDao {
       String sql = "SELECT id, url, media_type, status FROM media WHERE id = ?";
       return template.queryForObject(
           sql,
-          (rs, _) -> {
+          (rs, rowNum) -> {
             Media media = new Media();
             media.setId(rs.getLong("id"));
             media.setUrl(rs.getString("url"));
@@ -89,7 +89,7 @@ public class MediaDaoImpl implements MediaDao {
               + "WHERE c.id = ?";
       return template.queryForObject(
           sql,
-          (rs, _) -> {
+          (rs, rowNum) -> {
             Media media = new Media();
             media.setId(rs.getLong("id"));
             media.setUrl(rs.getString("url"));

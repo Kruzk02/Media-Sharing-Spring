@@ -127,6 +127,11 @@ public class UserServiceImpl implements UserService {
     return userDao.findFullUserByUsername(username);
   }
 
+  @Override
+  public User findById(Long id) {
+    return userDao.findUserById(id);
+  }
+
   /**
    * Update existing user details
    *

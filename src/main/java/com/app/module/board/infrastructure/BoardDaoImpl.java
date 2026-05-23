@@ -2,8 +2,6 @@ package com.app.module.board.infrastructure;
 
 import com.app.module.board.domain.Board;
 import com.app.module.board.domain.BoardNotFoundException;
-import com.app.module.pin.domain.Pin;
-import com.app.module.user.domain.entity.User;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
@@ -33,7 +31,7 @@ public class BoardDaoImpl implements BoardDao {
           jdbcTemplate.update(
               con -> {
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setLong(1, board.getUser().getId());
+                ps.setLong(1, board.getUserId());
                 ps.setString(2, board.getName());
                 return ps;
               },
@@ -53,9 +51,9 @@ public class BoardDaoImpl implements BoardDao {
               boardPinSql,
               board.getPins(),
               board.getPins().size(),
-              (ps, pin) -> {
+              (ps, pinId) -> {
                 ps.setLong(1, board.getId());
-                ps.setLong(2, pin.getId());
+                ps.setLong(2, pinId);
               });
         }
 
@@ -69,23 +67,23 @@ public class BoardDaoImpl implements BoardDao {
   }
 
   @Override
-  public Board addPinToBoard(Pin pin, Board board) {
+  public Board addPinToBoard(Long pinId, Board board) {
     String sql = "INSERT INTO board_pin (board_id, pin_id) VALUES(?,?)";
-    int rowAffected = jdbcTemplate.update(sql, board.getId(), pin.getId());
+    int rowAffected = jdbcTemplate.update(sql, board.getId(), pinId);
 
     if (rowAffected > 0) {
-      board.getPins().add(pin);
+      board.getPins().add(pinId);
       return board;
     }
     return null;
   }
 
   @Override
-  public Board deletePinFromBoard(Pin pin, Board board) {
+  public Board deletePinFromBoard(Long pinId, Board board) {
     String sql = "DELETE FROM board_pin WHERE board_id = ? AND pin_id = ?";
-    int rowAffected = jdbcTemplate.update(sql, board.getId(), pin.getId());
+    int rowAffected = jdbcTemplate.update(sql, board.getId(), pinId);
     if (rowAffected > 0) {
-      board.getPins().remove(pin);
+      board.getPins().remove(pinId);
       return board;
     }
     return null;
@@ -103,28 +101,21 @@ public class BoardDaoImpl implements BoardDao {
     try {
       String boardSql =
           """
-            SELECT b.id AS board_id, b.board_name,
-                   u.id AS user_id, u.username
+            SELECT b.id AS board_id, b.board_name, user_id
             FROM boards b
-            JOIN users u ON b.user_id = u.id
             WHERE b.id = ?
         """;
 
       Board board =
           jdbcTemplate.queryForObject(
               boardSql,
-              (rs, _) -> {
+              (rs, rowNum) -> {
                 var b =
                     Board.builder()
                         .id(rs.getLong("board_id"))
                         .name(rs.getString("board_name"))
                         .build();
-                var user =
-                    User.builder()
-                        .id(rs.getLong("user_id"))
-                        .username(rs.getString("username"))
-                        .build();
-                b.setUser(user);
+                b.setUserId(rs.getLong("user_id"));
                 return b;
               },
               id);
@@ -135,23 +126,13 @@ public class BoardDaoImpl implements BoardDao {
 
       String pinsSql =
           """
-            SELECT p.id AS pin_id, p.media_id, p.user_id AS pin_user_id, p.created_at AS pin_created_at
+            SELECT p.id AS pin_id
             FROM pins p
             JOIN board_pin bp ON bp.pin_id = p.id
             WHERE bp.board_id = ?
         """;
 
-      List<Pin> pins =
-          jdbcTemplate.query(
-              pinsSql,
-              (rs, _) ->
-                  Pin.builder()
-                      .id(rs.getLong("pin_id"))
-                      .mediaId(rs.getLong("media_id"))
-                      .userId(rs.getLong("pin_user_id"))
-                      .createdAt(rs.getTimestamp("pin_created_at").toLocalDateTime())
-                      .build(),
-              id);
+      List<Long> pins = jdbcTemplate.query(pinsSql, (rs, rowNun) -> rs.getLong("pin_id"), id);
 
       board.setPins(pins);
       return board;
@@ -165,9 +146,8 @@ public class BoardDaoImpl implements BoardDao {
     String boardSql =
         """
         SELECT b.id AS board_id, b.board_name,
-            u.id AS user_id, u.username
+            user_id
         FROM boards b
-        JOIN users u ON b.user_id = u.id
         WHERE b.user_id = ?
         ORDER BY b.id DESC
         LIMIT ? OFFSET ?
@@ -175,15 +155,11 @@ public class BoardDaoImpl implements BoardDao {
     var boards =
         jdbcTemplate.query(
             boardSql,
-            (rs, _) -> {
+            (rs, rowNum) -> {
               Board board = new Board();
               board.setId(rs.getLong("board_id"));
               board.setName(rs.getString("board_name"));
-
-              User user = new User();
-              user.setId(rs.getLong("user_id"));
-              user.setUsername(rs.getString("username"));
-              board.setUser(user);
+              board.setUserId(rs.getLong("user_id"));
 
               board.setPins(new ArrayList<>());
               return board;
@@ -201,7 +177,7 @@ public class BoardDaoImpl implements BoardDao {
     String pinSql =
         String.format(
             """
-      SELECT bp.board_id, p.id AS pin_id, p.media_id,
+      SELECT bp.board_id, p.id AS pin_id,
              p.user_id AS pin_user_id, p.created_at AS pin_created_at
       FROM board_pin bp
       JOIN pins p ON p.id = bp.pin_id
@@ -209,18 +185,13 @@ public class BoardDaoImpl implements BoardDao {
       """,
             inSql);
 
-    Map<Long, List<Pin>> pinMap = new HashMap<>();
+    Map<Long, List<Long>> pinMap = new HashMap<>();
 
     jdbcTemplate.query(
         pinSql,
         rs -> {
           long boardId = rs.getLong("board_id");
-          Pin pin = new Pin();
-          pin.setId(rs.getLong("pin_id"));
-          pin.setMediaId(rs.getLong("media_id"));
-          pin.setUserId(rs.getLong("pin_user_id"));
-          pin.setCreatedAt(rs.getTimestamp("pin_created_at").toLocalDateTime());
-          pinMap.computeIfAbsent(boardId, k -> new ArrayList<>()).add(pin);
+          pinMap.computeIfAbsent(boardId, i -> new ArrayList<>()).add(rs.getLong("pin_id"));
         },
         boardsIds.toArray());
 

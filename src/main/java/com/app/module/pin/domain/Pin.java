@@ -2,10 +2,12 @@ package com.app.module.pin.domain;
 
 import com.app.module.hashtag.domain.Hashtag;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import lombok.*;
+import org.springframework.modulith.NamedInterface;
 
+@NamedInterface
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -20,5 +22,5 @@ public class Pin implements Serializable {
   private String description;
   private Long mediaId;
   private Collection<Hashtag> hashtags;
-  private LocalDateTime createdAt;
+  private Instant createdAt;
 }

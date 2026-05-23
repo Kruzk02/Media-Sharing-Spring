@@ -1,10 +1,10 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.1'
+    id 'org.springframework.boot' version '4.0.2'
     id 'io.spring.dependency-management' version '1.1.7'
 
     id 'jacoco'                                    // for code coverage
-    id 'com.diffplug.spotless' version '8.1.0'    // for formatting
+    id 'com.diffplug.spotless' version '8.2.0'    // for formatting
 }
 
 group = 'com'
@@ -37,8 +37,8 @@ dependencies {
     implementation 'org.springframework.modulith:spring-modulith-events-api:2.0.1'
 
     // --- Jackson ---
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.20.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.20.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.21.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.0'
 
     // --- OpenAPI ---
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'

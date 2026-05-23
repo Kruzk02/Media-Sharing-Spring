@@ -1,9 +1,7 @@
 package com.app.module.subcomment.infrastructure.subcomment;
 
-import com.app.module.comment.domain.Comment;
 import com.app.module.subcomment.domain.SubComment;
 import com.app.module.subcomment.domain.SubCommentNotFoundException;
-import com.app.module.user.domain.entity.User;
 import com.app.shared.exception.sub.SaveDataFailedException;
 import com.app.shared.type.SortType;
 import java.sql.PreparedStatement;
@@ -39,8 +37,8 @@ public class SubCommentDaoImpl implements SubCommentDao {
                 PreparedStatement ps =
                     con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 ps.setString(1, subComment.getContent());
-                ps.setLong(2, subComment.getUser().getId());
-                ps.setLong(3, subComment.getComment().getId());
+                ps.setLong(2, subComment.getUserId());
+                ps.setLong(3, subComment.getCommentId());
                 return ps;
               },
               keyHolder);
@@ -112,17 +110,24 @@ public class SubCommentDaoImpl implements SubCommentDao {
   public SubComment findById(Long id) {
     try {
       String sql =
-          "SELECT sc.id as sc_id, sc.content AS sc_content, sc.create_at AS sc_create_at, "
-              + "sc.media_id AS sc_media_id, "
-              + "sc.comment_id AS sc_comment_id, "
-              + "u.id AS user_id, "
-              + "u.username AS user_username, "
-              + "c.content AS comment_content "
-              + "FROM sub_comments sc "
-              + "JOIN users u ON sc.user_id = u.id "
-              + "JOIN comments c ON sc.comment_id = c.id "
-              + "WHERE sc.id = ?";
-      return template.queryForObject(sql, new SubCommentRowMapper(), id);
+          "SELECT id, content, create_at, "
+              + "media_id, "
+              + "comment_id, "
+              + "user_id "
+              + "FROM sub_comments "
+              + "WHERE id = ?";
+      return template.queryForObject(
+          sql,
+          (rs, rowNum) ->
+              SubComment.builder()
+                  .id(rs.getLong("id"))
+                  .content(rs.getString("content"))
+                  .mediaId(rs.getLong("media_id"))
+                  .userId(rs.getLong("user_id"))
+                  .commentId(rs.getLong("comment_id"))
+                  .createAt(rs.getTimestamp("create_at").toInstant())
+                  .build(),
+          id);
     } catch (DataAccessException e) {
       System.out.println(e.getMessage());
       throw new SubCommentNotFoundException("Sub comment not found with id: " + id);
@@ -143,24 +148,14 @@ public class SubCommentDaoImpl implements SubCommentDao {
 
     @Override
     public SubComment mapRow(ResultSet rs, int rowNum) throws SQLException {
-      SubComment subComment = new SubComment();
-      subComment.setId(rs.getLong("sc_id"));
-
-      subComment.setContent(rs.getString("sc_content"));
-      subComment.setMediaId(rs.getLong("sc_media_id"));
-
-      User user = new User();
-      user.setId(rs.getLong("user_id"));
-      user.setUsername(rs.getString("user_username"));
-      subComment.setUser(user);
-
-      Comment comment = new Comment();
-      comment.setId(rs.getLong("sc_comment_id"));
-      comment.setContent(rs.getString("comment_content"));
-      subComment.setComment(comment);
-
-      subComment.setCreateAt(rs.getTimestamp("sc_create_at").toLocalDateTime());
-      return subComment;
+      return SubComment.builder()
+          .id(rs.getLong("sc_id"))
+          .content(rs.getString("sc_content"))
+          .mediaId(rs.getLong("sc_media_id"))
+          .userId(rs.getLong("user_id"))
+          .commentId(rs.getLong("sc_comment_id"))
+          .createAt(rs.getTimestamp("sc_create_at").toInstant())
+          .build();
     }
   }
 }
