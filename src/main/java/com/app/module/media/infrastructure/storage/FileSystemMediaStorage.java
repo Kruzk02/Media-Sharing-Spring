@@ -45,6 +45,24 @@ public class FileSystemMediaStorage implements MediaStorage {
     return path;
   }
 
+  private static String sanitizeFilename(String filename) {
+    if (filename == null || filename.isBlank()) {
+      throw new IllegalArgumentException("Filename must not be null or empty.");
+    }
+
+    String normalized = filename.replace("\\", "/");
+    if (normalized.contains("/") || normalized.contains("..")) {
+      throw new IllegalArgumentException("Invalid filename.");
+    }
+
+    Path namePath = Paths.get(filename).normalize();
+    if (namePath.isAbsolute() || namePath.getNameCount() != 1) {
+      throw new IllegalArgumentException("Invalid filename.");
+    }
+
+    return namePath.getFileName().toString();
+  }
+
   /**
    * Saves the provided file to the appropriate directory based on its extension.
    *
@@ -63,9 +81,13 @@ public class FileSystemMediaStorage implements MediaStorage {
     return CompletableFuture.runAsync(
         () -> {
           try {
-            Path folder = resolveMediaType(mediaInfo.extension());
-            Path safeName = Paths.get(mediaInfo.filename()).getFileName();
-            Path filePath = folder.resolve(safeName);
+            Path folder = resolveMediaType(mediaInfo.extension()).toAbsolutePath().normalize();
+            String safeName = sanitizeFilename(mediaInfo.filename());
+            Path filePath = folder.resolve(safeName).normalize();
+
+            if (!filePath.startsWith(folder)) {
+              throw new IllegalArgumentException("Invalid file path.");
+            }
 
             try (InputStream inputStream = file.getInputStream()) {
               Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
@@ -96,9 +118,13 @@ public class FileSystemMediaStorage implements MediaStorage {
     return CompletableFuture.runAsync(
         () -> {
           try {
-            Path folder = resolveMediaType(mediaInfo.extension());
-            Path safeName = Paths.get(mediaInfo.filename()).getFileName();
-            Path filePath = folder.resolve(safeName);
+            Path folder = resolveMediaType(mediaInfo.extension()).toAbsolutePath().normalize();
+            String safeName = sanitizeFilename(mediaInfo.filename());
+            Path filePath = folder.resolve(safeName).normalize();
+
+            if (!filePath.startsWith(folder)) {
+              throw new IllegalArgumentException("Invalid file path.");
+            }
 
             if (Files.exists(filePath)) {
               Files.delete(filePath);
