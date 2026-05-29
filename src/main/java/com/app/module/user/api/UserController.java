@@ -25,10 +25,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -113,7 +111,9 @@ public class UserController {
       int refreshTtlSeconds = 30 * 24 * 60 * 60;
 
       String refreshTokenKey = "refresh_token:" + UUID.randomUUID();
-      redisTemplate.opsForValue().set(refreshTokenKey, refreshToken, refreshTtlSeconds, TimeUnit.SECONDS);
+      redisTemplate
+          .opsForValue()
+          .set(refreshTokenKey, refreshToken, refreshTtlSeconds, TimeUnit.SECONDS);
 
       Cookie cookie = new Cookie("refresh_token", refreshTokenKey);
       cookie.setHttpOnly(true);
@@ -121,14 +121,13 @@ public class UserController {
       cookie.setPath("http://localhost:8080/api/users/refresh");
       cookie.setMaxAge(refreshTtlSeconds);
 
-      response.addCookie(cookie);
       response.addHeader(
-              "Set-Cookie",
-              "refresh_token="
-                      + refreshTokenKey
-                      + "; Max-Age="
-                      + refreshTtlSeconds
-                      + "; Path=http://localhost:8080/api/users/refresh; HttpOnly; Secure; SameSite=Strict");
+          "Set-Cookie",
+          "refresh_token="
+              + refreshTokenKey
+              + "; Max-Age="
+              + refreshTtlSeconds
+              + "; Path=http://localhost:8080/api/users/refresh; HttpOnly; Secure; SameSite=Strict");
     }
 
     return ResponseEntity.status(HttpStatus.OK)
