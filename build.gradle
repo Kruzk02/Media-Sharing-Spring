@@ -58,8 +58,8 @@ dependencies {
     runtimeOnly 'org.springframework.boot:spring-boot-docker-compose'
 
     // --- Lombok ---
-    compileOnly 'org.projectlombok:lombok:1.18.42'
-    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    compileOnly 'org.projectlombok:lombok:1.18.46'
+    annotationProcessor 'org.projectlombok:lombok:1.18.46'
 
     // --- Testing ---
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
